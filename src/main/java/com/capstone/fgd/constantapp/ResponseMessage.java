@@ -9,4 +9,5 @@ public class ResponseMessage {
     public static final String COLUMN_NULL = "COLUMN_NOT_FILLED";
     public static final String EMAIL_NULL = "EMAIL_REQUIRED";
     public static final String PASSWORD_NULL = "PASSWORD_REQUIRED";
+    public static final String CHAR_LESS_8 = "CHARACTER_LESS_THAN_8";
 }

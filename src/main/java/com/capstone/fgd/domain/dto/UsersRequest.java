@@ -14,4 +14,5 @@ public class UsersRequest {
     private String email;
     private String password;
     private Boolean isAdmin;
+    private Boolean isSuspended;
 }
