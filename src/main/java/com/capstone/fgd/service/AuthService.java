@@ -143,13 +143,16 @@ public class AuthService {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.generateToken(authentication);
+
             Optional<Users> usersOptional = Optional.ofNullable(userRepository.findChildByName(req.getEmail()));
             Users users = usersOptional.get();
             TokenResponse tokenResponse = TokenResponse.builder()
                     .token(jwt)
                     .isAdmin(users.getIsAdmin())
                     .name(users.getName())
+                    .isSupended(users.getIsSuspended())
                     .build();
+
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,
                    tokenResponse,
                     HttpStatus.OK);

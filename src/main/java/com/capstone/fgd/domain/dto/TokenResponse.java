@@ -13,6 +13,6 @@ public class TokenResponse {
     private String token;
     private Boolean isAdmin;
     private String name;
-//    private Boolean isSupended;
+    private Boolean isSupended;
 }
 
