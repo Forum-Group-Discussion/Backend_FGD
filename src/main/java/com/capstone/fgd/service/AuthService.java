@@ -30,24 +30,30 @@ public class AuthService {
 
     public ResponseEntity<Object> register(UsersRequest req) {
 
+        log.info("Register -> name : {},email : {}, password : {}, isAdmin", req.getName());
+        if ( req.getName().equals("") || req.getEmail().equals("")|| req.getPassword().equals("")){
+                log.error(" Name , Email, Password is null");
+                return ResponseUtil.build(ResponseMessage.COLUMN_NULL,null, HttpStatus.BAD_REQUEST);
+        }
+
         if (userRepository.existsByUsername(req.getEmail())) {
             log.error("User already exist");
             return ResponseUtil.build(ResponseMessage.USER_EXISTS,null, HttpStatus.BAD_REQUEST);
         }
 
-        if (req.getIsAdmin() == null) {
-            log.info(" User ");
-            Users userDao = Users.builder()
-                    .name(req.getName())
-                    .username(req.getEmail())
-                    .password(passwordEncoder.encode(req.getPassword()))
-                    .isAdmin(false)
-                    .build();
+        if (req.getIsAdmin() == null || req.getIsAdmin().equals(false)) {
+               log.info(" User ");
+               Users userDao = Users.builder()
+                       .name(req.getName())
+                       .username(req.getEmail())
+                       .password(passwordEncoder.encode(req.getPassword()))
+                       .isAdmin(false)
+                       .build();
 
-            userRepository.save(userDao);
-            log.info("User is Saved");
+               userRepository.save(userDao);
+               log.info("User is Saved");
 
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, null, HttpStatus.OK);
+               return ResponseUtil.build(ResponseMessage.KEY_FOUND, null, HttpStatus.OK);
         }
 
         if (req.getIsAdmin().equals(true) ) {
@@ -62,12 +68,20 @@ public class AuthService {
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, null, HttpStatus.OK);
 
         }
-        return null;
+        return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
+
     }
 
 
     public ResponseEntity<?> authenticateAndGenerateToken(UsersRequest req) {
         try {
+            if (req.getEmail().equals(null)) {
+                return ResponseUtil.build(ResponseMessage.EMAIL_NULL,null,HttpStatus.BAD_REQUEST);
+            }
+
+            if (req.getPassword().equals(null)){
+                return ResponseUtil.build(ResponseMessage.PASSWORD_NULL,null,HttpStatus.BAD_REQUEST);
+            }
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             req.getEmail(),
@@ -75,7 +89,9 @@ public class AuthService {
             );
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.generationToken(authentication);
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, TokenResponse.builder().token(jwt).build(),
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,
+                    TokenResponse.
+                            builder().token(jwt).build(),
                     HttpStatus.OK);
         } catch (BadCredentialsException e){
             log.error("Bad Credential", e.getMessage());
