@@ -47,6 +47,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/v1/auth/**", "/h2-ui/**", "/h2-console/**").permitAll()
+                .antMatchers("/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui/**",
+                        "/webjars/**").permitAll()
                 .anyRequest().authenticated();
         ;
 
