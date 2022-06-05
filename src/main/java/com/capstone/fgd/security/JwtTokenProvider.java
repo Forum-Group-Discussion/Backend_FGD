@@ -26,14 +26,14 @@ public class JwtTokenProvider {
     @Value("3600000")
     private Long expiration;
 
-    public String generationToken(Authentication authentication){
+    public String generateToken(Authentication authentication){
         final Users user = (Users) authentication.getPrincipal();
 
         Date now = new Date(System.currentTimeMillis());
         Date expiryDate = new Date(now.getTime() * expiration);
 
         Map<String,Object> claims = new HashMap<>();
-        claims.put("email", user.getUsername());
+        claims.put("email", user.getEmail());
         claims.put("isAdmin", user.getIsAdmin());
 
         return Jwts.builder()
@@ -64,7 +64,7 @@ public class JwtTokenProvider {
         return false;
     }
 
-    public String getUsername(String token){
+    public String getEmail(String token){
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         return claims.get("email").toString();
     }

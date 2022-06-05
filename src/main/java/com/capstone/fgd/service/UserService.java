@@ -29,9 +29,9 @@ public class UserService implements UserDetailsService {
     private ModelMapper mapper;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        Users user = userRepository.getDistinctTopByUsername(username);
+        Users user = userRepository.findByEmail(email);
 
         if (user == null){
             throw new UsernameNotFoundException("Email Not Found");
@@ -50,8 +50,6 @@ public class UserService implements UserDetailsService {
                 log.info("User List Not Found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
-
-
 
             for (Users user:userDaoList) {
                 userDtoList.add(mapper.map(user,UsersRequest.class));

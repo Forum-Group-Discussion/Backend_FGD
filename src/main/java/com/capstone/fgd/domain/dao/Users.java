@@ -28,7 +28,7 @@ public class Users extends BaseDao implements UserDetails {
     private String name;
 
     @Column(name = "email",nullable = false)
-    private String username;
+    private String email;
 
     @Column(name = "password",nullable = false)
     private String password;
@@ -45,6 +45,10 @@ public class Users extends BaseDao implements UserDetails {
         return null;
     }
 
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 
     @Override
     public boolean isAccountNonExpired() {

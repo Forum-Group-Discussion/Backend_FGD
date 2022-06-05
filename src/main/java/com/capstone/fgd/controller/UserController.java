@@ -21,8 +21,6 @@ public class UserController {
     @CrossOrigin
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllUser (Principal principal){
-
-
         Users user = (Users) userService.loadUserByUsername(principal.getName());
         if (user.getIsAdmin().equals(true)){
             return userService.getAllUser();
