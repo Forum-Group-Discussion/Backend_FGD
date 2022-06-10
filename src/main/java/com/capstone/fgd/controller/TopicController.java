@@ -23,7 +23,7 @@ public class TopicController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "")
+    @PostMapping
     public ResponseEntity<Object> createNewTopic(Principal principal, @RequestBody TopicRequest request){
         Users user = (Users) userService.loadUserByUsername(principal.getName());
         if (user.getIsAdmin().equals(true)){
