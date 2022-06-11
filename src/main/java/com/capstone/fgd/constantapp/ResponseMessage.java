@@ -10,4 +10,6 @@ public class ResponseMessage {
     public static final String EMAIL_NULL = "EMAIL_REQUIRED";
     public static final String PASSWORD_NULL = "PASSWORD_REQUIRED";
     public static final String CHAR_LESS_8 = "CHARACTER_LESS_THAN_8";
+    public static final String CHAR_LESS_4 = "CHARACTER_LESS_THAN_4";
+    public static final String TOKEN_INVALID_NULL = "TOKEN_INVALID_OR_TOKEN_NULL";
 }

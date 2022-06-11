@@ -41,16 +41,16 @@ public class AuthService {
                 return ResponseUtil.build(ResponseMessage.COLUMN_NULL,null, HttpStatus.BAD_REQUEST);
         }
 
-        //check character name
+//        check character name
         int name = req.getName().length();
         int j = 0;
         for ( int i = 0; i < name ; i ++ ){
             j++;
         }
 
-        if (j < 8){
-            log.info(" Your character less than 8");
-            return ResponseUtil.build(ResponseMessage.CHAR_LESS_8,null,HttpStatus.BAD_REQUEST);
+        if (j < 4){
+            log.info(" Your character less than 4");
+            return ResponseUtil.build(ResponseMessage.CHAR_LESS_4,null,HttpStatus.BAD_REQUEST);
         }
 
         //check email
@@ -75,13 +75,13 @@ public class AuthService {
 
         String regexpassword = req.getPassword();
         String numRegex   = ".*[0-9].*";
-        String alphaRegex = ".*[a-zA-Z].*";
+        String alphaRegex = ".*[A-Z].*";
 
 
 
         if ((regexpassword.matches(numRegex) && regexpassword.matches(alphaRegex)) == false) {
             log.info("must contain number and char");
-            return ResponseUtil.build("MUST_CONTAINS_NUMBER_AND_CHAR",null,HttpStatus.BAD_REQUEST);
+            return ResponseUtil.build("MUST_CONTAINS_NUMBER_AND_CAPITALCHAR",null,HttpStatus.BAD_REQUEST);
         }
 
 
@@ -128,11 +128,11 @@ public class AuthService {
     public ResponseEntity<?> authenticateAndGenerateToken(UsersRequest req) {
         try {
             log.info(" Login ");
-            if (req.getEmail().equals(null)) {
+            if (req.getEmail().equals("")) {
                 return ResponseUtil.build(ResponseMessage.EMAIL_NULL,null,HttpStatus.BAD_REQUEST);
             }
 
-            if (req.getPassword().equals(null)){
+            if (req.getPassword().equals("")){
                 return ResponseUtil.build(ResponseMessage.PASSWORD_NULL,null,HttpStatus.BAD_REQUEST);
             }
 
@@ -144,7 +144,7 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.generateToken(authentication);
 
-            Optional<Users> usersOptional = Optional.ofNullable(userRepository.findChildByName(req.getEmail()));
+            Optional<Users> usersOptional = Optional.ofNullable(userRepository.findByEmail(req.getEmail()));
             Users users = usersOptional.get();
             TokenResponse tokenResponse = TokenResponse.builder()
                     .token(jwt)

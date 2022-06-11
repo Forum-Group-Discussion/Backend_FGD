@@ -4,6 +4,7 @@ import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.UsersRequest;
 import com.capstone.fgd.repository.UserRepository;
+import com.capstone.fgd.security.SecurityFilter;
 import com.capstone.fgd.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -27,6 +28,7 @@ public class UserService implements UserDetailsService {
 
     @Autowired
     private ModelMapper mapper;
+
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -59,7 +61,6 @@ public class UserService implements UserDetailsService {
             log.error("Get an error when executing get all user,Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     public ResponseEntity<Object> getUserByid(Long id){
@@ -79,30 +80,71 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public ResponseEntity<Object> searchUser(String email){
+        try {
+            log.info("Executing search user with email : {}",email);
+            List<Users> userDaoList = userRepository.searchByEmail(email);
+            List<UsersRequest> userDtoList = new ArrayList<>();
+
+            if (userDaoList.isEmpty()){
+                log.info("User List Not Found");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
+            }
+
+            for (Users user:userDaoList) {
+                userDtoList.add(mapper.map(user,UsersRequest.class));
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,userDtoList,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Get an error by executing search user,Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> updateSuspended(Long id){
+        try {
+            log.info("Suspend user with id : {}",id);
+            Optional<Users> usersOptional = userRepository.findById(id);
+            if (usersOptional.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+            Users users = usersOptional.get();
+            users.setIsSuspended(true);
+            userRepository.save(users);
+            UsersRequest usersRequest = mapper.map(users,UsersRequest.class);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,usersRequest,HttpStatus.OK);
+
+        }catch (Exception e){
+            log.info("Get An error by executing update Suspend, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+    }
 
 
-//    public ResponseEntity<Object> updateUser(Long id,UsersRequest request){
-//        try {
-//            log.info("Executing update team with id : {}",id);
-//            Optional<Users> userDaoOptional = userRepository.findById(id);
-//            if (userDaoOptional.isEmpty()){
-//                log.info("user not found");
-//                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-//            }
-//            Users userDao = userDaoOptional.get();
-//
-//            userDao.setNameUser(request.getNameUser());
-//            userDao.setTelephoneNumber(request.getTelephoneNumber());
-//            userDao.setAlamat(request.getAlamat());
-//            userRepository.save(userDao);
-//
-//            return ResponseUtil.build(ResponseMassage.KEY_FOUND,mapper.map(userDao,UserDto.class),HttpStatus.OK);
-//
-//        }catch (Exception e){
-//            log.error("Get an error by exeuting update team,Error : {}",e.getMessage());
-//            return ResponseUtil.build(ResponseMassage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+
+    public ResponseEntity<Object> updateUser(Long id,UsersRequest request){
+        try {
+            log.info("Executing update user with id : {}", id);
+            Optional<Users> userDaoOptional = userRepository.findById(id);
+            if (userDaoOptional.isEmpty()){
+                log.info("user not found");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+            Users users = userDaoOptional.get();
+
+            users.setName(request.getName());
+            userRepository.save(users);
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,mapper.map(users,UsersRequest.class),HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Get an error by executing update team,Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 //    public ResponseEntity<Object> deleteUser(Long id){
 //        try {

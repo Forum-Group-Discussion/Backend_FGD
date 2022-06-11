@@ -3,11 +3,8 @@ package com.capstone.fgd.security;
 import com.capstone.fgd.domain.dao.Users;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.Logger;
-import org.aspectj.weaver.tools.UnsupportedPointcutPrimitiveException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -23,14 +20,16 @@ public class JwtTokenProvider {
 
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
+    //@Value("${token.expired.hour:1}")
     @Value("3600000")
-    private Long expiration;
+    private Long expiredHour;
 
     public String generateToken(Authentication authentication){
         final Users user = (Users) authentication.getPrincipal();
 
         Date now = new Date(System.currentTimeMillis());
-        Date expiryDate = new Date(now.getTime() * expiration);
+        Date expiryDate = new Date(now.getTime() * expiredHour);
+        //(expiredHour * 3600000)
 
         Map<String,Object> claims = new HashMap<>();
         claims.put("email", user.getEmail());
@@ -46,23 +45,17 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public boolean validateToken(String token){
+    public Boolean validateToken(String token) throws Exception{
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (SignatureException ex){
-            log.error("Invalid Jwt Signature : {}", ex.getMessage());
-        } catch (MalformedJwtException ex){
-            log.error("Invalid Jwt Token : {}", ex.getMessage());
-        } catch (ExpiredJwtException ex){
-            log.error("Invalid Jwt Token : {}", ex.getMessage());
-        } catch (UnsupportedJwtException ex) {
-            log.error("Unsupported Jwt Token : {}", ex.getMessage());
-        } catch (IllegalArgumentException ex) {
-            log.error("Unsupported Jwt Token : {}", ex.getMessage());
+        } catch (Exception ex){
+            log.error("JWT Error : {}", ex.getMessage());
+            throw new Exception();
         }
-        return false;
+
     }
+
 
     public String getEmail(String token){
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
