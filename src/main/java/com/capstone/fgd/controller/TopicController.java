@@ -3,6 +3,7 @@ package com.capstone.fgd.controller;
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Topic;
 import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dto.ThreadRequest;
 import com.capstone.fgd.domain.dto.TopicRequest;
 import com.capstone.fgd.service.TopicService;
 import com.capstone.fgd.service.UserService;
@@ -33,22 +34,24 @@ public class TopicController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<Object> getAllTopic(Principal principal){
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)){
-            return topicService.getAllTopic();
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> getAllTopic(){
+        return topicService.getAllTopic();
     }
 
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Object> getTopicById(Principal principal, @PathVariable Long id){
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)){
-            return topicService.getTopicById(id);
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> getTopicById(@PathVariable Long id){
+        return topicService.getTopicById(id);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Object> updateThread(@PathVariable Long id, @RequestBody TopicRequest request) {
+            return topicService.updateTopic(id, request);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Object> deleteTeam(@PathVariable Long id) {
+            return topicService.deleteTopic(id);
     }
 
 
