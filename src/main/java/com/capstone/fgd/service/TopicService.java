@@ -29,12 +29,11 @@ public class TopicService {
         try {
             log.info("Executing create new Topic");
             Topic topic = Topic.builder()
-                    .id(request.getId())
                     .topicName(request.getTopicName())
                     .build();
             topicRepository.save(topic);
             TopicRequest topicRequest = mapper.map(topic, TopicRequest.class);
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,request, HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,topicRequest, HttpStatus.OK);
         } catch (Exception e){
             log.error("Get an error executing create new topic, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -65,6 +64,10 @@ public class TopicService {
             List<Topic> topicList = topicRepository.findAll();
             List<TopicRequest> topicRequestList = new ArrayList<>();
 
+            if (topicList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
             for (Topic topic: topicList){
                 topicRequestList.add(mapper.map(topic, TopicRequest.class));
             }
@@ -81,7 +84,7 @@ public class TopicService {
 
             if (topicOptional.isEmpty()){
                 log.info("topic not found");
-                return ResponseUtil.build(ResponseMessage.KEY_FOUND,null, HttpStatus.BAD_REQUEST);
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
             Topic topic = topicOptional.get();
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(topic, TopicRequest.class), HttpStatus.OK);

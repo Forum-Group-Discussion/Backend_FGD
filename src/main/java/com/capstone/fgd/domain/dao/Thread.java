@@ -20,7 +20,6 @@ public class Thread extends BaseDao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users users;
@@ -28,14 +27,13 @@ public class Thread extends BaseDao {
     @Column(name = "title", length = 200, nullable = false)
     private String title;
 
-//    @Lob
+    @Lob
     @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "image", length = 100)
     private String image;
 
-//    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne
     @JoinColumn(name = "topic_id")
     private Topic topic;
@@ -43,9 +41,5 @@ public class Thread extends BaseDao {
     @Column(name = "save")
     private Boolean save;
 
-    @PrePersist
-    void onCreate(){
-        this.save = Boolean.FALSE;
-    }
 
 }

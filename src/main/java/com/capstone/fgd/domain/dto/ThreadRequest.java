@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ThreadRequest {
     private Long id;
-    private Users users;
+    private UsersRequest users;
     private String title;
     private String content;
     private String image;
-    private Topic topic;
+    private TopicRequest topic;
     private Boolean save;
 }
