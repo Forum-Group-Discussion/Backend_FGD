@@ -45,13 +45,21 @@ public class TopicController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Object> updateThread(@PathVariable Long id, @RequestBody TopicRequest request) {
+    public ResponseEntity<Object> updateThread(Principal principal,@PathVariable Long id, @RequestBody TopicRequest request) {
+        Users user = (Users) userService.loadUserByUsername(principal.getName());
+        if (user.getIsAdmin().equals(true)){
             return topicService.updateTopic(id, request);
+        }
+        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteTopic(@PathVariable Long id) {
+    public ResponseEntity<Object> deleteTopic(Principal principal, @PathVariable Long id) {
+        Users user = (Users) userService.loadUserByUsername(principal.getName());
+        if (user.getIsAdmin().equals(true)){
             return topicService.deleteTopic(id);
+        }
+        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
     }
 
 

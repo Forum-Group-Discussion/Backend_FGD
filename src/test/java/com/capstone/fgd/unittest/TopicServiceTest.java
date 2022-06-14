@@ -40,7 +40,7 @@ public class TopicServiceTest {
     private TopicService topicService;
 
     @Test
-    void addTopic_Test(){
+    void addTopic_Success_Test(){
         Topic topic = Topic.builder()
                 .id(1L)
                 .topicName("Sport")
@@ -256,7 +256,7 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void deleteTopicSuccess_Test(){
+    public void deleteTopic_Success_Test(){
         when(topicRepository.findById(anyLong())).thenReturn(Optional.of(Topic.builder()
                 .id(1L)
                 .topicName("Sport")
@@ -269,7 +269,7 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void deleteCoachNotFound_Test(){
+    public void deleteTopic_NotFound_Test(){
         when(topicRepository.findById(anyLong())).thenReturn(Optional.empty());
         doNothing().when(topicRepository).delete(any());
 
