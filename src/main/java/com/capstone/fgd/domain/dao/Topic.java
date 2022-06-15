@@ -5,16 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Data
-@Builder
+@Entity
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "m_topic")
-@Entity
 public class Topic extends BaseDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +24,5 @@ public class Topic extends BaseDao {
     @Column(name = "topic_name", nullable = false)
     private String topicName;
 
-    @OneToMany(mappedBy = "topic")
-    private List<Thread> thread;
 
 }

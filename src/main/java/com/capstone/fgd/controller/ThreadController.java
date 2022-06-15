@@ -29,37 +29,22 @@ public class ThreadController {
 
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllThread(Principal principal) {
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)) {
-            return threadService.getAllThread();
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED, null, HttpStatus.BAD_REQUEST);
+        return threadService.getAllThread();
+
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getThreadById(Principal principal, @PathVariable Long id) {
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)) {
-            return threadService.getThreadById(id);
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED, null, HttpStatus.BAD_REQUEST);
+        return threadService.getThreadById(id);
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateThread(Principal principal, @PathVariable Long id, @RequestBody ThreadRequest request) {
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)) {
-            return threadService.updateThread(id, request);
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED, null, HttpStatus.BAD_REQUEST);
+        return threadService.updateThread(id, request);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteTeam(Principal principal, @PathVariable Long id) {
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)) {
-            return threadService.deleteThread(id);
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED, null, HttpStatus.BAD_REQUEST);
+        return threadService.deleteThread(id);
     }
 }

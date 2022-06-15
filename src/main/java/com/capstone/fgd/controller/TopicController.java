@@ -3,6 +3,7 @@ package com.capstone.fgd.controller;
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Topic;
 import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dto.ThreadRequest;
 import com.capstone.fgd.domain.dto.TopicRequest;
 import com.capstone.fgd.service.TopicService;
 import com.capstone.fgd.service.UserService;
@@ -23,7 +24,7 @@ public class TopicController {
     @Autowired
     private UserService userService;
 
-    @PostMapping
+    @PostMapping(value = "")
     public ResponseEntity<Object> createNewTopic(Principal principal, @RequestBody TopicRequest request){
         Users user = (Users) userService.loadUserByUsername(principal.getName());
         if (user.getIsAdmin().equals(true)){
@@ -33,20 +34,30 @@ public class TopicController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<Object> getAllTopic(Principal principal){
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)){
-            return topicService.getAllTopic();
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> getAllTopic(){
+        return topicService.getAllTopic();
     }
 
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Object> getTopicById(Principal principal, @PathVariable Long id){
+    public ResponseEntity<Object> getTopicById(@PathVariable Long id){
+        return topicService.getTopicById(id);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Object> updateThread(Principal principal,@PathVariable Long id, @RequestBody TopicRequest request) {
         Users user = (Users) userService.loadUserByUsername(principal.getName());
         if (user.getIsAdmin().equals(true)){
-            return topicService.getTopicById(id);
+            return topicService.updateTopic(id, request);
+        }
+        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Object> deleteTopic(Principal principal, @PathVariable Long id) {
+        Users user = (Users) userService.loadUserByUsername(principal.getName());
+        if (user.getIsAdmin().equals(true)){
+            return topicService.deleteTopic(id);
         }
         return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
     }

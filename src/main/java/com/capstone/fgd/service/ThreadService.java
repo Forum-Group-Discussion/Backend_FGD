@@ -51,25 +51,18 @@ public class ThreadService {
             }
 
             Thread thread = Thread.builder()
-                    .id(threadRequest.getId())
-                    .users(usersOptional.get())
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
                     .image(threadRequest.getImage())
-                    .topic(topicOptional.get())
-                    .save(threadRequest.getSave())
+                    .save(false)
                     .build();
-//            Thread thread = mapper.map(threadRequest, Thread.class);
-//            thread.setId(threadRequest.getId());
-//            thread.setTitle(threadRequest.getTitle());
-//            thread.setContent(threadRequest.getContent());
-//            thread.setImage(threadRequest.getImage());
-//            thread.setUsers(usersOptional.get());
-//            thread.setTopic(topicOptional.get());
-            threadRepository.save(thread);
-//            ThreadRequest threadRequest1 = mapper.map(thread, ThreadRequest.class);
 
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, threadRequest,HttpStatus.OK);
+            thread.setUsers(usersOptional.get());
+            thread.setTopic(topicOptional.get());
+            threadRepository.save(thread);
+            ThreadRequest threadRequestDto = mapper.map(thread, ThreadRequest.class);
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, threadRequestDto,HttpStatus.OK);
         } catch (Exception e){
             log.error("Get an error executing new thread, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -89,8 +82,6 @@ public class ThreadService {
             Thread thread = threadOptional.get();
             thread.setTitle(request.getTitle());
             thread.setContent(request.getContent());
-            thread.setImage(request.getImage());
-            thread.setSave(request.getSave());
             threadRepository.save(thread);
 
         return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,mapper.map(thread, ThreadRequest.class), HttpStatus.OK);
@@ -105,6 +96,10 @@ public class ThreadService {
             log.info("Executing get all Thread");
             List<Thread> threadList = threadRepository.findAll();
             List<ThreadRequest> threadRequestList = new ArrayList<>();
+
+            if (threadList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
 
             for (Thread thread: threadList){
                 threadRequestList.add(mapper.map(thread, ThreadRequest.class));
@@ -124,7 +119,7 @@ public class ThreadService {
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
-                return ResponseUtil.build(ResponseMessage.KEY_FOUND,null, HttpStatus.BAD_REQUEST);
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
             Thread thread = threadOptional.get();
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(thread,ThreadRequest.class), HttpStatus.OK);

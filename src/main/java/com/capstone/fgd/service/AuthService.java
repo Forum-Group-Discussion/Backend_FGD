@@ -58,7 +58,7 @@ public class AuthService {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(req.getEmail());
         if (!matcher.matches()){
-            return ResponseUtil.build("Email Not Valid",null,HttpStatus.BAD_REQUEST);
+            return ResponseUtil.build("EMAIL_NOT_VALID",null,HttpStatus.BAD_REQUEST);
         }
 
         //check password
@@ -75,7 +75,7 @@ public class AuthService {
 
         String regexpassword = req.getPassword();
         String numRegex   = ".*[0-9].*";
-        String alphaRegex = ".*[a-zA-Z].*";
+        String alphaRegex = ".*[A-Z].*";
 
 
 
@@ -128,11 +128,11 @@ public class AuthService {
     public ResponseEntity<?> authenticateAndGenerateToken(UsersRequest req) {
         try {
             log.info(" Login ");
-            if (req.getEmail().equals(null)) {
+            if (req.getEmail().equals("")) {
                 return ResponseUtil.build(ResponseMessage.EMAIL_NULL,null,HttpStatus.BAD_REQUEST);
             }
 
-            if (req.getPassword().equals(null)){
+            if (req.getPassword().equals("")){
                 return ResponseUtil.build(ResponseMessage.PASSWORD_NULL,null,HttpStatus.BAD_REQUEST);
             }
 
