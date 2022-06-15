@@ -1,7 +1,7 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.Thread;
+import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Topic;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.ThreadRequest;
@@ -23,6 +23,7 @@ import java.util.Optional;
 @Slf4j
 @Service
 public class ThreadService {
+
 
     @Autowired
     private UserRepository userRepository;
@@ -50,7 +51,7 @@ public class ThreadService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
 
-            Thread thread = Thread.builder()
+            Threads thread = Threads.builder()
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
                     .image(threadRequest.getImage())
@@ -72,14 +73,14 @@ public class ThreadService {
     public ResponseEntity<Object> updateThread(Long id, ThreadRequest request){
         try {
             log.info("Executing update team");
-            Optional<Thread> threadOptional = threadRepository.findById(id);
+            Optional<Threads> threadOptional = threadRepository.findById(id);
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-            Thread thread = threadOptional.get();
+            Threads thread = threadOptional.get();
             thread.setTitle(request.getTitle());
             thread.setContent(request.getContent());
             threadRepository.save(thread);
@@ -94,14 +95,14 @@ public class ThreadService {
     public ResponseEntity<Object> getAllThread(){
         try {
             log.info("Executing get all Thread");
-            List<Thread> threadList = threadRepository.findAll();
+            List<Threads> threadList = threadRepository.findAll();
             List<ThreadRequest> threadRequestList = new ArrayList<>();
 
             if (threadList.isEmpty()){
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-            for (Thread thread: threadList){
+            for (Threads thread: threadList){
                 threadRequestList.add(mapper.map(thread, ThreadRequest.class));
             }
 
@@ -115,13 +116,13 @@ public class ThreadService {
     public ResponseEntity<Object> getThreadById(Long id){
         try {
             log.info("Executing getThreadById with id : {}", id);
-            Optional<Thread> threadOptional = threadRepository.findById(id);
+            Optional<Threads> threadOptional = threadRepository.findById(id);
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
-            Thread thread = threadOptional.get();
+            Threads thread = threadOptional.get();
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(thread,ThreadRequest.class), HttpStatus.OK);
         } catch (Exception e){
             log.error("Get an error by executing get thread by id, Error : {}", e.getMessage());
@@ -131,7 +132,7 @@ public class ThreadService {
 
     public ResponseEntity<Object> deleteThread(Long id){
         try {
-            Optional<Thread> threadOptional = threadRepository.findById(id);
+            Optional<Threads> threadOptional = threadRepository.findById(id);
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");

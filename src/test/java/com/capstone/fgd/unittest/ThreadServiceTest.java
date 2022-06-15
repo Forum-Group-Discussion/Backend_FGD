@@ -2,7 +2,7 @@ package com.capstone.fgd.unittest;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.common.ApiResponse;
-import com.capstone.fgd.domain.dao.Thread;
+import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Topic;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.ThreadRequest;
@@ -14,7 +14,6 @@ import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.service.ThreadService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -60,7 +59,7 @@ public class ThreadServiceTest {
                 .id(1L)
                 .build();
 
-        Thread thread = Thread.builder()
+        Threads thread = Threads.builder()
                 .id(1L)
                 .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
                 .image("urlxxxxxxxxxxxxxxxx")
@@ -84,7 +83,7 @@ public class ThreadServiceTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(users));
         when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
-        when(mapper.map(any(),eq(Thread.class))).thenReturn(thread);
+        when(mapper.map(any(),eq(Threads.class))).thenReturn(thread);
         when(mapper.map(any(),eq(ThreadRequest.class))).thenReturn(threadRequest);
 
         ResponseEntity<Object> responseEntity = threadService.createNewThread(ThreadRequest.builder()
@@ -171,7 +170,7 @@ public class ThreadServiceTest {
                 .id(1L)
                 .build();
 
-        Thread thread = Thread.builder()
+        Threads thread = Threads.builder()
                 .id(1L)
                 .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
                 .image("urlxxxxxxxxxxxxxxxx")
@@ -195,7 +194,7 @@ public class ThreadServiceTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(users));
         when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
-        when(mapper.map(any(),eq(Thread.class))).thenReturn(thread);
+        when(mapper.map(any(),eq(Threads.class))).thenReturn(thread);
         when(mapper.map(any(),eq(ThreadRequest.class))).thenReturn(threadRequest);
         when(threadRepository.save(any())).thenThrow(NullPointerException.class);
         ResponseEntity<Object> responseEntity = threadService.createNewThread(ThreadRequest.builder()
@@ -218,7 +217,7 @@ public class ThreadServiceTest {
 
     @Test
     void updateThread_Success_Test(){
-        Thread thread = Thread.builder()
+        Threads thread = Threads.builder()
                 .id(1L)
                 .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
                 .image("urlxxxxxxxxxxxxxxxx")
@@ -240,7 +239,7 @@ public class ThreadServiceTest {
                         .build())
                 .build();
         when(threadRepository.findById(anyLong())).thenReturn(Optional.of(thread));
-        when(mapper.map(any(), eq(Thread.class))).thenReturn(thread);
+        when(mapper.map(any(), eq(Threads.class))).thenReturn(thread);
         when(mapper.map(any(), eq(ThreadRequest.class))).thenReturn(threadRequest);
         when(threadRepository.save(any())).thenReturn(thread);
         ResponseEntity<Object> responseEntity = threadService.updateThread(1L,ThreadRequest.builder()
@@ -307,7 +306,7 @@ public class ThreadServiceTest {
 
     @Test
     void getAllThread_Success_Test(){
-        Thread thread = Thread.builder()
+        Threads thread = Threads.builder()
                 .id(1L)
                 .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
                 .image("urlxxxxxxxxxxxxxxxx")
@@ -339,7 +338,7 @@ public class ThreadServiceTest {
 
     @Test
     void getAllThread_Notfound_Test(){
-        Thread thread = Thread.builder()
+        Threads thread = Threads.builder()
                 .id(1L)
                 .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
                 .image("urlxxxxxxxxxxxxxxxx")
@@ -369,7 +368,7 @@ public class ThreadServiceTest {
 
     @Test
     public void getAllThread_Exception_Test(){
-        Thread thread = Thread.builder()
+        Threads thread = Threads.builder()
                 .id(1L)
                 .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
                 .image("urlxxxxxxxxxxxxxxxx")
@@ -399,7 +398,7 @@ public class ThreadServiceTest {
 
     @Test
     void getThreadById_Success_Test(){
-        Thread thread = Thread.builder()
+        Threads thread = Threads.builder()
                 .id(1L)
                 .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
                 .image("urlxxxxxxxxxxxxxxxx")
@@ -446,7 +445,7 @@ public class ThreadServiceTest {
 
     @Test
     void getThreadById_Exception_Test(){
-        Thread thread = Thread.builder()
+        Threads thread = Threads.builder()
                 .id(1L)
                 .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
                 .image("urlxxxxxxxxxxxxxxxx")
@@ -477,7 +476,7 @@ public class ThreadServiceTest {
 
     @Test
     void deleteThreadById_Success_Test(){
-        when(threadRepository.findById(anyLong())).thenReturn(Optional.of(Thread.builder()
+        when(threadRepository.findById(anyLong())).thenReturn(Optional.of(Threads.builder()
                 .id(1L)
                 .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
                 .image("urlxxxxxxxxxxxxxxxx")
