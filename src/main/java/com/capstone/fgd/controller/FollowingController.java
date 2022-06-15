@@ -21,8 +21,8 @@ public class FollowingController {
     private FollowingService followingService;
 
     @CrossOrigin
-    @PostMapping(value = "create/{id}")
-    public ResponseEntity<Object> createfollow(@RequestBody FollowingRequest request,@PathVariable Long id){
+    @PostMapping(value = "")
+    public ResponseEntity<Object> follow(@RequestBody FollowingRequest request,@PathVariable Long id){
         return followingService.createFollow(request,id);
     }
 

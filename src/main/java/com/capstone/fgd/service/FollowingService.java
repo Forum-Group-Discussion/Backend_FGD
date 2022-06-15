@@ -4,7 +4,6 @@ import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Following;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.FollowingRequest;
-import com.capstone.fgd.domain.dto.UsersRequest;
 import com.capstone.fgd.repository.FollowingRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
@@ -40,11 +39,11 @@ public class FollowingService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
 
-            Optional<Users> usersToFollow = userRepository.findById(request.getUsers_following().getId());
+            Optional<Users> usersToFollow = userRepository.findById(request.getUserFollowing().getId());
             if (usersToFollow.isEmpty()){
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
-            if (!(request.getUsers_following().getId().equals(ids))){
+            if (!(request.getUserFollowing().getId().equals(ids))){
                 Following follow = Following.builder()
                         .id(request.getId())
                         .build();

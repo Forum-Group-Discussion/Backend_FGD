@@ -1,6 +1,8 @@
 package com.capstone.fgd.domain.dto;
 
-import com.capstone.fgd.domain.dao.Users;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FollowingRequest {
-    private Long id;
-    private UsersRequest user;
-    private UsersRequest users_following;
-
+    private Long userId;
+    private String type;
 }

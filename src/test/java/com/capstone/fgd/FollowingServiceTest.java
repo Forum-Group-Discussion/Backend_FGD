@@ -66,7 +66,7 @@ public class FollowingServiceTest {
                 .user(UsersRequest.builder()
                         .id(1L)
                         .build())
-                .users_following(UsersRequest.builder()
+                .userFollowing(UsersRequest.builder()
                         .id(2L)
                         .build())
                 .build();
@@ -90,14 +90,14 @@ public class FollowingServiceTest {
         ResponseEntity<Object> responseEntity = followingService.createFollow(FollowingRequest
                 .builder()
                 .id(1L)
-                .users_following(UsersRequest.builder().id(2L).build())
+                .userFollowing(UsersRequest.builder().id(2L).build())
                 .build(), 1L);
 
         ApiResponse apiResponse = (ApiResponse)  responseEntity.getBody();
         FollowingRequest data = (FollowingRequest) Objects.requireNonNull(apiResponse).getData();
         assertEquals(1L,data.getId());
         assertEquals(1L,data.getUser().getId());
-        assertEquals(2L,data.getUsers_following().getId());
+        assertEquals(2L,data.getUserFollowing().getId());
     }
 
 
