@@ -35,16 +35,16 @@ public class FollowingService {
     public ResponseEntity<Object> createFollow(FollowingRequest request,Long ids){
         try{
             log.info("Executing service create follow");
-            Optional<Users>usersOptional = userRepository.findById(request.getUser().getId());
+            Optional<Users>usersOptional = userRepository.findById(ids);
             if (usersOptional.isEmpty()){
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
 
-            Optional<Users> usersToFollow = userRepository.findById(ids);
+            Optional<Users> usersToFollow = userRepository.findById(request.getUsers_following().getId());
             if (usersToFollow.isEmpty()){
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
-            if (!(request.getUser().getId().equals(ids))){
+            if (!(request.getUsers_following().getId().equals(ids))){
                 Following follow = Following.builder()
                         .id(request.getId())
                         .build();
