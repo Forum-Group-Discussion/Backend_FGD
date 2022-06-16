@@ -40,5 +40,4 @@ public class Threads extends BaseDao {
     @Column(name = "save")
     private Boolean save;
 
-
 }
