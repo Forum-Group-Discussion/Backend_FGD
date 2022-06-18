@@ -37,7 +37,6 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("Email Not Found");
         }
         return user;
-
     }
 
     public ResponseEntity<Object> getAllUser(){

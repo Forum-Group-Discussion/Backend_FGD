@@ -34,23 +34,22 @@ public class AuthService {
     public ResponseEntity<Object> register(UsersRequest req) {
 
         log.info(" Register ");
-
         //check filled name,email,password
         if ( req.getName().equals("") || req.getEmail().equals("")|| req.getPassword().equals("")){
-                log.error(" Name , Email, Password is null");
-                return ResponseUtil.build(ResponseMessage.COLUMN_NULL,null, HttpStatus.BAD_REQUEST);
+            log.error(" Name , Email, Password is null");
+            return ResponseUtil.build(ResponseMessage.COLUMN_NULL,null, HttpStatus.BAD_REQUEST);
         }
 
-        //check character name
+//        check character name
         int name = req.getName().length();
         int j = 0;
         for ( int i = 0; i < name ; i ++ ){
             j++;
         }
 
-        if (j < 8){
-            log.info(" Your character less than 8");
-            return ResponseUtil.build(ResponseMessage.CHAR_LESS_8,null,HttpStatus.BAD_REQUEST);
+        if (j < 4){
+            log.info(" Your character less than 4");
+            return ResponseUtil.build(ResponseMessage.CHAR_LESS_4,null,HttpStatus.BAD_REQUEST);
         }
 
         //check email
@@ -58,7 +57,7 @@ public class AuthService {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(req.getEmail());
         if (!matcher.matches()){
-            return ResponseUtil.build("EMAIL_NOT_VALID",null,HttpStatus.BAD_REQUEST);
+            return ResponseUtil.build(ResponseMessage.EMAIL_INVALID,null,HttpStatus.BAD_REQUEST);
         }
 
         //check password
@@ -81,7 +80,7 @@ public class AuthService {
 
         if ((regexpassword.matches(numRegex) && regexpassword.matches(alphaRegex)) == false) {
             log.info("must contain number and char");
-            return ResponseUtil.build("MUST_CONTAINS_NUMBER_AND_CHAR",null,HttpStatus.BAD_REQUEST);
+            return ResponseUtil.build("MUST_CONTAINS_NUMBER_AND_CAPITALCHAR",null,HttpStatus.BAD_REQUEST);
         }
 
 
@@ -91,19 +90,19 @@ public class AuthService {
         }
 
         if (req.getIsAdmin() == null || req.getIsAdmin().equals(false)) {
-               log.info(" User ");
-               Users userDao = Users.builder()
-                       .name(req.getName())
-                       .email(req.getEmail())
-                       .password(passwordEncoder.encode(req.getPassword()))
-                       .isAdmin(false)
-                       .isSuspended(false)
-                       .build();
+            log.info(" User ");
+            Users userDao = Users.builder()
+                    .name(req.getName())
+                    .email(req.getEmail())
+                    .password(passwordEncoder.encode(req.getPassword()))
+                    .isAdmin(false)
+                    .isSuspended(false)
+                    .build();
 
-               userRepository.save(userDao);
-               log.info("User is Saved");
+            userRepository.save(userDao);
+            log.info("User is Saved");
 
-               return ResponseUtil.build(ResponseMessage.KEY_FOUND, null, HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, null, HttpStatus.OK);
         }
 
         if (req.getIsAdmin().equals(true) ) {
@@ -144,7 +143,7 @@ public class AuthService {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtTokenProvider.generateToken(authentication);
 
-            Optional<Users> usersOptional = Optional.ofNullable(userRepository.findChildByName(req.getEmail()));
+            Optional<Users> usersOptional = Optional.ofNullable(userRepository.findByEmail(req.getEmail()));
             Users users = usersOptional.get();
             TokenResponse tokenResponse = TokenResponse.builder()
                     .token(jwt)
@@ -154,7 +153,7 @@ public class AuthService {
                     .build();
 
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,
-                   tokenResponse,
+                    tokenResponse,
                     HttpStatus.OK);
         } catch (BadCredentialsException e){
             log.error("Bad Credential", e.getMessage());

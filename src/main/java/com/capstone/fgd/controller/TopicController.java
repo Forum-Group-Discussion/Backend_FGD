@@ -1,9 +1,7 @@
 package com.capstone.fgd.controller;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.Topic;
 import com.capstone.fgd.domain.dao.Users;
-import com.capstone.fgd.domain.dto.ThreadRequest;
 import com.capstone.fgd.domain.dto.TopicRequest;
 import com.capstone.fgd.service.TopicService;
 import com.capstone.fgd.service.UserService;

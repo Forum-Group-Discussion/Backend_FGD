@@ -10,6 +10,7 @@ import com.capstone.fgd.security.JwtTokenProvider;
 import com.capstone.fgd.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,16 +20,23 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = AuthService.class)
 public class AuthServiceTest {
+    @MockBean
+    private ModelMapper mapper;
+
     @MockBean
     private UserRepository userRepository;
 
@@ -81,7 +89,7 @@ public class AuthServiceTest {
                 .isSuspended(false)
                 .build();
         when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-        when(userRepository.save(users)).thenReturn(users);
+        when(userRepository.save(any())).thenReturn(users);
 
         ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
                 .id(1L)
@@ -108,7 +116,7 @@ public class AuthServiceTest {
                 .build();
 
         when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-        when(userRepository.save(users)).thenReturn(users);
+        when(userRepository.save(any())).thenReturn(users);
 
         ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
                 .id(1L)
@@ -122,11 +130,11 @@ public class AuthServiceTest {
     }
 
     @Test
-    void registerUsersFail_Namelessthen8_Test() {
+    void registerUsersFail_Namelessthen4_Test() {
 
         Users users = Users.builder()
                 .id(1L)
-                .name("hafidz")
+                .name("haf")
                 .email("hafidzfebrian@gmail.com")
                 .password("Jokowilover12")
                 .isAdmin(false)
@@ -134,17 +142,17 @@ public class AuthServiceTest {
                 .build();
 
         when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-        when(userRepository.save(users)).thenReturn(users);
+        when(userRepository.save(any())).thenReturn(users);
 
         ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
                 .id(1L)
-                .name("hafidz")
+                .name("haf")
                 .email("hafidzfebrian@gmail.com")
                 .password("Jokowilover12")
                 .build());
         ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
         assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
-        assertEquals(ResponseMessage.CHAR_LESS_8,Objects.requireNonNull(apiResponse).getMessage());
+        assertEquals(ResponseMessage.CHAR_LESS_4,Objects.requireNonNull(apiResponse).getMessage());
     }
 
     @Test
@@ -160,7 +168,7 @@ public class AuthServiceTest {
                 .build();
 
         when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-        when(userRepository.save(users)).thenReturn(users);
+        when(userRepository.save(any())).thenReturn(users);
 
         ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
                 .id(1L)
@@ -187,7 +195,7 @@ public class AuthServiceTest {
                 .build();
 
         when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-        when(userRepository.save(users)).thenReturn(users);
+        when(userRepository.save(any())).thenReturn(users);
 
         ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
                 .id(1L)
@@ -197,7 +205,7 @@ public class AuthServiceTest {
                 .build());
         ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
         assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
-        assertEquals("MUST_CONTAINS_NUMBER_AND_CHAR",Objects.requireNonNull(apiResponse).getMessage());
+        assertEquals("MUST_CONTAINS_NUMBER_AND_CAPITALCHAR",Objects.requireNonNull(apiResponse).getMessage());
     }
 
     @Test
@@ -210,16 +218,23 @@ public class AuthServiceTest {
                 .isAdmin(false)
                 .isSuspended(false)
                 .build();
+        TokenResponse tokenResponseDto = TokenResponse.builder()
+                .token("TOKEN")
+                .name("Hafidz Febrian")
+                .isAdmin(false)
+                .isSupended(false)
+                .build();
 
         when(jwtTokenProvider.generateToken(any())).thenReturn("TOKEN");
-        when(userRepository.findChildByName(any())).thenReturn(users);
+        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(users));
+        when(mapper.map(any(),eq(Users.class))).thenReturn(users);
+        when(mapper.map(any(),eq(TokenResponse.class))).thenReturn(tokenResponseDto);
         ResponseEntity<?> responseEntity = authService.authenticateAndGenerateToken(UsersRequest.builder()
-                .id(1L)
-                .name("Hafidz Febrian")
-                .email("hafidzencis@gmail.com")
-                .password("jokowiloveR12")
-                .isAdmin(false)
-                .isSuspended(false)
+                        .name("Hafidz Febrian")
+                        .email("hafidzencis@gmail.com")
+                        .password("jokowiloveR12")
+                        .isAdmin(false)
+                        .isSuspended(false)
                 .build());
         ApiResponse response = (ApiResponse) responseEntity.getBody();
         TokenResponse tokenResponse = (TokenResponse) Objects.requireNonNull(response).getData();
@@ -243,7 +258,7 @@ public class AuthServiceTest {
                 .build();
 
         when(jwtTokenProvider.generateToken(any())).thenThrow(NullPointerException.class);
-        when(userRepository.findChildByName(any())).thenReturn(users);
+        when(userRepository.findByEmail(any())).thenReturn(users);
         ResponseEntity<?> responseEntity = authService.authenticateAndGenerateToken(UsersRequest.builder()
                 .id(1L)
                 .name("Hafidz Febrian")
