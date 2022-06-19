@@ -20,8 +20,8 @@ public class JwtTokenProvider {
 
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    //@Value("${token.expired.hour:1}")
-    @Value("3600000")
+    @Value("${token.expired.hour:1}")
+//    @Value("3600000")
     private Long expiredHour;
 
     public String generateToken(Authentication authentication){
