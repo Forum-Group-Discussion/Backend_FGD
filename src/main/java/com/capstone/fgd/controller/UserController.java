@@ -2,6 +2,7 @@ package com.capstone.fgd.controller;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dto.UsersRequest;
 import com.capstone.fgd.service.UserService;
 import com.capstone.fgd.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ public class UserController {
 
     @CrossOrigin
     @GetMapping(value = "")
-    public ResponseEntity<Object> getAllUser (Principal principal){
+    public ResponseEntity<Object> getAllUser (Principal principal) {
+
         Users user = (Users) userService.loadUserByUsername(principal.getName());
         if (user.getIsAdmin().equals(true)){
             return userService.getAllUser();
@@ -32,21 +34,33 @@ public class UserController {
     @CrossOrigin
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getUserById(Principal principal, @PathVariable Long id){
+
         return userService.getUserByid(id);
     }
 
-//    @PutMapping(value = "/{id}")
-//    public ResponseEntity<Object> updateUser(Principal principal,@PathVariable Long id,@RequestBody UserDto userDto){
-//        return userService.updateService(id,userDto);
-//    }
+    @CrossOrigin
+    @GetMapping(value = "/search")
+    public ResponseEntity<Object> searchUser(Principal principal,@RequestParam(value = "email",required = false) String email){
+        return userService.searchUser(email);
+    }
 
-//    @DeleteMapping(value = "/{id}")
-//    public ResponseEntity<Object> deleteUser(Principal principal,@PathVariable Long id){
-//        UserDao user = (UserDao) userService.loadUserByUsername(principal.getName());
-//        if (user.getAuthor().equals("ADMIN")){
-//            return userService.deleteUser(id);
-//        }
-//        return ResponseUtil.build(ResponseMassage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
-//
-//    }
+    @CrossOrigin
+    @PutMapping(value = "/suspend/{id}")
+    public ResponseEntity<Object> updateSuspend(Principal principal,@PathVariable Long id){
+
+        Users user = (Users) userService.loadUserByUsername(principal.getName());
+        if (user.getIsAdmin().equals(true)){
+            return userService.updateSuspended(id);
+        }
+        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
+    }
+
+    @CrossOrigin
+    @PutMapping(value = "/update/{id}")
+    public ResponseEntity<Object> updateUser(Principal principal,@PathVariable Long id,
+                                             @RequestBody UsersRequest user){
+        return userService.updateUser(id,user);
+    }
+
+
 }

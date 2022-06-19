@@ -27,13 +27,13 @@ public abstract class BaseDao {
     private Boolean isDeleted;
 
     @PrePersist
-    void onCreate(){
+    void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.isDeleted = Boolean.FALSE;
+        this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
-    void onUpdate() {
+        void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
 

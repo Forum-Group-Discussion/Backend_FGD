@@ -2,6 +2,7 @@ package com.capstone.fgd.config;
 
 import com.capstone.fgd.security.SecurityFilter;
 import com.capstone.fgd.security.handle.CustomAuthenticationEntryPoint;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
         return super.authenticationManager();
     }
 
+
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint(){
         return new CustomAuthenticationEntryPoint();
@@ -62,6 +64,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
                         "/swagger-ui/**",
                         "/webjars/**").permitAll().anyRequest().authenticated()
                 .and()
+
         //when token null and invalid
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint());
 

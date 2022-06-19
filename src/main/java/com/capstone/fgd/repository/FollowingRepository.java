@@ -19,6 +19,4 @@ public interface FollowingRepository extends JpaRepository<Following,Long> {
     @Query(value = "SELECT * FROM m_following t Where t.user_id = :userId ",nativeQuery = true)
     List<Following> listFollowedUser(@Param("userId") Long userId);
 
-//    @Query(value = "SELECT t FROM m_following t Where t.user_id = :userId and t.user_follow_id = :userFollowId",nativeQuery = true)
-//    Following followIsExists(@Param("userId") Long userId, @Param("userFollowId") Long userFollowId);
 }

@@ -17,7 +17,6 @@ import java.security.Principal;
 @RequestMapping(value = "/v1/following")
 public class FollowingController {
 
-
     @Autowired
     private FollowingService followingService;
 
@@ -38,10 +37,7 @@ public class FollowingController {
     public ResponseEntity<Object> getFollowingById(Principal principal, @PathVariable Long id){
         return followingService.getFollowingByid(id);
     }
-//
-//    @CrossOrigin
-//    @DeleteMapping(value = "/{id}")
-//    public ResponseEntity<Object> deleteFollowing(@PathVariable Long id){
-//        return followingService.deleteFollowingById(id);
-//    }
+
+
 }
+

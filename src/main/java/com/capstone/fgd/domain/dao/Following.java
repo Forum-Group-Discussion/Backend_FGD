@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -16,8 +14,6 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "m_following")
-//@SQLDelete(sql = "UPDATE m_following SET is_follow = true WHERE id = ?")
-//@Where(clause = "is_follow = false")
 public class Following extends BaseDao {
 
     @Id
@@ -37,4 +33,5 @@ public class Following extends BaseDao {
 
     @JoinColumn(name = "is_fdllow")
     private Boolean isFollow;
+
 }
