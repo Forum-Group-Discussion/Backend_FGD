@@ -1,7 +1,5 @@
 package com.capstone.fgd.domain.dto;
 
-import com.capstone.fgd.domain.dao.Topic;
-import com.capstone.fgd.domain.dao.Users;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ThreadRequest {
+public class ThreadsRequest {
     private Long id;
     private UsersRequest users;
     private String title;
