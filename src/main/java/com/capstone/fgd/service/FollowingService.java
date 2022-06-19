@@ -103,7 +103,7 @@ public class FollowingService {
             }
             return null;
 
-        }catch (Exception e){
+        } catch (Exception e){
             log.error("Get an error by create follow, Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }

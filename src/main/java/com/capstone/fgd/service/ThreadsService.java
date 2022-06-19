@@ -4,8 +4,8 @@ import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Topic;
 import com.capstone.fgd.domain.dao.Users;
-import com.capstone.fgd.domain.dto.ThreadRequest;
-import com.capstone.fgd.repository.ThreadRepository;
+import com.capstone.fgd.domain.dto.ThreadsRequest;
+import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.repository.TopicRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
@@ -16,14 +16,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
-public class ThreadService {
+public class ThreadsService {
 
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -32,19 +35,17 @@ public class ThreadService {
     private TopicRepository topicRepository;
 
     @Autowired
-    private ThreadRepository threadRepository;
+    private ThreadsRepository threadsRepository;
 
     @Autowired
     private ModelMapper mapper;
 
-    public ResponseEntity<Object> createNewThread(ThreadRequest threadRequest){
+    public ResponseEntity<Object> createNewThread(ThreadsRequest threadRequest, Principal principal){
         try {
             log.info("Executing create new Thread");
-            Optional<Users> usersOptional = userRepository.findById(threadRequest.getUsers().getId());
-            if (usersOptional.isEmpty()){
-                log.info("User not found");
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
-            }
+
+            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
+
             Optional<Topic> topicOptional = topicRepository.findById(threadRequest.getTopic().getId());
             if (topicOptional.isEmpty()){
                 log.info("Topic not found");
@@ -52,16 +53,15 @@ public class ThreadService {
             }
 
             Threads thread = Threads.builder()
+                    .users(userSignIn)
+                    .topic(topicOptional.get())
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
                     .image(threadRequest.getImage())
                     .save(false)
                     .build();
-
-            thread.setUsers(usersOptional.get());
-            thread.setTopic(topicOptional.get());
-            threadRepository.save(thread);
-            ThreadRequest threadRequestDto = mapper.map(thread, ThreadRequest.class);
+            threadsRepository.save(thread);
+            ThreadsRequest threadRequestDto = mapper.map(thread, ThreadsRequest.class);
 
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, threadRequestDto,HttpStatus.OK);
         } catch (Exception e){
@@ -70,40 +70,18 @@ public class ThreadService {
         }
     }
 
-    public ResponseEntity<Object> updateThread(Long id, ThreadRequest request){
-        try {
-            log.info("Executing update team");
-            Optional<Threads> threadOptional = threadRepository.findById(id);
-
-            if (threadOptional.isEmpty()){
-                log.info("thread not found");
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-            }
-
-            Threads thread = threadOptional.get();
-            thread.setTitle(request.getTitle());
-            thread.setContent(request.getContent());
-            threadRepository.save(thread);
-
-        return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,mapper.map(thread, ThreadRequest.class), HttpStatus.OK);
-        } catch (Exception e){
-            log.error("Get an error executing update thread, Error : {}", e.getMessage());
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public ResponseEntity<Object> getAllThread(){
         try {
             log.info("Executing get all Thread");
-            List<Threads> threadList = threadRepository.findAll();
-            List<ThreadRequest> threadRequestList = new ArrayList<>();
+            List<Threads> threadList = threadsRepository.findAll();
+            List<ThreadsRequest> threadRequestList = new ArrayList<>();
 
             if (threadList.isEmpty()){
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
             for (Threads thread: threadList){
-                threadRequestList.add(mapper.map(thread, ThreadRequest.class));
+                threadRequestList.add(mapper.map(thread, ThreadsRequest.class));
             }
 
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, threadRequestList, HttpStatus.OK);
@@ -113,32 +91,77 @@ public class ThreadService {
         }
     }
 
+
+    public ResponseEntity<Object> getAllThreadFollow(Principal principal){
+        try {
+            log.info("Executing get all Thread");
+
+            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
+
+            List<Threads> threadList = threadsRepository.listFollowedUserThread(userSignIn.getId());
+            List<ThreadsRequest> threadRequestList = new ArrayList<>();
+
+            if (threadList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (Threads thread: threadList){
+                threadRequestList.add(mapper.map(thread, ThreadsRequest.class));
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, threadRequestList, HttpStatus.OK);
+        } catch (Exception e){
+            log.error("Get an error get all thread, Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     public ResponseEntity<Object> getThreadById(Long id){
         try {
             log.info("Executing getThreadById with id : {}", id);
-            Optional<Threads> threadOptional = threadRepository.findById(id);
+            Optional<Threads> threadOptional = threadsRepository.findById(id);
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
             Threads thread = threadOptional.get();
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(thread,ThreadRequest.class), HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(thread, ThreadsRequest.class), HttpStatus.OK);
         } catch (Exception e){
             log.error("Get an error by executing get thread by id, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public ResponseEntity<Object> deleteThread(Long id){
+    public ResponseEntity<Object> updateThread(Long id, ThreadsRequest request){
         try {
-            Optional<Threads> threadOptional = threadRepository.findById(id);
+            log.info("Executing update team");
+            Optional<Threads> threadOptional = threadsRepository.findById(id);
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
-            threadRepository.delete(threadOptional.get());
+
+            Threads thread = threadOptional.get();
+            thread.setTitle(request.getTitle());
+            thread.setContent(request.getContent());
+            threadsRepository.save(thread);
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,mapper.map(thread, ThreadsRequest.class), HttpStatus.OK);
+        } catch (Exception e){
+            log.error("Get an error executing update thread, Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> deleteThread(Long id){
+        try {
+            Optional<Threads> threadOptional = threadsRepository.findById(id);
+
+            if (threadOptional.isEmpty()){
+                log.info("thread not found");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+            threadsRepository.delete(threadOptional.get());
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
         } catch (Exception e){
             log.error("Get an error by executing delete thread");

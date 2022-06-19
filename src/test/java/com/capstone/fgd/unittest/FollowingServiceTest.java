@@ -1,4 +1,4 @@
-package com.capstone.fgd;
+package com.capstone.fgd.unittest;
 
 
 import com.capstone.fgd.domain.common.ApiResponse;

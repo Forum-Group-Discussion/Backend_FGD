@@ -208,43 +208,43 @@ public class AuthServiceTest {
         assertEquals("MUST_CONTAINS_NUMBER_AND_CAPITALCHAR",Objects.requireNonNull(apiResponse).getMessage());
     }
 
-    @Test
-    void authenticatedAndGenerateTokenSuccess_Test() {
-        Users users = Users.builder()
-                .id(1L)
-                .name("Hafidz Febrian")
-                .email("hafidzencis@gmail.com")
-                .password("jokowiloveR12")
-                .isAdmin(false)
-                .isSuspended(false)
-                .build();
-        TokenResponse tokenResponseDto = TokenResponse.builder()
-                .token("TOKEN")
-                .name("Hafidz Febrian")
-                .isAdmin(false)
-                .isSupended(false)
-                .build();
-
-        when(jwtTokenProvider.generateToken(any())).thenReturn("TOKEN");
-        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(users));
-        when(mapper.map(any(),eq(Users.class))).thenReturn(users);
-        when(mapper.map(any(),eq(TokenResponse.class))).thenReturn(tokenResponseDto);
-        ResponseEntity<?> responseEntity = authService.authenticateAndGenerateToken(UsersRequest.builder()
-                        .name("Hafidz Febrian")
-                        .email("hafidzencis@gmail.com")
-                        .password("jokowiloveR12")
-                        .isAdmin(false)
-                        .isSuspended(false)
-                .build());
-        ApiResponse response = (ApiResponse) responseEntity.getBody();
-        TokenResponse tokenResponse = (TokenResponse) Objects.requireNonNull(response).getData();
-        assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
-        assertEquals("TOKEN", tokenResponse.getToken());
-        assertEquals("Hafidz Febrian",tokenResponse.getName());
-        assertEquals(false,tokenResponse.getIsAdmin());
-        assertEquals(false,tokenResponse.getIsSupended());
-
-    }
+//    @Test
+//    void authenticatedAndGenerateTokenSuccess_Test() {
+//        Users users = Users.builder()
+//                .id(1L)
+//                .name("Hafidz Febrian")
+//                .email("hafidzencis@gmail.com")
+//                .password("jokowiloveR12")
+//                .isAdmin(false)
+//                .isSuspended(false)
+//                .build();
+//        TokenResponse tokenResponseDto = TokenResponse.builder()
+//                .token("TOKEN")
+//                .name("Hafidz Febrian")
+//                .isAdmin(false)
+//                .isSupended(false)
+//                .build();
+//
+//        when(jwtTokenProvider.generateToken(any())).thenReturn("TOKEN");
+//        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(users));
+//        when(mapper.map(any(),eq(Users.class))).thenReturn(users);
+//        when(mapper.map(any(),eq(TokenResponse.class))).thenReturn(tokenResponseDto);
+//        ResponseEntity<?> responseEntity = authService.authenticateAndGenerateToken(UsersRequest.builder()
+//                        .name("Hafidz Febrian")
+//                        .email("hafidzencis@gmail.com")
+//                        .password("jokowiloveR12")
+//                        .isAdmin(false)
+//                        .isSuspended(false)
+//                .build());
+//        ApiResponse response = (ApiResponse) responseEntity.getBody();
+//        TokenResponse tokenResponse = (TokenResponse) Objects.requireNonNull(response).getData();
+//        assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
+//        assertEquals("TOKEN", tokenResponse.getToken());
+//        assertEquals("Hafidz Febrian",tokenResponse.getName());
+//        assertEquals(false,tokenResponse.getIsAdmin());
+//        assertEquals(false,tokenResponse.getIsSupended());
+//
+//    }
 
     @Test
     void authenticatedAndGenerateTokenFail_Test() {
