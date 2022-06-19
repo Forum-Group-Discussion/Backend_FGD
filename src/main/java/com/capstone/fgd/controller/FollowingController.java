@@ -22,14 +22,14 @@ public class FollowingController {
 
     @CrossOrigin
     @PostMapping(value = "")
-    public ResponseEntity<Object> follow(@RequestBody FollowingRequest request,@PathVariable Long id){
-        return followingService.createFollow(request,id);
+    public ResponseEntity<Object> follow(@RequestBody FollowingRequest request,Principal principal){
+        return followingService.followUser(request,principal);
     }
 
     @CrossOrigin
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllFollowing (Principal principal){
-        return followingService.getAllFollowing();
+        return followingService.getAllFollowing(principal);
     }
 
     @CrossOrigin
@@ -38,9 +38,6 @@ public class FollowingController {
         return followingService.getFollowingByid(id);
     }
 
-    @CrossOrigin
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteFollowing(@PathVariable Long id){
-        return followingService.deleteFollowingById(id);
-    }
+
 }
+

@@ -25,6 +25,13 @@ public class Following extends BaseDao {
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "user_following_id")
-    private Users user_following;
+    @JoinColumn(name = "user_follow_id")
+    private Users userFollow;
+
+    @JoinColumn(name = "type")
+    private String type;
+
+    @JoinColumn(name = "is_fdllow")
+    private Boolean isFollow;
+
 }

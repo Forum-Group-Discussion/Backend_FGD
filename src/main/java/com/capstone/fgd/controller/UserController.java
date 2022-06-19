@@ -46,7 +46,7 @@ public class UserController {
 
     @CrossOrigin
     @PutMapping(value = "/suspend/{id}")
-    public ResponseEntity<Object> updateSuspend(Principal principal ,@PathVariable Long id){
+    public ResponseEntity<Object> updateSuspend(Principal principal,@PathVariable Long id){
 
         Users user = (Users) userService.loadUserByUsername(principal.getName());
         if (user.getIsAdmin().equals(true)){

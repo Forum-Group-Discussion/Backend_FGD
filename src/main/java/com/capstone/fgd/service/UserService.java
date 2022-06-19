@@ -39,7 +39,6 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("Email Not Found");
         }
         return user;
-
     }
 
     public ResponseEntity<Object> getAllUser(){
@@ -83,7 +82,7 @@ public class UserService implements UserDetailsService {
     public ResponseEntity<Object> searchUser(String email){
         try {
             log.info("Executing search user with email : {}",email);
-            List<Users> userDaoList = userRepository.searchByEmail(email);
+            List<Users> userDaoList = userRepository.findEmail(email);
             List<UsersRequest> userDtoList = new ArrayList<>();
 
             if (userDaoList.isEmpty()){

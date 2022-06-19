@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,6 +18,11 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FollowingRequest {
-    private Long userId;
+    private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private Long id;
+    private UsersRequest user;
+    private UsersRequest userFollow;
     private String type;
+    private Boolean isFollow;
 }
