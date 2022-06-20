@@ -20,13 +20,13 @@ public class ThreadsController {
 
     @CrossOrigin
     @PostMapping(value = "")
-    public ResponseEntity<?> createNewThread(@RequestBody ThreadsRequest request, Principal principal) {
+    public ResponseEntity<Object> createNewThread(@RequestBody ThreadsRequest request, Principal principal) {
         return threadsService.createNewThread(request,principal);
     }
 
     @CrossOrigin
     @GetMapping(value = "")
-    public ResponseEntity<Object> getAllThread(Principal principal) {
+    public ResponseEntity<Object> getAllThread() {
         return threadsService.getAllThread();
 
     }
@@ -40,19 +40,19 @@ public class ThreadsController {
 
     @CrossOrigin
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Object> getThreadById(Principal principal, @PathVariable Long id) {
+    public ResponseEntity<Object> getThreadById(@PathVariable Long id) {
         return threadsService.getThreadById(id);
     }
 
     @CrossOrigin
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Object> updateThread(Principal principal, @PathVariable Long id, @RequestBody ThreadsRequest request) {
+    public ResponseEntity<Object> updateThread(@PathVariable Long id, @RequestBody ThreadsRequest request) {
         return threadsService.updateThread(id, request);
     }
 
     @CrossOrigin
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteTeam(Principal principal, @PathVariable Long id) {
+    public ResponseEntity<Object> deleteThread(@PathVariable Long id) {
         return threadsService.deleteThread(id);
     }
 }
