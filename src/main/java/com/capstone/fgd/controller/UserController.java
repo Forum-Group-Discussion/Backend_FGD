@@ -13,13 +13,14 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequestMapping(value = "/v1/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
-    @CrossOrigin
+
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllUser (Principal principal) {
 
@@ -31,20 +32,17 @@ public class UserController {
 
     }
 
-    @CrossOrigin
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getUserById(Principal principal, @PathVariable Long id){
 
         return userService.getUserByid(id);
     }
 
-    @CrossOrigin
     @GetMapping(value = "/search")
     public ResponseEntity<Object> searchUser(Principal principal,@RequestParam(value = "email",required = false) String email){
         return userService.searchUser(email);
     }
 
-    @CrossOrigin
     @PutMapping(value = "/suspend/{id}")
     public ResponseEntity<Object> updateSuspend(Principal principal,@PathVariable Long id){
 
@@ -55,7 +53,6 @@ public class UserController {
         return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
     }
 
-    @CrossOrigin
     @PutMapping(value = "/update/{id}")
     public ResponseEntity<Object> updateUser(Principal principal,@PathVariable Long id,
                                              @RequestBody UsersRequest user){

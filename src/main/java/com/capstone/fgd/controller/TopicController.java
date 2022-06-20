@@ -22,7 +22,6 @@ public class TopicController {
     @Autowired
     private UserService userService;
 
-    @CrossOrigin
     @PostMapping(value = "")
     public ResponseEntity<Object> createNewTopic(Principal principal, @RequestBody TopicRequest request){
         Users user = (Users) userService.loadUserByUsername(principal.getName());
@@ -32,20 +31,17 @@ public class TopicController {
         return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
     }
 
-    @CrossOrigin
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllTopic(){
         return topicService.getAllTopic();
     }
 
 
-    @CrossOrigin
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getTopicById(@PathVariable Long id){
         return topicService.getTopicById(id);
     }
 
-    @CrossOrigin
     @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateThread(Principal principal,@PathVariable Long id, @RequestBody TopicRequest request) {
         Users user = (Users) userService.loadUserByUsername(principal.getName());
@@ -55,7 +51,6 @@ public class TopicController {
         return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
     }
 
-    @CrossOrigin
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteTopic(Principal principal, @PathVariable Long id) {
         Users user = (Users) userService.loadUserByUsername(principal.getName());
