@@ -16,13 +16,13 @@ import javax.validation.Valid;
 public class AuthController {
     private final AuthService authService;
 
-    @CrossOrigin
+//    @CrossOrigin
     @PostMapping(value  ="/register" )
     ResponseEntity<?> register( @RequestBody UsersRequest req)  {
         return authService.register(req);
     }
 
-    @CrossOrigin
+//    @CrossOrigin
     @PostMapping(value  ="/login" )
     ResponseEntity<?> login(@RequestBody @Valid UsersRequest req){
         return authService.authenticateAndGenerateToken(req);
