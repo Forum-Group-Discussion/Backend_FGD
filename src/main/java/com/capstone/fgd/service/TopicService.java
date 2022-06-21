@@ -2,6 +2,7 @@ package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Topic;
+import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.domain.dto.TopicRequest;
 import com.capstone.fgd.repository.TopicRepository;
 import com.capstone.fgd.util.ResponseUtil;
@@ -109,4 +110,5 @@ public class TopicService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }
