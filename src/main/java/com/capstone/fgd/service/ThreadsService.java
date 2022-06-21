@@ -145,4 +145,26 @@ public class ThreadsService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    public ResponseEntity<Object> searchByThread(String req){
+        try {
+            log.info("Executing searchByThread");
+            List<Threads> threadsList = threadsRepository.searchByThread(req);
+            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+
+            if (threadsList.isEmpty()){
+                log.info("not found any thread");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (Threads threads:threadsList){
+                threadsRequestList.add(mapper.map(threadsList,ThreadsRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by searching thread, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

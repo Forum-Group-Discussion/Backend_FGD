@@ -46,4 +46,9 @@ public class ThreadsController {
     public ResponseEntity<Object> deleteThread(@PathVariable Long id) {
         return threadsService.deleteThread(id);
     }
+
+    @GetMapping(value = "/search")
+    public ResponseEntity<Object> searchThread(@RequestParam(value = "thread",required = false) String thread){
+        return userService.searchUser(thread);
+    }
 }
