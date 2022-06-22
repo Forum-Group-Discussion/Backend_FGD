@@ -24,9 +24,9 @@ public class CommentController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "new")
-    public ResponseEntity<?> createNewComment(@RequestBody CommentRequest request) {
-        return commentService.createNewComment(request);
+    @PostMapping(value = "")
+    public ResponseEntity<?> createNewComment(@RequestBody CommentRequest request, Principal principal) {
+        return commentService.createNewComment(request, principal);
     }
 
     @DeleteMapping(value = "/{id}")

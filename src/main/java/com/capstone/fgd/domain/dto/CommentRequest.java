@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CommentRequest {
     private Long Id;
-    private Users users;
-    private Threads thread;
-    private String content;
+    private UsersRequest users;
+    private ThreadsRequest thread;
+    private String comment;
 }

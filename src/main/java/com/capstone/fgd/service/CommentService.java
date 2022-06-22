@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.Optional;
 
 @Slf4j
@@ -39,15 +40,11 @@ public class CommentService {
     private CommentRepository commentRepository;
 
 
-    public ResponseEntity<Object> createNewComment(CommentRequest commentRequest){
+    public ResponseEntity<Object> createNewComment(CommentRequest commentRequest, Principal principal){
         try {
             log.info("Executing create new Comment");
+            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
 
-            Optional<Users> usersOptional = userRepository.findById(commentRequest.getUsers().getId());
-            if (usersOptional.isEmpty()){
-                log.info("User not found");
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
-            }
             Optional<Threads> threadOptional = threadRepository.findById(commentRequest.getThread().getId());
             if (threadOptional.isEmpty()){
                 log.info("Thread not found");
@@ -55,9 +52,9 @@ public class CommentService {
             }
 
             Comment comment = Comment.builder()
-                    .users(usersOptional.get())
+                    .users(userSignIn)
                     .thread(threadOptional.get())
-                    .content(commentRequest.getContent())
+                    .content(commentRequest.getComment())
                     .build();
 
 //            Comment comment = mapper.map(commentRequest, Comment.class);
