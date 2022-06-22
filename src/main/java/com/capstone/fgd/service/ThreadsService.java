@@ -134,7 +134,7 @@ public class ThreadsService {
 
     public ResponseEntity<Object> updateThread(Long id, ThreadsRequest request){
         try {
-            log.info("Executing update team");
+            log.info("Executing update thread");
             Optional<Threads> threadOptional = threadsRepository.findById(id);
 
             if (threadOptional.isEmpty()){

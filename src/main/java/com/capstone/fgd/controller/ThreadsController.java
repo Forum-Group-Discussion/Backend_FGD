@@ -47,7 +47,7 @@ public class ThreadsController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteTeam(Principal principal, @PathVariable Long id) {
+    public ResponseEntity<Object> deleteThread(Principal principal, @PathVariable Long id) {
         return threadsService.deleteThread(id);
     }
 }
