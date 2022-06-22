@@ -15,5 +15,5 @@ public interface LikeThreadRepository extends JpaRepository<LikeThread,Long> {
     Optional<LikeThread> userLikeThreads(@Param("userId") Long userId,@Param("threadId") Long threadId );
 
     @Query(value = "SELECT COUNT(*) FROM m_likethread t WHERE t.is_like = TRUE AND t.thread_id = :threadId",nativeQuery = true)
-   Long  userLikeThreads(@Param("threadId") Long threadId );
+     public Long userLikeThreads(@Param("threadId") Long threadId );
 }
