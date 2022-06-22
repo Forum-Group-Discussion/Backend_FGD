@@ -30,6 +30,7 @@ public abstract class BaseDao {
     void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.isDeleted = Boolean.FALSE;
     }
 
     @PreUpdate
