@@ -40,3 +40,5 @@ public class LikeThread extends BaseDao {
     private Boolean isDislike;
 
 }
+
+
