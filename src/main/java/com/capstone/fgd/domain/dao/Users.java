@@ -1,6 +1,9 @@
 package com.capstone.fgd.domain.dao;
 
 import com.capstone.fgd.domain.common.BaseDao;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,6 +20,8 @@ import java.util.Collection;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "m_user")
 @Entity
 public class Users extends BaseDao implements UserDetails {
@@ -35,6 +40,9 @@ public class Users extends BaseDao implements UserDetails {
 
     @Column(name = "password",nullable = false)
     private String password;
+
+    @Column(name = "image")
+    private String urlImage;
 
     @Column(name = "is_Admin")
     private Boolean isAdmin;

@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 import java.util.regex.*;
@@ -31,7 +32,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<Object> register(UsersRequest req) {
+    public ResponseEntity<Object> register(UsersRequest req, MultipartFile file) {
 
         log.info(" Register ");
         //check filled name,email,password
@@ -95,6 +96,7 @@ public class AuthService {
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
+                    .urlImage(String.valueOf(file))
                     .isAdmin(false)
                     .isSuspended(false)
                     .build();
@@ -111,6 +113,7 @@ public class AuthService {
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
+                    .urlImage(String.valueOf(file))
                     .isAdmin(req.getIsAdmin())
                     .isSuspended(false)
                     .build();
