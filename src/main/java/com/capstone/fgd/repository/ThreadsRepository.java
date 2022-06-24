@@ -1,7 +1,5 @@
 package com.capstone.fgd.repository;
 
-
-import com.capstone.fgd.domain.dao.Following;
 import com.capstone.fgd.domain.dao.Threads;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,9 +12,9 @@ import java.util.List;
 @Repository
 public interface ThreadsRepository extends JpaRepository<Threads, Long> {
 
-    @Query(value = "SELECT * FROM m_thread t INNER JOIN m_following f ON t.user_id = f.user_id WHERE " +
-            "f.user_id = :userId ",nativeQuery = true)
-    List<Threads> listFollowedUserThread(@Param("userId") Long userId);
+
+    @Query(value = "SELECT * FROM m_thread WHERE title LIKE %:Word% OR content LIKE %:word% ",nativeQuery = true)
+    List<Threads> searchByThread(@Param("Word") String Word);
 }
 
 

@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -50,26 +52,38 @@ public class CommentService {
                 log.info("Thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
-
             Comment comment = Comment.builder()
                     .users(userSignIn)
                     .thread(threadOptional.get())
-                    .content(commentRequest.getComment())
+                    .comment(commentRequest.getComment())
                     .build();
-
-//            Comment comment = mapper.map(commentRequest, Comment.class);
-//            comment.setId(commentRequest.getId());
-//            comment.setUsers(commentRequest.getUsers());
-//            comment.setThread(commentRequest.getThread());
-//            comment.setContent(commentRequest.getContent());
             commentRepository.save(comment);
-
             CommentRequest commentRequestDto = mapper.map(comment, CommentRequest.class);
-
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, commentRequestDto,HttpStatus.OK);
         } catch (Exception e){
             log.error("Get an error executing new Comment, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getCommentByThread(){
+        try {
+            log.info("Executing get all comment by thread");
+            List<Comment> commentList = commentRepository.findAllByThread(Threads.builder().build());
+            List<CommentRequest> commentRequestsList = new ArrayList<>();
+
+            if (commentList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (Comment comment: commentList){
+                commentRequestsList.add(mapper.map(comment,CommentRequest.class));
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
+        } catch (Exception e){
+            log.error("Get An error get all comment by thread : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -103,6 +117,27 @@ public class CommentService {
         } catch (Exception e){
             log.error("Get an error by executing delete Comment");
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> updateComment(Long id, CommentRequest request){
+        try {
+            log.info("Executing Update Comment");
+            Optional<Comment> commentOptional = commentRepository.findById(id);
+
+            if (commentOptional.isEmpty()){
+                log.info("Comment Not Found");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            Comment comment = commentOptional.get();
+            comment.setComment(request.getComment());
+            commentRepository.save(comment);
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,mapper.map(comment, CommentRequest.class), HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Get an error executing update comment, Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

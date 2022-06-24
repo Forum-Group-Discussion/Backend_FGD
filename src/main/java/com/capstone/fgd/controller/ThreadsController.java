@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@CrossOrigin
+//@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 @RequestMapping(value = "/v1/thread")
 public class ThreadsController {
     @Autowired
@@ -45,5 +45,10 @@ public class ThreadsController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteThread(@PathVariable Long id) {
         return threadsService.deleteThread(id);
+    }
+
+    @GetMapping(value = "/search")
+    public ResponseEntity<Object> searchThread(@RequestParam(value = "thread",required = false) String thread){
+        return userService.searchUser(thread);
     }
 }

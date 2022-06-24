@@ -29,6 +29,21 @@ public class CommentController {
         return commentService.createNewComment(request, principal);
     }
 
+    @GetMapping(value = "")
+    public ResponseEntity<Object> getAllCommentByThread(){
+        return commentService.getCommentByThread();
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Object> getCommentById(@PathVariable Long id){
+        return commentService.getCommentById(id);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Object> UpdateComment(@PathVariable Long id, @RequestBody CommentRequest request){
+        return commentService.updateComment(id, request);
+    }
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteComment(Principal principal, @PathVariable Long id) {
         Users user = (Users) userService.loadUserByUsername(principal.getName());

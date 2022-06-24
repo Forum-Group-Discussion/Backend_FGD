@@ -93,7 +93,6 @@ public class FollowingService {
                     follows.setUserFollow(follows.getUserFollow());
                     follows.setType("FOLLOW");
                     follows.setIsFollow(true);
-
                     followingRepository.save(follows);
 
                     FollowingRequest followingRequest = mapper.map(follows,FollowingRequest.class);

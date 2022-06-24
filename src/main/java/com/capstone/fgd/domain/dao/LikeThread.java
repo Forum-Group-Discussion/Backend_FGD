@@ -15,28 +15,30 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "m_comment")
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-public class Comment extends BaseDao {
+@Table(name = "m_likethread")
 
+public class LikeThread extends BaseDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Users users;
+    @JoinColumn(name = "thread_id")
+    private Threads threadLike;
 
     @ManyToOne
-    @JoinColumn(name = "topic_id")
-    private Threads thread;
+    @JoinColumn(name = "user_id")
+    private Users userLike;
 
-    @Lob
-    @Column(name = "comment", nullable = false)
-    private String comment;
+    @Column(name = "is_like")
+    private Boolean isLike;
 
+    @Column(name = "is_dislike")
+    private Boolean isDislike;
 
 }
+
+
