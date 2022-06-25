@@ -30,5 +30,4 @@ public class LikeThreadController {
         return likeThreadService.countDislikeThread(request);
     }
 
-
 }
