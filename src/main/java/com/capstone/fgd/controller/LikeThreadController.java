@@ -1,6 +1,7 @@
 package com.capstone.fgd.controller;
 
 import com.capstone.fgd.domain.dto.LikeThreadRequest;
+import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.service.LikeThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,14 @@ public class LikeThreadController {
         return likeThreadService.likeTheThread(principal,request);
     }
 
-    @GetMapping(value = "")
-    ResponseEntity<Object> countLikeThread(@RequestBody  LikeThreadRequest request){
+    @GetMapping(value = "/like")
+    ResponseEntity<Object> countLikeThread(@RequestBody ThreadsRequest request){
         return likeThreadService.countLikeThread(request);
+    }
+
+    @GetMapping(value = "/dislike")
+    ResponseEntity<Object> countDislikeThread(@RequestBody ThreadsRequest request){
+        return likeThreadService.countDislikeThread(request);
     }
 
 

@@ -5,6 +5,7 @@ import com.capstone.fgd.domain.dao.LikeThread;
 import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.LikeThreadRequest;
+import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.repository.LikeThreadRepository;
 import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.util.ResponseUtil;
@@ -132,15 +133,31 @@ public class LikeThreadService {
     }
 
 
-    public ResponseEntity<Object> countLikeThread(LikeThreadRequest request){
+    public ResponseEntity<Object> countLikeThread(ThreadsRequest request){
         try {
             log.info("Executing count like thread ");
-           Long count = (likeThreadRepository.userLikeThreads(request.getThreadLike().getId()));
+            log.info("{}",request.getId());
+           Long count = (likeThreadRepository.userLikeThreads(request.getId()));
            log.info("{}",count);
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,count,HttpStatus.OK);
         }catch (Exception e){
-            log.error("Get an error by executing countlike thread, Error : {}",e.getMessage());
+            log.error("Get an error by executing count like thread, Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public ResponseEntity<Object> countDislikeThread(ThreadsRequest request){
+        try {
+            log.info("Executing count dislike thread ");
+            log.info("{}",request.getId());
+            Long count = (likeThreadRepository.userDislikeThreads(request.getId()));
+            log.info("{}",count);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,count,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by executing count dislike thread, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }
