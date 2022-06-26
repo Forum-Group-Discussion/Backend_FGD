@@ -88,11 +88,10 @@ public class LikeThreadService {
 
             }
 
+            //user have liked
             if (likeThreadOptional.isPresent()){
-                log.info("User Like Thread Found");
+                    log.info("User Like Thread Found");
 
-//                if (likeThreadOptional.get().getIsLike().equals(true) && likeThreadOptional.get().getIsDislike().
-//                        equals(false))
                   if (req.getIsLike().equals(true) && req.getIsDislike().equals(false))     {
                     log.info("Like True and Dislike is False");
 
@@ -107,8 +106,6 @@ public class LikeThreadService {
 
                 }
 
-//                if (likeThreadOptional.get().getIsLike().equals(false) && likeThreadOptional.get().getIsDislike().
-//                        equals(true))
                 if (req.getIsLike().equals(false) && req.getIsDislike().equals(true)) {
                     log.info("Like False and Dislike is True");
 
@@ -121,6 +118,18 @@ public class LikeThreadService {
                     LikeThreadRequest likeThreadRequest = mapper.map(likeThread,LikeThreadRequest.class);
                     return ResponseUtil.build(ResponseMessage.KEY_FOUND,likeThreadRequest,HttpStatus.OK);
 
+                }
+
+                if (req.getIsLike().equals(false) && req.getIsDislike().equals(false)){
+                    log.info("User Unlike or undislike thread");
+                    LikeThread likeThread = likeThreadOptional.get();
+                    likeThread.setId(likeThread.getId());
+                    likeThread.setIsLike(null);
+                    likeThread.setIsDislike(null);
+
+                    likeThreadRepository.save(likeThread);
+                    LikeThreadRequest likeThreadRequest = mapper.map(likeThread,LikeThreadRequest.class);
+                    return ResponseUtil.build(ResponseMessage.KEY_FOUND,likeThreadRequest,HttpStatus.OK);
                 }
 
             }
