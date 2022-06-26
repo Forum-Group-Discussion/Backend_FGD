@@ -30,8 +30,8 @@ public class CommentController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<Object> getAllCommentByThread(){
-        return commentService.getCommentByThread();
+    public ResponseEntity<Object> getAllCommentByThread(@RequestParam(value = "thread", required = false)Integer comment){
+        return commentService.getCommentByThread(comment);
     }
 
     @GetMapping(value = "/{id}")
