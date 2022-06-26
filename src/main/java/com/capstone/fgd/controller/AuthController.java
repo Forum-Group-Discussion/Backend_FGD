@@ -23,18 +23,16 @@ public class AuthController {
 
     private final AuthService authService;
 
-//    @CrossOrigin
     @PostMapping(value  ="/register",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> register(@RequestParam("json") String json, @RequestParam("file")MultipartFile file) throws JsonProcessingException {
-        ObjectMapper  mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
 
-        UsersRequest request = mapper.readValue(json,UsersRequest.class);
+        UsersRequest request = mapper.readValue(json, UsersRequest.class);
 
-        return authService.register(request,file);
-
+        return authService.register(request, file);
     }
 
-//    @CrossOrigin
+
     @PostMapping(value  ="/login" )
     ResponseEntity<?> login(@RequestBody UsersRequest req){
         return authService.authenticateAndGenerateToken(req);
