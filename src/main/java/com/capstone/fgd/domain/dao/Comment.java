@@ -31,7 +31,7 @@ public class Comment extends BaseDao {
     private Users users;
 
     @ManyToOne
-    @JoinColumn(name = "topic_id")
+    @JoinColumn(name = "thread_id")
     private Threads thread;
 
     @Lob
