@@ -15,6 +15,10 @@ public interface ThreadsRepository extends JpaRepository<Threads, Long> {
 
     @Query(value = "SELECT * FROM m_thread WHERE title LIKE %:Word% OR content LIKE %:word% ",nativeQuery = true)
     List<Threads> searchByThread(@Param("Word") String Word);
+
+//    @Query(value = "SELECT * FROM m_thread ORDER BY created_at desc",nativeQuery = true)
+//    List
+
 }
 
 
