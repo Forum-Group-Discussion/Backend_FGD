@@ -2,6 +2,7 @@ package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.ReportThread;
+import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.ReportThreadRequest;
 import com.capstone.fgd.repository.ReportThreadRepository;
@@ -43,23 +44,17 @@ public class ReportThreadService {
             log.info("Executing create new Report Thread");
             Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
 
-//            Optional<Users> usersOptional = userRepository.findById(reportThreadRequest.getUsers().getId());
-//            if (usersOptional.isEmpty()) {
-//                log.info("User not found");
-//                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
-//            }
-//            Optional<Threads> threadOptional = threadRepository.findById(reportThreadRequest.getThread().getId());
-//            if (threadOptional.isEmpty()) {
-//                log.info("Thread not found");
-//                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
-//            }
+            Optional<Threads> threadOptional = threadRepository.findById(reportThreadRequest.getThread().getId());
+            if (threadOptional.isEmpty()) {
+                log.info("Thread not found");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
 
             ReportThread reportThread = ReportThread.builder()
                     .user(userSignIn)
+                    .thread(threadOptional.get())
                     .reportType(reportThreadRequest.getReportType())
                     .build();
-//            reportThread.setUser(usersOptional.get());
-//            reportThread.setThread(threadOptional.get());
             reportThreadRepository.save(reportThread);
             ReportThreadRequest reportThreadRequestDto = mapper.map(reportThread, ReportThreadRequest.class);
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportThreadRequestDto, HttpStatus.OK);

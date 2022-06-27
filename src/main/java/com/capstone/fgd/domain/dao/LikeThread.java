@@ -1,6 +1,5 @@
 package com.capstone.fgd.domain.dao;
 
-import com.capstone.fgd.domain.Enum.ReportType;
 import com.capstone.fgd.domain.common.BaseDao;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -16,24 +15,30 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Table(name = "m_report_thread")
-public class ReportThread extends BaseDao {
+@Entity
+@Table(name = "m_likethread")
+
+public class LikeThread extends BaseDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-        @ManyToOne
-    @JoinColumn(name = "Id_Thread")
-    private Threads thread;
+    @ManyToOne
+    @JoinColumn(name = "thread_id")
+    private Threads threadLike;
 
     @ManyToOne
-    @JoinColumn(name = "Id_User")
-    private Users user;
+    @JoinColumn(name = "user_id")
+    private Users userLike;
 
-    @Enumerated(EnumType.STRING)
-    @JoinColumn(name = "Report_Type")
-    private ReportType reportType;
+    @Column(name = "is_like")
+    private Boolean isLike;
+
+    @Column(name = "is_dislike")
+    private Boolean isDislike;
+
 }
+
+

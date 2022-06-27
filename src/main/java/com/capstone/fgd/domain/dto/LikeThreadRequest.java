@@ -1,6 +1,5 @@
 package com.capstone.fgd.domain.dto;
 
-import com.capstone.fgd.domain.Enum.ReportType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -15,9 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ReportThreadRequest {
+public class LikeThreadRequest {
     private Long id;
-    private ThreadsRequest thread;
-    private UsersRequest user;
-    private ReportType reportType;
+    private ThreadsRequest threadLike;
+    private UsersRequest userLike;
+    private Boolean isLike;
+    private Boolean isDislike;
+
 }

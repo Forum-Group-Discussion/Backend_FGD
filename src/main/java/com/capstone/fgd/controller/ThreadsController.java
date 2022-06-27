@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
+//@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 @RequestMapping(value = "/v1/thread")
 public class ThreadsController {
     @Autowired
@@ -19,35 +20,39 @@ public class ThreadsController {
     private ThreadsService threadsService;
 
     @PostMapping(value = "")
-    public ResponseEntity<?> createNewThread(@RequestBody ThreadsRequest request, Principal principal) {
+    public ResponseEntity<Object> createNewThread(@RequestBody ThreadsRequest request, Principal principal) {
         return threadsService.createNewThread(request,principal);
     }
 
+
     @GetMapping(value = "")
-    public ResponseEntity<Object> getAllThread(Principal principal) {
+    public ResponseEntity<Object> getAllThread() {
         return threadsService.getAllThread();
-
-    }
-
-    @GetMapping(value = "/follow")
-    public ResponseEntity<Object> getAllThreadFollow(Principal principal) {
-        return threadsService.getAllThreadFollow(principal);
-
     }
 
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Object> getThreadById(Principal principal, @PathVariable Long id) {
+    public ResponseEntity<Object> getThreadById(@PathVariable Long id) {
         return threadsService.getThreadById(id);
     }
 
+
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Object> updateThread(Principal principal, @PathVariable Long id, @RequestBody ThreadsRequest request) {
+    public ResponseEntity<Object> updateThread(@PathVariable Long id, @RequestBody ThreadsRequest request) {
         return threadsService.updateThread(id, request);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteThread(Principal principal, @PathVariable Long id) {
-        return threadsService.deleteThread(id);
-    }
+//    @DeleteMapping(value = "/{id}")
+//<<<<<<< HEAD
+//    public ResponseEntity<Object> deleteThread(Principal principal, @PathVariable Long id) {
+//=======
+//    public ResponseEntity<Object> deleteThread(@PathVariable Long id) {
+//>>>>>>> fd2925da89ceed722cd9748aec38befb9024fe2e
+//        return threadsService.deleteThread(id);
+//    }
+//
+//    @GetMapping(value = "/search")
+//    public ResponseEntity<Object> searchThread(@RequestParam(value = "thread",required = false) String thread){
+//        return userService.searchUser(thread);
+//    }
 }

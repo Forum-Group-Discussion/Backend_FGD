@@ -1,6 +1,5 @@
 package com.capstone.fgd.domain.dao;
 
-import com.capstone.fgd.domain.Enum.ReportType;
 import com.capstone.fgd.domain.common.BaseDao;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -16,24 +15,28 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
+@Table(name = "m_comment")
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Table(name = "m_report_thread")
-public class ReportThread extends BaseDao {
+@Entity
+public class Comment extends BaseDao {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-        @ManyToOne
-    @JoinColumn(name = "Id_Thread")
-    private Threads thread;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private Users users;
 
     @ManyToOne
-    @JoinColumn(name = "Id_User")
-    private Users user;
+    @JoinColumn(name = "topic_id")
+    private Threads thread;
 
-    @Enumerated(EnumType.STRING)
-    @JoinColumn(name = "Report_Type")
-    private ReportType reportType;
+    @Lob
+    @Column(name = "comment", nullable = false)
+    private String comment;
+
+
 }

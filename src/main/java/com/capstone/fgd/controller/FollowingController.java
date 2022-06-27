@@ -14,25 +14,25 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
+//@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 @RequestMapping(value = "/v1/following")
 public class FollowingController {
 
     @Autowired
     private FollowingService followingService;
 
-    @CrossOrigin
+
     @PostMapping(value = "")
     public ResponseEntity<Object> follow(@RequestBody FollowingRequest request,Principal principal){
         return followingService.followUser(request,principal);
     }
 
-    @CrossOrigin
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllFollowing (Principal principal){
         return followingService.getAllFollowing(principal);
     }
 
-    @CrossOrigin
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getFollowingById(Principal principal, @PathVariable Long id){
         return followingService.getFollowingByid(id);

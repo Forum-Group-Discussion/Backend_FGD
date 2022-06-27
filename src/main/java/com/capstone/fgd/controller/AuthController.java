@@ -14,17 +14,16 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping(value = "/v1/auth")
 public class AuthController {
+
     private final AuthService authService;
 
-    @CrossOrigin
     @PostMapping(value  ="/register" )
     ResponseEntity<?> register( @RequestBody UsersRequest req)  {
         return authService.register(req);
     }
 
-    @CrossOrigin
     @PostMapping(value  ="/login" )
-    ResponseEntity<?> login(@RequestBody @Valid UsersRequest req){
+    ResponseEntity<?> login(@RequestBody UsersRequest req){
         return authService.authenticateAndGenerateToken(req);
     }
 

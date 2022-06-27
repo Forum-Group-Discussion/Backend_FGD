@@ -1,6 +1,8 @@
 package com.capstone.fgd.domain.dto;
 
-import com.capstone.fgd.domain.Enum.ReportType;
+
+import com.capstone.fgd.domain.dao.Threads;
+import com.capstone.fgd.domain.dao.Users;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -13,11 +15,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ReportThreadRequest {
-    private Long id;
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class CommentRequest {
+    private Long Id;
+    private UsersRequest users;
     private ThreadsRequest thread;
-    private UsersRequest user;
-    private ReportType reportType;
+    private String comment;
 }
