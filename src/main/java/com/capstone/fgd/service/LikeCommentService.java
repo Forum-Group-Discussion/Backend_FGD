@@ -3,6 +3,7 @@ package com.capstone.fgd.service;
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Comment;
 import com.capstone.fgd.domain.dao.LikeComment;
+import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.CommentRequest;
 import com.capstone.fgd.domain.dto.LikeCommentRequest;
@@ -34,17 +35,22 @@ public class LikeCommentService {
     private UserService userService;
 
     @Autowired
+    private ThreadsService threadsService;
+
+    @Autowired
     private ModelMapper mapper;
 
     public ResponseEntity<Object> LikeComment(Principal principal, LikeCommentRequest request){
         try{
             log.info("Executing post like comment");
             Users userLogin = (Users) userService.loadUserByUsername(principal.getName());
+
             log.info("{}",userLogin.getId());
 
             Optional<Comment> commentOptional = commentRepository.findById(request.getCommentLike().getId());
+            Optional<Comment> commentOptional1 = commentRepository.findById(request.getThreadsId().getId());
 
-            if (commentOptional.isEmpty()){
+            if (commentOptional.isEmpty() && commentOptional1.isEmpty()){
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
 
@@ -57,6 +63,7 @@ public class LikeCommentService {
 
                     LikeComment likeComment = LikeComment.builder()
                             .userLike(userLogin)
+                            .threadsId(commentOptional1.get())
                             .commentLike(commentOptional.get())
                             .isLike(true)
                             .isDislike(false)
@@ -73,6 +80,7 @@ public class LikeCommentService {
 
                     LikeComment likeComment = LikeComment.builder()
                             .userLike(userLogin)
+                            .threadsId(commentOptional1.get())
                             .commentLike(commentOptional.get())
                             .isLike(false)
                             .isDislike(true)
@@ -94,6 +102,7 @@ public class LikeCommentService {
 
                     LikeComment likeComment = likeCommentOptional.get();
                     likeComment.setId(likeComment.getId());
+                    likeComment.setThreadsId(commentOptional1.get());
                     likeComment.setIsLike(true);
                     likeComment.setIsDislike(false);
 
@@ -106,6 +115,7 @@ public class LikeCommentService {
                     log.info("Like false and dislike is true");
 
                     LikeComment likeComment = likeCommentOptional.get();
+                    likeComment.setThreadsId(commentOptional1.get());
                     likeComment.setId(likeComment.getId());
                     likeComment.setIsLike(false);
                     likeComment.setIsDislike(true);
@@ -118,6 +128,7 @@ public class LikeCommentService {
                 if (request.getIsLike().equals(false) && request.getIsDislike().equals(false)){
                     log.info("User Unlike or undislike comment");
                     LikeComment likeComment = likeCommentOptional.get();
+                    likeComment.setThreadsId(commentOptional1.get());
                     likeComment.setId(likeComment.getId());
                     likeComment.setIsLike(null);
                     likeComment.setIsDislike(null);

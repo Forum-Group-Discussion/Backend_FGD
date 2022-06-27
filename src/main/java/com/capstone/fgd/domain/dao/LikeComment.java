@@ -33,6 +33,10 @@ public class LikeComment extends BaseDao {
     @JoinColumn(name = "user_id")
     private Users userLike;
 
+    @ManyToOne
+    @JoinColumn(name = "thread_id")
+    private Comment threadsId;
+
     @Column(name = "is_like")
     private Boolean isLike;
 

@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 public class LikeCommentRequest {
     private Long id;
     private CommentRequest commentLike;
+    private ThreadsRequest threadsId;
     private UsersRequest userLike;
     private Boolean isLike;
     private Boolean isDislike;
