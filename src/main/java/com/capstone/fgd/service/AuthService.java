@@ -32,7 +32,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<Object> register(UsersRequest req, MultipartFile file) {
+    public ResponseEntity<Object> register(UsersRequest req) {
 
         log.info(" Register ");
         //check filled name,email,password
@@ -96,7 +96,7 @@ public class AuthService {
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
-                    .urlImage(String.valueOf(file))
+//                    .urlImage(String.valueOf(file))
                     .isAdmin(false)
                     .isSuspended(false)
                     .build();
@@ -113,7 +113,7 @@ public class AuthService {
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
-                    .urlImage(String.valueOf(file))
+//                    .urlImage(String.valueOf(file))
                     .isAdmin(req.getIsAdmin())
                     .isSuspended(false)
                     .build();
