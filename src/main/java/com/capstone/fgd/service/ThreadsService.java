@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,6 +110,47 @@ public class ThreadsService {
         }
     }
 
+    public ResponseEntity<Object> getThreadByTopic(Integer request){
+        try {
+            log.info("Executing get All Thread By Topic");
+            List<Threads> threadsList = threadsRepository.getAllThreadByTopic(request);
+            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+
+            if (threadsList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (Threads threads: threadsList){
+                threadsRequestList.add(mapper.map(threads, ThreadsRequest.class));
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, threadsRequestList, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get An Error get thread by topic : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getAllThreadByNew(){
+        try {
+            log.info("Executing get All Thread Order By DSC");
+            List<Threads> threadsList = threadsRepository.getThreadASC();
+            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+
+            if (threadsList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+
+            }
+
+            for (Threads threads: threadsList){
+                threadsRequestList.add(mapper.map(threads, ThreadsRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error get thread order by dsc : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     public ResponseEntity<Object> updateThread(Long id, ThreadsRequest request){
         try {
             log.info("Executing update team");
