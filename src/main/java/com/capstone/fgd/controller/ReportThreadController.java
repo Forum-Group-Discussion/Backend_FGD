@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 
 @RestController
-@RequestMapping(value = "/v1/reportThread")
+@RequestMapping(value = "/v1/reportthread")
 public class ReportThreadController {
     @Autowired
     private UserService userService;
