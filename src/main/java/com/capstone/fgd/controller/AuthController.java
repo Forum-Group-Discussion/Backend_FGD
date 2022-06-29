@@ -43,11 +43,6 @@ public class AuthController {
     }
 
 
-    @PostMapping(value = "/register")
-    ResponseEntity<?> register(@RequestBody UsersRequest request){
-        return authService.register(request);
-
-    }
 
     @PostMapping(value  ="/login" )
     ResponseEntity<?> login(@RequestBody UsersRequest req){
