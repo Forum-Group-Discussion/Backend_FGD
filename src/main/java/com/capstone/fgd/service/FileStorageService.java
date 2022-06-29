@@ -42,12 +42,13 @@ public class FileStorageService {
             Path uploadDir = Paths.get(uploadPath);
 
             String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-            usersSignIn.setUrlImage(fileName);
-            userRepository.save(usersSignIn);
+
             InputStream inputStream = multipartFile.getInputStream();
-            Path filePath = uploadDir.resolve(fileName);
+            Path filePath = uploadDir.resolve(uploadPath+fileName);
             Files.copy(inputStream,filePath, StandardCopyOption.REPLACE_EXISTING);
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,fileName, HttpStatus.OK);
+            usersSignIn.setUrlImage(String.valueOf(filePath));
+            userRepository.save(usersSignIn);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,filePath, HttpStatus.OK);
         }catch (Exception e){
                 log.error("Upload File Error :{}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);

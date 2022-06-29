@@ -1,13 +1,9 @@
 package com.capstone.fgd.controller;
 
-import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.Users;
+
 import com.capstone.fgd.domain.dto.FollowingRequest;
 import com.capstone.fgd.service.FollowingService;
-import com.capstone.fgd.service.UserService;
-import com.capstone.fgd.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

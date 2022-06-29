@@ -23,16 +23,24 @@ public class ThreadsController {
         return threadsService.createNewThread(request,principal);
     }
 
-
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllThread() {
         return threadsService.getAllThread();
     }
 
+    @GetMapping(value = "/bytopic")
+    public ResponseEntity<Object> getThreadByTopic(@RequestParam(value = "topic", required = false)Integer thread){
+        return threadsService.getThreadByTopic(thread);
+    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getThreadById(@PathVariable Long id) {
         return threadsService.getThreadById(id);
+    }
+
+    @GetMapping(value = "/desc")
+    public ResponseEntity<Object> getThreadDesc(){
+        return threadsService.getAllThreadByNew();
     }
 
 
