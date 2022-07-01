@@ -9,6 +9,8 @@ import com.capstone.fgd.security.JwtTokenProvider;
 import com.capstone.fgd.util.ResponseUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.utility.RandomString;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,8 +20,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import org.apache.commons.io.FilenameUtils;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 import java.util.regex.*;
 
 @Slf4j
@@ -31,7 +44,50 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<Object> register(UsersRequest req) {
+    public ResponseEntity<?> authenticateAndGenerateToken(UsersRequest req) {
+        try {
+            log.info(" Login ");
+            if (req.getEmail().equals("")) {
+                return ResponseUtil.build(ResponseMessage.EMAIL_NULL,null,HttpStatus.BAD_REQUEST);
+            }
+
+            if (req.getPassword().equals("")){
+                return ResponseUtil.build(ResponseMessage.PASSWORD_NULL,null,HttpStatus.BAD_REQUEST);
+            }
+
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            req.getEmail(),
+                            req.getPassword())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtTokenProvider.generateToken(authentication);
+
+            Optional<Users> usersOptional = Optional.ofNullable(userRepository.findByEmail(req.getEmail()));
+            Users users = usersOptional.get();
+            TokenResponse tokenResponse = TokenResponse.builder()
+                    .token(jwt)
+                    .isAdmin(users.getIsAdmin())
+                    .name(users.getName())
+                    .isSupended(users.getIsSuspended())
+                    .build();
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,
+                    tokenResponse,
+                    HttpStatus.OK);
+        } catch (BadCredentialsException e){
+            log.error("Bad Credential", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
+        } catch (Exception e){
+            log.error(e.getMessage(), e);
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Value("${upload.path}")
+    private String uploadPath;
+
+    public ResponseEntity<Object> registerWithUploadImages(UsersRequest req, MultipartFile file) throws IOException {
 
         log.info(" Register ");
         //check filled name,email,password
@@ -89,12 +145,35 @@ public class AuthService {
             return ResponseUtil.build(ResponseMessage.USER_EXISTS,null, HttpStatus.BAD_REQUEST);
         }
 
+        //check image
+        if (file.isEmpty()){
+            log.error("file is empty");
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
+        }
+
+        // sebagai tempat upload
+        log.info("Store file");
+        Path uploadDir = Paths.get(uploadPath);
+
+        // sebagai ttempat upload
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String getExt = FilenameUtils.getExtension(fileName);
+        log.info(getExt);
+        String imageUrl = String.format("%s.%s", UUID.randomUUID(),getExt);
+        log.info(imageUrl);
+
+        InputStream inputStream = file.getInputStream();
+        Path filePath = uploadDir.resolve(imageUrl);
+        String imageUrlSave = uploadPath + imageUrl;
+        Files.copy(inputStream,filePath, StandardCopyOption.REPLACE_EXISTING);
+
         if (req.getIsAdmin() == null || req.getIsAdmin().equals(false)) {
             log.info(" User ");
             Users userDao = Users.builder()
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
+                    .urlImage(imageUrlSave)
                     .isAdmin(false)
                     .isSuspended(false)
                     .build();
@@ -111,6 +190,7 @@ public class AuthService {
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
+                    .urlImage(imageUrlSave)
                     .isAdmin(req.getIsAdmin())
                     .isSuspended(false)
                     .build();
@@ -118,50 +198,8 @@ public class AuthService {
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, null, HttpStatus.OK);
 
         }
-//        return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
         return null;
 
-    }
-
-
-    public ResponseEntity<?> authenticateAndGenerateToken(UsersRequest req) {
-        try {
-            log.info(" Login ");
-            if (req.getEmail().equals("")) {
-                return ResponseUtil.build(ResponseMessage.EMAIL_NULL,null,HttpStatus.BAD_REQUEST);
-            }
-
-            if (req.getPassword().equals("")){
-                return ResponseUtil.build(ResponseMessage.PASSWORD_NULL,null,HttpStatus.BAD_REQUEST);
-            }
-
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            req.getEmail(),
-                            req.getPassword())
-            );
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            String jwt = jwtTokenProvider.generateToken(authentication);
-
-            Optional<Users> usersOptional = Optional.ofNullable(userRepository.findByEmail(req.getEmail()));
-            Users users = usersOptional.get();
-            TokenResponse tokenResponse = TokenResponse.builder()
-                    .token(jwt)
-                    .isAdmin(users.getIsAdmin())
-                    .name(users.getName())
-                    .isSupended(users.getIsSuspended())
-                    .build();
-
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,
-                    tokenResponse,
-                    HttpStatus.OK);
-        } catch (BadCredentialsException e){
-            log.error("Bad Credential", e.getMessage());
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
-        } catch (Exception e){
-            log.error(e.getMessage(), e);
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
 }

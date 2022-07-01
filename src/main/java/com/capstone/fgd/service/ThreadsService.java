@@ -10,16 +10,23 @@ import com.capstone.fgd.repository.TopicRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -40,7 +47,10 @@ public class ThreadsService {
     @Autowired
     private ModelMapper mapper;
 
-    public ResponseEntity<Object> createNewThread(ThreadsRequest threadRequest, Principal principal){
+    @Value("${upload.path}")
+    private String uploadPath;
+
+    public ResponseEntity<Object> createNewThread(Principal principal,ThreadsRequest threadRequest, MultipartFile file){
         try {
             log.info("Executing create new Thread");
 
@@ -52,12 +62,28 @@ public class ThreadsService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
 
+            // sebagai tempat upload
+            log.info("Store file");
+            Path uploadDir = Paths.get(uploadPath);
+
+            // sebagai ttempat upload
+            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String getExt = FilenameUtils.getExtension(fileName);
+            log.info(getExt);
+            String imageUrl = String.format("%s.%s", UUID.randomUUID(),getExt);
+            log.info(imageUrl);
+
+            InputStream inputStream = file.getInputStream();
+            Path filePath = uploadDir.resolve(imageUrl);
+            String imageUrlSave = uploadPath + imageUrl;
+            Files.copy(inputStream,filePath, StandardCopyOption.REPLACE_EXISTING);
+
             Threads thread = Threads.builder()
                     .users(userSignIn)
                     .topic(topicOptional.get())
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
-                    .image(threadRequest.getImage())
+                    .image(imageUrlSave)
                     .save(false)
                     .build();
             threadsRepository.save(thread);
@@ -109,6 +135,47 @@ public class ThreadsService {
         }
     }
 
+    public ResponseEntity<Object> getThreadByTopic(Integer request){
+        try {
+            log.info("Executing get All Thread By Topic");
+            List<Threads> threadsList = threadsRepository.getAllThreadByTopic(request);
+            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+
+            if (threadsList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (Threads threads: threadsList){
+                threadsRequestList.add(mapper.map(threads, ThreadsRequest.class));
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, threadsRequestList, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get An Error get thread by topic : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getAllThreadByNew(){
+        try {
+            log.info("Executing get All Thread Order By DSC");
+            List<Threads> threadsList = threadsRepository.getThreadASC();
+            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+
+            if (threadsList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+
+            }
+
+            for (Threads threads: threadsList){
+                threadsRequestList.add(mapper.map(threads, ThreadsRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error get thread order by dsc : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     public ResponseEntity<Object> updateThread(Long id, ThreadsRequest request){
         try {
             log.info("Executing update team");
