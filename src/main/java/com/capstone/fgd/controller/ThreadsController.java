@@ -1,12 +1,18 @@
 package com.capstone.fgd.controller;
 
 import com.capstone.fgd.domain.dto.ThreadsRequest;
+import com.capstone.fgd.domain.dto.UsersRequest;
 import com.capstone.fgd.service.ThreadsService;
 import com.capstone.fgd.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -18,9 +24,24 @@ public class ThreadsController {
     @Autowired
     private ThreadsService threadsService;
 
-    @PostMapping(value = "")
-    public ResponseEntity<Object> createNewThread(@RequestBody ThreadsRequest request, Principal principal) {
-        return threadsService.createNewThread(request,principal);
+
+//    @PostMapping(value ="/registerwithuploadfile",)
+//    ResponseEntity<?> register(@RequestParam("json") String json, @RequestParam("file")MultipartFile file)
+//            throws IOException {
+//        ObjectMapper mapper = new ObjectMapper();
+//
+//        UsersRequest request = mapper.readValue(json, UsersRequest.class);
+//
+//        return authService.registerWithUploadImages(request, file);
+//    }
+    @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> createNewThread(Principal principal,@RequestParam("json") String json,
+                                                  @RequestParam("file")MultipartFile file) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        ThreadsRequest request = mapper.readValue(json,ThreadsRequest.class);
+
+        return threadsService.createNewThread(principal,request,file);
     }
 
     @GetMapping(value = "")
