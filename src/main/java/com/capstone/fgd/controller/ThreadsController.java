@@ -49,13 +49,17 @@ public class ThreadsController {
         return threadsService.updateThread(id, request);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteThread(@PathVariable Long id) {
-        return threadsService.deleteThread(id);
-    }
-
-    @GetMapping(value = "/search")
-    public ResponseEntity<Object> searchThread(@RequestParam(value = "thread",required = false) String thread){
-        return userService.searchUser(thread);
-    }
+//    @DeleteMapping(value = "/{id}")
+//<<<<<<< HEAD
+//    public ResponseEntity<Object> deleteThread(Principal principal, @PathVariable Long id) {
+//=======
+//    public ResponseEntity<Object> deleteThread(@PathVariable Long id) {
+//>>>>>>> fd2925da89ceed722cd9748aec38befb9024fe2e
+//        return threadsService.deleteThread(id);
+//    }
+//
+//    @GetMapping(value = "/search")
+//    public ResponseEntity<Object> searchThread(@RequestParam(value = "thread",required = false) String thread){
+//        return userService.searchUser(thread);
+//    }
 }
