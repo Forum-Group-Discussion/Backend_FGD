@@ -30,8 +30,7 @@ public class Threads extends BaseDao {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Lob
-    @Column(name = "image")
+    @Column(name = "image", length = 255)
     private String image;
 
     @ManyToOne

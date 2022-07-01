@@ -36,7 +36,7 @@ public class ThreadsController {
 //    }
     @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> createNewThread(Principal principal,@RequestParam("json") String json,
-                                                  @RequestParam("file")MultipartFile file) throws JsonProcessingException {
+                                                  @RequestParam(value = "file",required = false) MultipartFile file) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
         ThreadsRequest request = mapper.readValue(json,ThreadsRequest.class);
