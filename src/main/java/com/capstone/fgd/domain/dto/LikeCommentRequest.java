@@ -8,28 +8,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.Path;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UsersRequest {
+public class LikeCommentRequest {
     private Long id;
-
-    private String name;
-
-    private String email;
-
-    private String password;
-
-    private String urlImage;
-
-    private Boolean isAdmin;
-
-    private Boolean isSuspended;
+    private CommentRequest commentLike;
+    private ThreadsRequest threadsId;
+    private UsersRequest userLike;
+    private Boolean isLike;
+    private Boolean isDislike;
 }

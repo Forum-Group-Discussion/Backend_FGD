@@ -11,32 +11,35 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "m_comment")
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-public class Comment extends BaseDao {
-
+@Table(name = "m_likecomment")
+public class LikeComment extends BaseDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "comment_id")
+    private Comment commentLike;
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users users;
+    private Users userLike;
 
     @ManyToOne
     @JoinColumn(name = "thread_id")
-    private Threads thread;
+    private Comment threadsId;
 
-    @Lob
-    @Column(name = "comment", nullable = false)
-    private String comment;
+    @Column(name = "is_like")
+    private Boolean isLike;
 
-
+    @Column(name = "is_dislike")
+    private Boolean isDislike;
 }

@@ -66,10 +66,10 @@ public class CommentService {
         }
     }
 
-    public ResponseEntity<Object> getCommentByThread(){
+    public ResponseEntity<Object> getCommentByThread(Integer req){
         try {
             log.info("Executing get all comment by thread");
-            List<Comment> commentList = commentRepository.findAllByThread(Threads.builder().build());
+            List<Comment> commentList = commentRepository.searchByIdThread(req);
             List<CommentRequest> commentRequestsList = new ArrayList<>();
 
             if (commentList.isEmpty()){
@@ -80,7 +80,7 @@ public class CommentService {
                 commentRequestsList.add(mapper.map(comment,CommentRequest.class));
             }
 
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,commentRequestsList,HttpStatus.OK);
         } catch (Exception e){
             log.error("Get An error get all comment by thread : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
@@ -133,7 +133,7 @@ public class CommentService {
             Comment comment = commentOptional.get();
             comment.setComment(request.getComment());
             commentRepository.save(comment);
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,mapper.map(comment, CommentRequest.class), HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,mapper.map(comment, CommentRequest.class), HttpStatus.OK);
 
         }catch (Exception e){
             log.error("Get an error executing update comment, Error : {}", e.getMessage());
