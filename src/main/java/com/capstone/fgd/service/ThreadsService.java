@@ -50,9 +50,10 @@ public class ThreadsService {
     @Value("${upload.path}")
     private String uploadPath;
 
-    public ResponseEntity<Object> createNewThread(Principal principal,ThreadsRequest threadRequest, MultipartFile file){
+    public ResponseEntity<Object> createNewThreadUsingImage(Principal principal,ThreadsRequest threadRequest,
+                                                            MultipartFile file){
         try {
-            log.info("Executing create new Thread");
+            log.info("Executing create new Thread Using Image");
 
             Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
 
@@ -60,6 +61,10 @@ public class ThreadsService {
             if (topicOptional.isEmpty()){
                 log.info("Topic not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+
+            if (file.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
             // sebagai tempat upload
@@ -84,6 +89,36 @@ public class ThreadsService {
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
                     .image(imageUrlSave)
+                    .save(false)
+                    .build();
+            threadsRepository.save(thread);
+            ThreadsRequest threadRequestDto = mapper.map(thread, ThreadsRequest.class);
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, threadRequestDto,HttpStatus.OK);
+        } catch (Exception e){
+            log.error("Get an error executing new thread, Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> createNewThread(Principal principal,ThreadsRequest threadRequest){
+        try {
+            log.info("Executing create new Thread");
+
+            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
+
+            Optional<Topic> topicOptional = topicRepository.findById(threadRequest.getTopic().getId());
+            if (topicOptional.isEmpty()){
+                log.info("Topic not found");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+
+            Threads thread = Threads.builder()
+                    .users(userSignIn)
+                    .topic(topicOptional.get())
+                    .title(threadRequest.getTitle())
+                    .content(threadRequest.getContent())
+                    .image(null)
                     .save(false)
                     .build();
             threadsRepository.save(thread);

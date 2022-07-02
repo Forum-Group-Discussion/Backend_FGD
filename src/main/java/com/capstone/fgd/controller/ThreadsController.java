@@ -25,15 +25,6 @@ public class ThreadsController {
     private ThreadsService threadsService;
 
 
-//    @PostMapping(value ="/registerwithuploadfile",)
-//    ResponseEntity<?> register(@RequestParam("json") String json, @RequestParam("file")MultipartFile file)
-//            throws IOException {
-//        ObjectMapper mapper = new ObjectMapper();
-//
-//        UsersRequest request = mapper.readValue(json, UsersRequest.class);
-//
-//        return authService.registerWithUploadImages(request, file);
-//    }
     @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> createNewThread(Principal principal,@RequestParam("json") String json,
                                                   @RequestParam(value = "file",required = false) MultipartFile file) throws JsonProcessingException {
@@ -41,7 +32,10 @@ public class ThreadsController {
 
         ThreadsRequest request = mapper.readValue(json,ThreadsRequest.class);
 
-        return threadsService.createNewThread(principal,request,file);
+        if(file == null){
+            return threadsService.createNewThread(principal,request);
+        }
+        return threadsService.createNewThreadUsingImage(principal,request,file);
     }
 
     @GetMapping(value = "")
@@ -63,7 +57,6 @@ public class ThreadsController {
     public ResponseEntity<Object> getThreadDesc(){
         return threadsService.getAllThreadByNew();
     }
-
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateThread(@PathVariable Long id, @RequestBody ThreadsRequest request) {

@@ -33,12 +33,15 @@ public class AuthController {
     }
 
     @PostMapping(value ="/registerwithuploadfile",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    ResponseEntity<?> register(@RequestParam("json") String json, @RequestParam(value = "file",required = false) MultipartFile file)
-            throws IOException {
+    ResponseEntity<?> register(@RequestParam("json") String json, @RequestParam(value = "file",required = false) MultipartFile file) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
 
         UsersRequest request = mapper.readValue(json, UsersRequest.class);
 
+
+        if (file == null){
+            return authService.register(request);
+        }
         return authService.registerWithUploadImages(request, file);
     }
 

@@ -23,14 +23,14 @@ public class Threads extends BaseDao {
     @JoinColumn(name = "user_id")
     private Users users;
 
-    @Column(name = "title", length = 255, nullable = false)
+    @Column(name = "title", length = 200, nullable = false)
     private String title;
 
     @Lob
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "image", length = 255)
+    @Column(name = "image")
     private String image;
 
     @ManyToOne
