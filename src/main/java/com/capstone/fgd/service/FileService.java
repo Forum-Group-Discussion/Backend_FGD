@@ -37,6 +37,9 @@ public class FileService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private Comm
+
     @Value("${upload.path}")
     private String uploadPath;
 
