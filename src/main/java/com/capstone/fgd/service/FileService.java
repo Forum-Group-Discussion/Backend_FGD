@@ -2,6 +2,7 @@ package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,10 @@ public class FileService {
     private UserService userService;
 
     @Autowired
-    private Comm
+    private ThreadsService threadsService;
+
+    @Autowired
+    private ThreadsRepository threadsRepository;
 
     @Value("${upload.path}")
     private String uploadPath;
