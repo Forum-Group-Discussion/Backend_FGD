@@ -44,7 +44,6 @@ public class ThreadsController {
         return threadsService.getAllThreadByNew();
     }
 
-
     @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateThread(@PathVariable Long id, @RequestBody ThreadsRequest request) {
         return threadsService.updateThread(id, request);
