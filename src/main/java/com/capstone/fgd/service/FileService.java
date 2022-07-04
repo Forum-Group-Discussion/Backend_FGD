@@ -7,14 +7,21 @@ import com.capstone.fgd.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,12 +30,15 @@ import java.security.Principal;
 
 @Slf4j
 @Service
-public class FileStorageService {
+public class FileService {
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private Comm
 
     @Value("${upload.path}")
     private String uploadPath;
@@ -53,5 +63,37 @@ public class FileStorageService {
                 log.error("Upload File Error :{}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public ResponseEntity<?> userLoadImage(Principal principal){
+        try {
+            log.info("Executing photo profile ");
+            Users usersSignIn = (Users) userService.loadUserByUsername(principal.getName());
+
+            Path uploadDir = Paths.get(uploadPath);
+            log.info("Name file : {}",usersSignIn.getUrlImage());
+            Path filePath = uploadDir.resolve(usersSignIn.getUrlImage()).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+//            var imgFile = new ClassPathResource("D:/ANIME/FILES/0266fefa-6d1e-424f-ac22-5686d206face.jpg");
+
+//            return ResponseEntity
+//                    .ok()
+//                    .contentType(MediaType.IMAGE_JPEG)
+//                    .body(new InputStreamResource(imgFile.getInputStream()));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
+//
+//                    .contentType(MediaType.parseMediaType("image/jpeg, image/jpg, image/png, image/gif"))
+
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }catch (Exception e){
+            log.info("Get an error by executing photo profile, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return null;
     }
 }
