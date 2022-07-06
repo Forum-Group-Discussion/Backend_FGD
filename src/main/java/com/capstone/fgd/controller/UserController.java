@@ -32,13 +32,7 @@ public class UserController {
 
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllUser (Principal principal) {
-
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)){
             return userService.getAllUser();
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
-
     }
     @GetMapping(value = "/image",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<?> loadUserImage(Principal principal){
@@ -47,7 +41,6 @@ public class UserController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getUserById(Principal principal, @PathVariable Long id){
-
         return userService.getUserByid(id);
     }
 
