@@ -25,10 +25,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/uploadfile")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipartFile, Principal principal) {
-        return fileStorageService.saveFile(multipartFile,principal);
-    }
+
 
     @PostMapping(value ="/register",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<?> register(@RequestParam("json") String json, @RequestParam(value = "file",required = false) MultipartFile file) throws Exception {
