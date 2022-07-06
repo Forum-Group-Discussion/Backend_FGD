@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
@@ -24,6 +25,10 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @PostMapping("/uploadfile")
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipartFile, Principal principal) {
+        return fileService.saveFile(multipartFile,principal);
+    }
 
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllUser (Principal principal) {
@@ -35,9 +40,8 @@ public class UserController {
         return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
 
     }
-    @GetMapping(value = "/photo",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/image",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<?> loadUserImage(Principal principal){
-
         return fileService.userLoadImage(principal);
     }
 
