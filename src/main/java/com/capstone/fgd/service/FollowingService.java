@@ -47,7 +47,6 @@ public class FollowingService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-
             if (userLogin.getId().equals(request.getUserFollow().getId())){
                 return ResponseUtil.build("CAN'T_FOLLOW_YOURSELF",null,HttpStatus.BAD_REQUEST);
             }
@@ -58,7 +57,7 @@ public class FollowingService {
 
             if (checkFollow.isEmpty()){
                 log.info("Follow is empty");
-                log.info("i user : {}, user folow : {}",userLogin.getId(),userToFollow.get().getId());
+                log.info("i user : {}, user follow : {}",userLogin.getId(),userToFollow.get().getId());
                 Following following = Following.builder()
                         .user(userLogin)
                         .userFollow(userToFollow.get())
@@ -72,27 +71,27 @@ public class FollowingService {
 
             if (checkFollow.isPresent()){
                 Following follows = checkFollow.get();
-                if (follows.getType().equals("FOLLOW")){
-                    log.info("Unfollow user");
+                if (request.getType().equals("FOLLOW")){
+                    log.info("follow user");
                     follows.setId(follows.getId());
                     follows.setUser(follows.getUser());
                     follows.setUserFollow(follows.getUserFollow());
-                    follows.setType("UNFOLLOW");
-                    follows.setIsFollow(false);
+                    follows.setType("FOLLOW");
+                    follows.setIsFollow(true);
                     followingRepository.save(follows);
 
                     FollowingRequest followingRequest = mapper.map(follows,FollowingRequest.class);
                     return ResponseUtil.build(ResponseMessage.KEY_FOUND,followingRequest,HttpStatus.OK);
                 }
 
-                if (follows.getType().equals("UNFOLLOW")){
+                if (request.getType().equals("UNFOLLOW")){
                     log.info("follow user again");
 
                     follows.setId(follows.getId());
                     follows.setUser(follows.getUser());
                     follows.setUserFollow(follows.getUserFollow());
-                    follows.setType("FOLLOW");
-                    follows.setIsFollow(true);
+                    follows.setType("UNFOLLOW");
+                    follows.setIsFollow(false);
                     followingRepository.save(follows);
 
                     FollowingRequest followingRequest = mapper.map(follows,FollowingRequest.class);

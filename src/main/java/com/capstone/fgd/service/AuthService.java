@@ -67,8 +67,9 @@ public class AuthService {
             Users users = usersOptional.get();
             TokenResponse tokenResponse = TokenResponse.builder()
                     .token(jwt)
-                    .isAdmin(users.getIsAdmin())
+                    .id(users.getId())
                     .name(users.getName())
+                    .isAdmin(users.getIsAdmin())
                     .isSupended(users.getIsSuspended())
                     .build();
 
