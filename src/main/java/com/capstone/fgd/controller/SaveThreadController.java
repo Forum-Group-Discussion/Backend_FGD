@@ -19,8 +19,8 @@ public class SaveThreadController {
     private SaveThreadService saveThreadService;
 
     @PostMapping(value = "")
-    ResponseEntity<Object> savethread (Principal principal, @RequestBody SaveThreadRequest request){
-        return saveThreadService.saveThread(principal, request);
+    ResponseEntity<Object> savethread (@RequestBody SaveThreadRequest request, Principal principal){
+        return saveThreadService.saveThread(request, principal);
     }
 
 }
