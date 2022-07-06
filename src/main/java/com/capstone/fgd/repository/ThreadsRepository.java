@@ -20,7 +20,13 @@ public interface ThreadsRepository extends JpaRepository<Threads, Long> {
     List<Threads> getAllThreadByTopic(@Param("topic") Integer topic);
 
     @Query(value = "SELECT * FROM m_thread ORDER BY created_at DESC", nativeQuery = true)
-    List<Threads> getThreadASC();
+    List<Threads> getThreadDESC();
+
+    @Query(value = "SELECT image FROM Threads ")
+    List<Threads> getAllImage();
+
+    @Query(value = "SELECT * FROM m_thread ORDER BY created_at DESC OFFSET :offset LIMIT :limit",nativeQuery = true)
+    List<Threads> getAllThreadDESCUsingPagination(Long offset, Long limit);
 }
 
 
