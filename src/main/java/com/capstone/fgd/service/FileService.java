@@ -10,6 +10,7 @@ import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -57,20 +59,22 @@ public class FileService {
     @Value("${upload.path}")
     private String uploadPath;
 
-    public ResponseEntity<?> saveFile(MultipartFile multipartFile, Principal principal)  {
-
-
+    public ResponseEntity<?> editImage(MultipartFile multipartFile, Principal principal)  {
         try {
-            log.info("Executing upload file");
+            log.info("Executing upload image");
             Users usersSignIn = (Users) userService.loadUserByUsername(principal.getName());
             Path uploadDir = Paths.get(uploadPath);
 
             String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            String getExt = FilenameUtils.getExtension(fileName);
+            log.info(getExt);
+            String imageUrl = String.format("%s.%s", UUID.randomUUID(),getExt);
+            log.info(imageUrl);
 
             InputStream inputStream = multipartFile.getInputStream();
-            Path filePath = uploadDir.resolve(uploadPath+fileName);
+            Path filePath = uploadDir.resolve(uploadPath+imageUrl);
             Files.copy(inputStream,filePath, StandardCopyOption.REPLACE_EXISTING);
-            usersSignIn.setUrlImage(String.valueOf(filePath));
+            usersSignIn.setImage(String.valueOf(filePath));
             userRepository.save(usersSignIn);
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,filePath, HttpStatus.OK);
 
@@ -80,16 +84,65 @@ public class FileService {
         }
     }
 
+    public ResponseEntity<?> editImageBackground(MultipartFile multipartFile, Principal principal)  {
+        try {
+            log.info("Executing upload image");
+            Users usersSignIn = (Users) userService.loadUserByUsername(principal.getName());
+            Path uploadDir = Paths.get(uploadPath);
+
+            String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+            String getExt = FilenameUtils.getExtension(fileName);
+            log.info(getExt);
+            String imageUrl = String.format("%s.%s", UUID.randomUUID(),getExt);
+            log.info(imageUrl);
+
+            InputStream inputStream = multipartFile.getInputStream();
+            Path filePath = uploadDir.resolve(uploadPath+imageUrl);
+            Files.copy(inputStream,filePath, StandardCopyOption.REPLACE_EXISTING);
+            usersSignIn.setBackgroundImage(String.valueOf(filePath));
+            userRepository.save(usersSignIn);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,filePath, HttpStatus.OK);
+
+        }catch (Exception e){
+            log.error("Upload File Error :{}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     public ResponseEntity<?> userLoadImage(Principal principal){
         try {
             log.info("Executing photo profile ");
             Users usersSignIn = (Users) userService.loadUserByUsername(principal.getName());
 
             Path uploadDir = Paths.get(uploadPath);
-            log.info("Name file : {}",usersSignIn.getUrlImage());
-            Path filePath = uploadDir.resolve(usersSignIn.getUrlImage()).normalize();
+            log.info("Name file : {}",usersSignIn.getImage());
+            Path filePath = uploadDir.resolve(usersSignIn.getImage()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }catch (Exception e){
+            log.info("Get an error by executing photo profile, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return null;
+    }
+
+    public ResponseEntity<?> userLoadImageBackground(Principal principal){
+        try {
+            log.info("Executing photo profile ");
+            Users usersSignIn = (Users) userService.loadUserByUsername(principal.getName());
+
+            Path uploadDir = Paths.get(uploadPath);
+            log.info("Name file : {}",usersSignIn.getImage());
+            Path filePath = uploadDir.resolve(usersSignIn.getBackgroundImage()).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
 
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType("application/octet-stream"))
@@ -127,6 +180,8 @@ public class FileService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
     public ResponseEntity<?> getAllThreadUsingImage(){
         try {
