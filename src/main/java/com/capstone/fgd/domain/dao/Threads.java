@@ -1,13 +1,12 @@
 package com.capstone.fgd.domain.dao;
 
 import com.capstone.fgd.domain.common.BaseDao;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
@@ -39,5 +38,8 @@ public class Threads extends BaseDao {
 
     @Column(name = "save")
     private Boolean save;
+
+//    @OneToMany(mappedBy = "threadLike",fetch = FetchType.EAGER)
+//    private Set<LikeThread> likeThreads;
 
 }

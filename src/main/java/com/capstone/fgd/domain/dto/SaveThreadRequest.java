@@ -8,38 +8,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.Path;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UsersRequest {
-    private Long id;
-
-    private String name;
-
-    private String username;
-
-    private String email;
-
-    private String password;
-
-    private String image;
-
-    private String bio;
-
-    private String location;
-
-    private String website;
-
-    private String backgroundImage;
-
-    private Boolean isAdmin;
-
-    private Boolean isSuspended;
+public class SaveThreadRequest {
+    private Long Id;
+    private UsersRequest IdUser;
+    private ThreadsRequest IdThread;
 }

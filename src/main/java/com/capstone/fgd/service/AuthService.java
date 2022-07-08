@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -44,6 +45,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
+    @Transactional
     public ResponseEntity<?> authenticateAndGenerateToken(UsersRequest req) {
         try {
             log.info(" Login ");
@@ -67,8 +69,9 @@ public class AuthService {
             Users users = usersOptional.get();
             TokenResponse tokenResponse = TokenResponse.builder()
                     .token(jwt)
-                    .isAdmin(users.getIsAdmin())
+                    .id(users.getId())
                     .name(users.getName())
+                    .isAdmin(users.getIsAdmin())
                     .isSupended(users.getIsSuspended())
                     .build();
 
@@ -180,7 +183,7 @@ public class AuthService {
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
-                    .urlImage(imageUrlSave)
+                    .image(imageUrlSave)
                     .isAdmin(false)
                     .isSuspended(false)
                     .build();
@@ -197,7 +200,7 @@ public class AuthService {
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
-                    .urlImage(imageUrlSave)
+                    .image(imageUrlSave)
                     .isAdmin(req.getIsAdmin())
                     .isSuspended(false)
                     .build();
@@ -274,7 +277,7 @@ public class AuthService {
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
-                    .urlImage(null)
+                    .image(null)
                     .isAdmin(false)
                     .isSuspended(false)
                     .build();
@@ -291,7 +294,7 @@ public class AuthService {
                     .name(req.getName())
                     .email(req.getEmail())
                     .password(passwordEncoder.encode(req.getPassword()))
-                    .urlImage(null)
+                    .image(null)
                     .isAdmin(req.getIsAdmin())
                     .isSuspended(false)
                     .build();

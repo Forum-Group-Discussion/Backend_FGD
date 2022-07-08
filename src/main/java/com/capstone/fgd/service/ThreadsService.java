@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -131,6 +132,7 @@ public class ThreadsService {
         }
     }
 
+
     public ResponseEntity<Object> getAllThread(){
         try {
             log.info("Executing get all Thread");
@@ -152,7 +154,7 @@ public class ThreadsService {
         }
     }
 
-
+    @Transactional
     public ResponseEntity<Object> getThreadById(Long id){
         try {
             log.info("Executing getThreadById with id : {}", id);
@@ -170,7 +172,8 @@ public class ThreadsService {
         }
     }
 
-    public ResponseEntity<Object> getThreadByTopic(Integer request){
+    @Transactional
+    public ResponseEntity<Object> getThreadByTopic(Long request){
         try {
             log.info("Executing get All Thread By Topic");
             List<Threads> threadsList = threadsRepository.getAllThreadByTopic(request);
@@ -191,10 +194,11 @@ public class ThreadsService {
         }
     }
 
+    @Transactional
     public ResponseEntity<Object> getAllThreadByNew(){
         try {
             log.info("Executing get All Thread Order By DSC");
-            List<Threads> threadsList = threadsRepository.getThreadASC();
+            List<Threads> threadsList = threadsRepository.getThreadDESC();
             List<ThreadsRequest> threadsRequestList = new ArrayList<>();
 
             if (threadsList.isEmpty()){
@@ -211,6 +215,32 @@ public class ThreadsService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+//    @Transactional
+//    public ResponseEntity<Object> getThreadJoinLikeThread(){
+//        try {
+//            log.info("Executing get All Thread ");
+//            List<ThreadsRequest> joinThreadLKS = threadsRepository.getThreadJoinLikeThread();
+//            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+//
+//            if (threadsList.isEmpty()){
+//                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+//
+//            }
+//
+//            for (Threads threads: threadsList){
+//                threadsRequestList.add(mapper.map(threads, ThreadsRequest.class));
+//            }
+//
+//
+//            //return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
+//            return ResponseUtil.build(ResponseMessage.KEY_FOUND,joinThreadLKS, HttpStatus.OK);
+//        }catch (Exception e){
+//            log.error("Get an error get thread order by dsc : {}", e.getMessage());
+//            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
     public ResponseEntity<Object> updateThread(Long id, ThreadsRequest request){
         try {
             log.info("Executing update thread");
@@ -232,22 +262,49 @@ public class ThreadsService {
         }
     }
 
-    public ResponseEntity<Object> deleteThread(Long id){
+    public ResponseEntity<Object> deleteThread(Principal principal ,Long id){
         try {
+            log.info("DELETE THREAD BY ID");
             Optional<Threads> threadOptional = threadsRepository.findById(id);
+            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
+
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
             threadsRepository.delete(threadOptional.get());
+            log.info("DELETE THREAD SUCCESS");
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
+
+
         } catch (Exception e){
             log.error("Get an error by executing delete thread");
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
 
+    @Transactional
+    public ResponseEntity<?> getAllThreadWithPagination(Long offset,Long limit){
+        try {
+            log.info("Get All Thread With Pagination");
+            List<Threads> threadsList = threadsRepository.getAllThreadDESCUsingPagination(offset,limit);
+            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+
+            if (threadsList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.OK);
+            }
+
+            for (Threads threads : threadsList){
+                threadsRequestList.add(mapper.map(threads,ThreadsRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get all thread with pagination, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public ResponseEntity<Object> searchByThread(String req){
         try {
@@ -263,7 +320,7 @@ public class ThreadsService {
             for (Threads threads:threadsList){
                 threadsRequestList.add(mapper.map(threadsList,ThreadsRequest.class));
             }
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsList,HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList,HttpStatus.OK);
         }catch (Exception e){
             log.error("Get an error by searching thread, Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);

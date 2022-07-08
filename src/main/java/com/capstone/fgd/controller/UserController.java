@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
@@ -24,26 +25,33 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @PostMapping("/editimage")
+    public ResponseEntity<?> editImage(@RequestParam("file") MultipartFile multipartFile, Principal principal) {
+        return fileService.editImage(multipartFile,principal);
+    }
+
+    @PostMapping("/editimagebackground")
+    public ResponseEntity<?> editImageBackground(@RequestParam("file") MultipartFile multipartFile, Principal principal) {
+        return fileService.editImageBackground(multipartFile,principal);
+    }
 
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllUser (Principal principal) {
-
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)){
             return userService.getAllUser();
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
-
     }
-    @GetMapping(value = "/photo",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-    public ResponseEntity<?> loadUserImage(Principal principal){
 
+    @GetMapping(value = "/image",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<?> loadUserImage(Principal principal){
         return fileService.userLoadImage(principal);
+    }
+
+    @GetMapping(value = "/imagebackground",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<?> loadUserImageBackground(Principal principal){
+        return fileService.userLoadImageBackground(principal);
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getUserById(Principal principal, @PathVariable Long id){
-
         return userService.getUserByid(id);
     }
 

@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.w3c.dom.Text;
 
 import javax.persistence.*;
 import javax.validation.Path;
@@ -34,16 +35,30 @@ public class Users extends BaseDao implements UserDetails {
     @Column(name = "name_user",nullable = false)
     private String name;
 
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "email",nullable = false)
     private String email;
-
 
     @Column(name = "password",nullable = false)
     private String password;
 
     @Column(name = "image")
-    private String urlImage;
+    private String image;
+
+    @Lob
+    @Column(name = "bio")
+    private String bio;
+
+    @Column(name = "location")
+    private String location;
+
+    @Column(name = "website")
+    private String website;
+
+    @Column(name = "background_image")
+    private String backgroundImage;
 
     @Column(name = "is_Admin")
     private Boolean isAdmin;

@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TokenResponse {
+
     private String token;
+    private Long id;
     private Boolean isAdmin;
     private String name;
     private Boolean isSupended;
