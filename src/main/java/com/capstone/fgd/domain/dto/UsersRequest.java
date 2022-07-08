@@ -23,11 +23,21 @@ public class UsersRequest {
 
     private String name;
 
+    private String username;
+
     private String email;
 
     private String password;
 
-    private String urlImage;
+    private String image;
+
+    private String bio;
+
+    private String location;
+
+    private String website;
+
+    private String backgroundImage;
 
     private Boolean isAdmin;
 

@@ -53,7 +53,7 @@ public class ThreadsController {
     }
 
     @GetMapping(value = "/bytopic")
-    public ResponseEntity<Object> getThreadByTopic(@RequestParam(value = "topic", required = false)Integer thread){
+    public ResponseEntity<Object> getThreadByTopic(@RequestParam(value = "topic", required = false)Long thread){
         return threadsService.getThreadByTopic(thread);
     }
 
@@ -66,6 +66,11 @@ public class ThreadsController {
     public ResponseEntity<Object> getThreadDesc(){
         return threadsService.getAllThreadByNew();
     }
+
+//    @GetMapping(value = "/joinlikethread")
+//    public ResponseEntity<Object> getThreadJoinLikeThread(){
+//        return threadsService.getThreadJoinLikeThread();
+//    }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateThread(@PathVariable Long id, @RequestBody ThreadsRequest request) {

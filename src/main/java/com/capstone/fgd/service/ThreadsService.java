@@ -14,7 +14,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -133,6 +132,7 @@ public class ThreadsService {
         }
     }
 
+
     public ResponseEntity<Object> getAllThread(){
         try {
             log.info("Executing get all Thread");
@@ -154,7 +154,7 @@ public class ThreadsService {
         }
     }
 
-
+    @Transactional
     public ResponseEntity<Object> getThreadById(Long id){
         try {
             log.info("Executing getThreadById with id : {}", id);
@@ -172,7 +172,8 @@ public class ThreadsService {
         }
     }
 
-    public ResponseEntity<Object> getThreadByTopic(Integer request){
+    @Transactional
+    public ResponseEntity<Object> getThreadByTopic(Long request){
         try {
             log.info("Executing get All Thread By Topic");
             List<Threads> threadsList = threadsRepository.getAllThreadByTopic(request);
@@ -214,6 +215,32 @@ public class ThreadsService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+//    @Transactional
+//    public ResponseEntity<Object> getThreadJoinLikeThread(){
+//        try {
+//            log.info("Executing get All Thread ");
+//            List<ThreadsRequest> joinThreadLKS = threadsRepository.getThreadJoinLikeThread();
+//            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+//
+//            if (threadsList.isEmpty()){
+//                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+//
+//            }
+//
+//            for (Threads threads: threadsList){
+//                threadsRequestList.add(mapper.map(threads, ThreadsRequest.class));
+//            }
+//
+//
+//            //return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
+//            return ResponseUtil.build(ResponseMessage.KEY_FOUND,joinThreadLKS, HttpStatus.OK);
+//        }catch (Exception e){
+//            log.error("Get an error get thread order by dsc : {}", e.getMessage());
+//            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
     public ResponseEntity<Object> updateThread(Long id, ThreadsRequest request){
         try {
             log.info("Executing update thread");

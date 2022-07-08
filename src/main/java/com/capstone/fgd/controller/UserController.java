@@ -25,18 +25,29 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/uploadfile")
-    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile multipartFile, Principal principal) {
-        return fileService.saveFile(multipartFile,principal);
+    @PostMapping("/editimage")
+    public ResponseEntity<?> editImage(@RequestParam("file") MultipartFile multipartFile, Principal principal) {
+        return fileService.editImage(multipartFile,principal);
+    }
+
+    @PostMapping("/editimagebackground")
+    public ResponseEntity<?> editImageBackground(@RequestParam("file") MultipartFile multipartFile, Principal principal) {
+        return fileService.editImageBackground(multipartFile,principal);
     }
 
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllUser (Principal principal) {
             return userService.getAllUser();
     }
+
     @GetMapping(value = "/image",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public ResponseEntity<?> loadUserImage(Principal principal){
         return fileService.userLoadImage(principal);
+    }
+
+    @GetMapping(value = "/imagebackground",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<?> loadUserImageBackground(Principal principal){
+        return fileService.userLoadImageBackground(principal);
     }
 
     @GetMapping(value = "/{id}")
