@@ -132,6 +132,29 @@ public class FollowingService {
         }
     }
 
+    public ResponseEntity<Object> getAllFollower(Principal principal){
+        try {
+            log.info("Executing get all followers");
+            Users userLogin = (Users) userService.loadUserByUsername(principal.getName());
+
+            List<Following> followingList = followingRepository.listFollowersUser(userLogin.getId());
+            List<FollowingRequest> followingRequestList = new ArrayList<>();
+
+            if (followingList.isEmpty()){
+                log.info("Following List Not Found");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
+            }
+
+            for (Following follow:followingList) {
+                followingRequestList.add(mapper.map(follow,FollowingRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,followingRequestList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error when executing get all following,Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public ResponseEntity<Object> getFollowingByid(Long id){
         try {

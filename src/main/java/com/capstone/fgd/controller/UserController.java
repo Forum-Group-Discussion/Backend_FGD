@@ -40,7 +40,7 @@ public class UserController {
             return userService.getAllUser();
     }
 
-    @GetMapping(value = "/image",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/image",produces = MediaType.IMAGE_JPEG_VALUE)
     public ResponseEntity<?> loadUserImage(Principal principal){
         return fileService.userLoadImage(principal);
     }
