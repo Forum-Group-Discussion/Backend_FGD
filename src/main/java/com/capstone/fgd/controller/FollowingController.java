@@ -27,6 +27,11 @@ public class FollowingController {
         return followingService.getAllFollowing(principal);
     }
 
+    @GetMapping(value = "/followers")
+    public ResponseEntity<Object> getAllFollowers(Principal principal){
+        return followingService.getAllFollower(principal);
+    }
+
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getFollowingById(Principal principal, @PathVariable Long id){

@@ -170,7 +170,6 @@ public class FileService {
             Path filePath = uploadDir.resolve(threadsOptional.get().getImage()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
-
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType("application/octet-stream"))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
