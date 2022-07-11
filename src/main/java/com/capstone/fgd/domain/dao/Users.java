@@ -31,7 +31,6 @@ public class Users extends BaseDao implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(name = "name_user",nullable = false)
     private String name;
 

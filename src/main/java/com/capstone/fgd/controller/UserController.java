@@ -61,11 +61,12 @@ public class UserController {
     }
 
     @PutMapping(value = "/suspend/{id}")
-    public ResponseEntity<Object> updateSuspend(Principal principal,@PathVariable Long id){
+    public ResponseEntity<Object> updateSuspend(Principal principal,@PathVariable Long id,@RequestBody UsersRequest
+                                                request){
 
         Users user = (Users) userService.loadUserByUsername(principal.getName());
         if (user.getIsAdmin().equals(true)){
-            return userService.updateSuspended(id);
+            return userService.updateSuspended(id,request);
         }
         return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED,null, HttpStatus.BAD_REQUEST);
     }
