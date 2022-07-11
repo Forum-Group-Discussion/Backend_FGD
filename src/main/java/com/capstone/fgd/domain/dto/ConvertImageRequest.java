@@ -15,5 +15,6 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class ConvertImageRequest {
+    private Long id;
     private String imageBase64;
 }
