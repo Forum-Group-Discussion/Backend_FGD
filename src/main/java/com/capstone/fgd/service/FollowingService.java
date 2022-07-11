@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class FollowingService {
     private ModelMapper mapper;
 
 
+    @Transactional
     public ResponseEntity<Object> followUser(FollowingRequest request,Principal principal) {
         try {
             log.info("Executing service create follow");
@@ -109,6 +111,7 @@ public class FollowingService {
 
 
 
+    @Transactional
     public ResponseEntity<Object> getAllFollowing(Principal principal){
         try {
             log.info("Executing get all following");
@@ -132,6 +135,7 @@ public class FollowingService {
         }
     }
 
+    @Transactional
     public ResponseEntity<Object> getAllFollower(Principal principal){
         try {
             log.info("Executing get all followers");
