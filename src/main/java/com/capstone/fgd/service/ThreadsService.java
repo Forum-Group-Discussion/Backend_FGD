@@ -1,9 +1,11 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
+import com.capstone.fgd.domain.dao.ThreadByLikeDao;
 import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Topic;
 import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dto.ThreadByLikeDTO;
 import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.repository.TopicRepository;
@@ -216,30 +218,44 @@ public class ThreadsService {
         }
     }
 
-//    @Transactional
-//    public ResponseEntity<Object> getThreadJoinLikeThread(){
-//        try {
-//            log.info("Executing get All Thread ");
-//            List<ThreadsRequest> joinThreadLKS = threadsRepository.getThreadJoinLikeThread();
-//            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
-//
+    @Transactional
+    public ResponseEntity<Object> getListThreadByLike(){
+        try {
+            log.info("Executing get All Thread By Like ");
+            List<ThreadByLikeDao> joinThreadLKS = threadsRepository.getListThreadByLike();
+            List<ThreadByLikeDTO> threadsRequestList = new ArrayList<>();
+            log.info("JOIN THREAD LKS: {}",joinThreadLKS);
+
+
+            for (ThreadByLikeDao thread: joinThreadLKS){
+                log.info("Like : {}",thread.getLike());
+                threadsRequestList.add(ThreadByLikeDTO.builder()
+                                .id(thread.getId())
+                                .like(thread.getLike())
+                                .content(thread.getContent())
+                                .image(thread.getImage())
+                                .title(thread.getTitle())
+                                .userId(thread.getUserId())
+                        .build());
+            }
+
 //            if (threadsList.isEmpty()){
 //                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
 //
 //            }
-//
+
 //            for (Threads threads: threadsList){
-//                threadsRequestList.add(mapper.map(threads, ThreadsRequest.class));
+//                threadsRequestList.add(mapper.map(threads, ThreadsRequest.class));new ArrayList<>()
 //            }
-//
-//
-//            //return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
-//            return ResponseUtil.build(ResponseMessage.KEY_FOUND,joinThreadLKS, HttpStatus.OK);
-//        }catch (Exception e){
-//            log.error("Get an error get thread order by dsc : {}", e.getMessage());
-//            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+
+
+            //return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error get thread order by dsc : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public ResponseEntity<Object> updateThread(Long id, ThreadsRequest request){
         try {

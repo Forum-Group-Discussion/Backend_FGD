@@ -77,7 +77,7 @@ public class ThreadsController {
         return threadsService.updateThread(id, request);
     }
 
-    @GetMapping(value = "/photo/{id}",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/photo/{id}",produces= "application/json")
     public ResponseEntity<?> getImageThreadById(@PathVariable Long id){
         return fileService.getImageThreadById(id);
     }
@@ -96,5 +96,10 @@ public class ThreadsController {
     @GetMapping(value = "/{offset}/{limit}")
     public ResponseEntity<?> getAllThreadDESCUsingPagination(@PathVariable Long offset,@PathVariable Long limit){
         return threadsService.getAllThreadWithPagination(offset, limit);
+    }
+
+    @GetMapping(value = "/bylike")
+    public ResponseEntity<?> getListThreadByLike(){
+        return threadsService.getListThreadByLike();
     }
 }

@@ -4,12 +4,14 @@ import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Topic;
 import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dto.ConvertImageRequest;
 import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.domain.dto.TopicRequest;
 import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -34,10 +37,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -169,11 +169,17 @@ public class FileService {
             log.info("Name file : {}",threadsOptional.get().getImage());
             Path filePath = uploadDir.resolve(threadsOptional.get().getImage()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
+            File convert = resource.getFile();
+            byte[] fileContent = FileUtils.readFileToByteArray(convert);
+            String encodedString = Base64
+                    .getEncoder()
+                    .encodeToString(fileContent);
 
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType("application/octet-stream"))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
-
+            log.info("{}",encodedString);
+            ConvertImageRequest convertImageRequest = ConvertImageRequest.builder()
+                    .imageBase64(encodedString)
+                    .build();
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, convertImageRequest,HttpStatus.OK);
         }catch (Exception e){
             log.info("Get an error by executing image thread by id, Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
