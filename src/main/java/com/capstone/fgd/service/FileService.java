@@ -164,6 +164,9 @@ public class FileService {
             if (threadsOptional.isEmpty()){
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
+            if (threadsOptional.get().getImage() == null){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
+            }
 
             Path uploadDir = Paths.get(uploadPath);
             log.info("Name file : {}",threadsOptional.get().getImage());
@@ -175,8 +178,8 @@ public class FileService {
                     .getEncoder()
                     .encodeToString(fileContent);
 
-            log.info("{}",encodedString);
             ConvertImageRequest convertImageRequest = ConvertImageRequest.builder()
+                    .id(id)
                     .imageBase64(encodedString)
                     .build();
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, convertImageRequest,HttpStatus.OK);
@@ -185,7 +188,6 @@ public class FileService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
 
     public ResponseEntity<?> getAllThreadUsingImage(){
