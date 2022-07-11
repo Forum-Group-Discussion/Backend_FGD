@@ -108,7 +108,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public ResponseEntity<Object> updateSuspended(Long id){
+    public ResponseEntity<Object> updateSuspended(Long id,UsersRequest request){
         try {
             log.info("Suspend user with id : {}",id);
             Optional<Users> usersOptional = userRepository.findById(id);
@@ -116,7 +116,7 @@ public class UserService implements UserDetailsService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
             Users users = usersOptional.get();
-            users.setIsSuspended(true);
+            users.setIsSuspended(request.getIsSuspended());
             userRepository.save(users);
             UsersRequest usersRequest = mapper.map(users,UsersRequest.class);
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,usersRequest,HttpStatus.OK);
@@ -143,11 +143,12 @@ public class UserService implements UserDetailsService {
             users.setUsername(request.getUsername());
             users.setBio(request.getBio());
             users.setLocation(request.getLocation());
-            users.setWebsite(request.getLocation());
+            users.setWebsite(request.getWebsite());
 
             userRepository.save(users);
+            UsersRequest usersRequest = mapper.map(users,UsersRequest.class);
 
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,mapper.map(users,UsersRequest.class),HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,usersRequest,HttpStatus.OK);
 
         }catch (Exception e){
             log.error("Get an error by executing update team,Error : {}",e.getMessage());
@@ -155,22 +156,4 @@ public class UserService implements UserDetailsService {
         }
     }
 
-
-
-//    public ResponseEntity<Object> deleteUser(Long id){
-//        try {
-//            log.info("Executing delete user with id : {}",id);
-//            Optional<UserDa> userDaoOptional = userRepository.findById(id);
-//            if (userDaoOptional.isEmpty()){
-//                log.info("user not found");
-//                return ResponseUtil.build(ResponseMassage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-//            }
-//            userRepository.delete(userDaoOptional.get());
-//            return ResponseUtil.build(ResponseMassage.KEY_FOUND,null,HttpStatus.OK);
-//
-//        }catch (Exception e){
-//            log.error("Get an error by executing delete user,Error : {}",e.getMessage());
-//            return ResponseUtil.build(ResponseMassage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
 }
