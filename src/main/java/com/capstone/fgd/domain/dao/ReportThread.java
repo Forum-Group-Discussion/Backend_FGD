@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -25,12 +27,13 @@ public class ReportThread extends BaseDao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "Id_Thread")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "thread_id",nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Threads thread;
 
-    @ManyToOne
-    @JoinColumn(name = "Id_User")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false)
     private Users user;
 
     @Enumerated(EnumType.STRING)

@@ -15,10 +15,9 @@ public class ThreadsRequest {
     private Long id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private UsersRequest users;
+    private UsersRequest user;
     private String title;
     private String content;
     private String image;
     private TopicRequest topic;
-    private Boolean save;
 }

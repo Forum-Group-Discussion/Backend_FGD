@@ -20,9 +20,17 @@ public class Following extends BaseDao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id",nullable = false)
+//    private Users user;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_follow_id",nullable = false)
+//    private Users userFollow;
 
     @ManyToOne
     @JoinColumn(name = "user_follow_id")

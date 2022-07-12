@@ -53,7 +53,7 @@ public class CommentService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
             Comment comment = Comment.builder()
-                    .users(userSignIn)
+                    .user(userSignIn)
                     .thread(threadOptional.get())
                     .comment(commentRequest.getComment())
                     .build();
@@ -96,8 +96,8 @@ public class CommentService {
                 log.info("comment not found");
                 return ResponseUtil.build(ResponseMessage.KEY_FOUND,null, HttpStatus.BAD_REQUEST);
             }
-            Comment comment = commentOptional.get();
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(comment, ThreadsRequest.class), HttpStatus.OK);
+            CommentRequest commentRequest = mapper.map(commentOptional.get(),CommentRequest.class);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,commentRequest, HttpStatus.OK);
         } catch (Exception e){
             log.error("Get an error by executing get comment by id, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);

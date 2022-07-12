@@ -8,8 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Data
 @Builder
@@ -26,17 +29,25 @@ public class Comment extends BaseDao {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Users users;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false)
+    private Users user;
 
-    @ManyToOne
-    @JoinColumn(name = "thread_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "thread_id",nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Threads thread;
 
-    @Lob
-    @Column(name = "comment", nullable = false)
+    @Column(name = "comment",columnDefinition = "TEXT",nullable = false)
     private String comment;
 
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "commentLike")
+    private Set<Comment> commentLike;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "threadsId")
+    private Set<LikeComment> likeCommentsThread;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "comment")
+    private Set<ReportComment> reportComment;
 
 }

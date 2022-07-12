@@ -2,6 +2,7 @@ package com.capstone.fgd.domain.dao;
 
 import com.capstone.fgd.domain.common.BaseDao;
 import lombok.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -13,33 +14,44 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "m_thread")
 @Entity
+@Transactional
 public class Threads extends BaseDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Users users;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false)
+    private Users user;
 
     @Column(name = "title", length = 200, nullable = false)
     private String title;
 
-    @Lob
-    @Column(name = "content", nullable = false)
+    @Column(name = "content",columnDefinition = "TEXT",nullable = false)
     private String content;
 
     @Column(name = "image")
     private String image;
 
-    @ManyToOne
-    @JoinColumn(name = "topic_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "topic_id",nullable = false)
     private Topic topic;
 
-    @Column(name = "save")
-    private Boolean save;
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "thread")
+    private Set<Comment> threadsComments;
 
-//    @OneToMany(mappedBy = "threadLike",fetch = FetchType.EAGER)
-//    private Set<LikeThread> likeThreads;
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "threadLike")
+    private Set<LikeThread> threadsLike;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "threadsId")
+    private Set<LikeComment> threadsLikeComment;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "thread")
+    private Set<ReportThread> reportThreads;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "threads")
+    private Set<SaveThread> saveThreads;
+
+
 
 }

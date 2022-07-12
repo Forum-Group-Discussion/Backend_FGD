@@ -25,12 +25,12 @@ public class ReportUser extends BaseDao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id",nullable = false)
     private Users user;
 
-    @ManyToOne
-    @JoinColumn(name = "user_report_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_report_id",nullable = false)
     private Users userReport;
 
     @Enumerated(EnumType.STRING)

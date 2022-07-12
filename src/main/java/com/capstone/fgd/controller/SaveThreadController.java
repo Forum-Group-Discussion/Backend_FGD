@@ -5,10 +5,7 @@ import com.capstone.fgd.domain.dto.SaveThreadRequest;
 import com.capstone.fgd.service.SaveThreadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -23,4 +20,8 @@ public class SaveThreadController {
         return saveThreadService.saveThread(request, principal);
     }
 
+    @GetMapping(value = "/{id}")
+    ResponseEntity<Object> getSaveThreadById(@PathVariable Long id){
+        return saveThreadService.getByUser(id);
+    }
 }

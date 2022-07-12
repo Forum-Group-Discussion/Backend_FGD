@@ -176,23 +176,5 @@ public class FollowingService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-//
-//    public ResponseEntity<Object> deleteFollowingById(Long id){
-//        try {
-//            log.info("Executing delete following by id,id : {}",id);
-//            Optional<Following> followingOptional = followingRepository.findById(id);
-//
-//            if (followingOptional.isEmpty()){
-//                log.info("following not found");
-//                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-//            }
-//            followingRepository.delete(followingOptional.get());
-//            return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
-//        }catch (Exception e){
-//            log.error("Get an error by executing get user by id, Error : {}",e.getMessage());
-//            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
-//
+
 }

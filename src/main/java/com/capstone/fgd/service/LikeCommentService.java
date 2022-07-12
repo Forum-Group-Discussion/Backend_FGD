@@ -111,7 +111,7 @@ public class LikeCommentService {
                     return ResponseUtil.build(ResponseMessage.KEY_FOUND,likeCommentRequest,HttpStatus.OK);
                 }
 
-                if (request.getIsLike().equals(false) && request.getIsDislike().getClass().equals(true)){
+                if (request.getIsLike().equals(false) && request.getIsDislike().equals(true)){
                     log.info("Like false and dislike is true");
 
                     LikeComment likeComment = likeCommentOptional.get();

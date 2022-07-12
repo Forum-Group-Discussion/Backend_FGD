@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CommentRequest {
-    private Long Id;
-    private UsersRequest users;
+    private Long id;
+    private UsersRequest user;
     private ThreadsRequest thread;
     private String comment;
 }

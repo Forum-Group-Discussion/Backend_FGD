@@ -33,6 +33,7 @@ import java.util.*;
 
 @Slf4j
 @Service
+@Transactional
 public class ThreadsService {
 
     @Autowired
@@ -87,12 +88,11 @@ public class ThreadsService {
             Files.copy(inputStream,filePath, StandardCopyOption.REPLACE_EXISTING);
 
             Threads thread = Threads.builder()
-                    .users(userSignIn)
+                    .user(userSignIn)
                     .topic(topicOptional.get())
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
                     .image(imageUrlSave)
-                    .save(false)
                     .build();
             threadsRepository.save(thread);
             ThreadsRequest threadRequestDto = mapper.map(thread, ThreadsRequest.class);
@@ -117,12 +117,11 @@ public class ThreadsService {
             }
 
             Threads thread = Threads.builder()
-                    .users(userSignIn)
+                    .user(userSignIn)
                     .topic(topicOptional.get())
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
                     .image(null)
-                    .save(false)
                     .build();
             threadsRepository.save(thread);
             ThreadsRequest threadRequestDto = mapper.map(thread, ThreadsRequest.class);
@@ -174,7 +173,7 @@ public class ThreadsService {
         }
     }
 
-    @Transactional
+
     public ResponseEntity<Object> getThreadByTopic(Long request){
         try {
             log.info("Executing get All Thread By Topic");
@@ -196,7 +195,7 @@ public class ThreadsService {
         }
     }
 
-    @Transactional
+
     public ResponseEntity<Object> getAllThreadByNew(){
         try {
             log.info("Executing get All Thread Order By DSC");
@@ -218,7 +217,7 @@ public class ThreadsService {
         }
     }
 
-    @Transactional
+
     public ResponseEntity<Object> getListThreadByLike(){
         try {
             log.info("Executing get All Thread By Like ");
@@ -278,30 +277,34 @@ public class ThreadsService {
         }
     }
 
-    public ResponseEntity<Object> deleteThread(Principal principal ,Long id){
+    public ResponseEntity<Object> deleteThread(Integer id){
         try {
             log.info("DELETE THREAD BY ID");
-            Optional<Threads> threadOptional = threadsRepository.findById(id);
-            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
-
+            Optional<Threads> threadOptional = threadsRepository.findById(Long.valueOf(id));
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
-            threadsRepository.delete(threadOptional.get());
+            threadsRepository.deleteThreadFromSaveThread(id);
+//            threadsRepository.deleteThreadFromReportComment(id);
+            threadsRepository.deleteThreadFromReportThread(id);
+            threadsRepository.deleteThreadFromLikeComment(id);
+            threadsRepository.deleteThreadFromLikeThread(id);
+            threadsRepository.deleteThreadFromComment(id);
+            threadsRepository.deleteById(Long.valueOf(id));
             log.info("DELETE THREAD SUCCESS");
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
 
 
         } catch (Exception e){
-            log.error("Get an error by executing delete thread");
+            log.error("Get an error by executing delete thread : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
-    @Transactional
+
     public ResponseEntity<?> getAllThreadWithPagination(Long offset,Long limit){
         try {
             log.info("Get All Thread With Pagination");
