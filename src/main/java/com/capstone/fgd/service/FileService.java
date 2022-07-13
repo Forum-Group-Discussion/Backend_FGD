@@ -119,12 +119,18 @@ public class FileService {
             log.info("Name file : {}",usersSignIn.getImage());
             Path filePath = uploadDir.resolve(usersSignIn.getImage()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
+            File convert = resource.getFile();
+            byte[] fileContent = FileUtils.readFileToByteArray(convert);
+            String encodedString = Base64
+                    .getEncoder()
+                    .encodeToString(fileContent);
 
+            ConvertImageRequest convertImageRequest = ConvertImageRequest.builder()
+                    .id(usersSignIn.getId())
+                    .imageBase64(encodedString)
+                    .build();
 
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType("application/octet-stream"))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
-
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, convertImageRequest,HttpStatus.OK);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }catch (Exception e){
@@ -144,10 +150,18 @@ public class FileService {
             Path filePath = uploadDir.resolve(usersSignIn.getBackgroundImage()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType("application/octet-stream"))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"").body(resource);
+            File convert = resource.getFile();
+            byte[] fileContent = FileUtils.readFileToByteArray(convert);
+            String encodedString = Base64
+                    .getEncoder()
+                    .encodeToString(fileContent);
 
+            ConvertImageRequest convertImageRequest = ConvertImageRequest.builder()
+                    .id(usersSignIn.getId())
+                    .imageBase64(encodedString)
+                    .build();
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, convertImageRequest,HttpStatus.OK);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }catch (Exception e){
@@ -190,24 +204,4 @@ public class FileService {
     }
 
 
-    public ResponseEntity<?> getAllThreadUsingImage(){
-        try {
-            log.info("Get All Thread Using Image");
-
-            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
-            List<Threads> threadsList = threadsRepository.getAllImage();
-
-
-            for (Threads threads1: threadsList){
-                threadsRequestList.add(mapper.map(threads1, ThreadsRequest.class));
-            }
-
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList,HttpStatus.OK);
-
-
-        }catch (Exception e){
-            log.info("Get an error by executing all iamge thread, Error : {}",e.getMessage());
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 }
