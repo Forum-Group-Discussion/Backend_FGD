@@ -67,10 +67,6 @@ public class ThreadsController {
         return threadsService.getAllThreadByNew();
     }
 
-//    @GetMapping(value = "/joinlikethread")
-//    public ResponseEntity<Object> getThreadJoinLikeThread(){
-//        return threadsService.getThreadJoinLikeThread();
-//    }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateThread(@PathVariable Long id, @RequestBody ThreadsRequest request) {
@@ -89,8 +85,8 @@ public class ThreadsController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<Object> searchThread(@RequestParam(value = "thread",required = false) String thread){
-        return userService.searchUser(thread);
+    public ResponseEntity<Object> searchByThread(@RequestParam(value = "thread",required = false) String thread){
+        return threadsService.searchByThread(thread);
     }
 
     @GetMapping(value = "/{offset}/{limit}")

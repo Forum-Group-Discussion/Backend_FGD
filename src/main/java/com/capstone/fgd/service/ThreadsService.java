@@ -232,24 +232,13 @@ public class ThreadsService {
                 threadsRequestList.add(ThreadByLikeDTO.builder()
                                 .id(thread.getId())
                                 .like(thread.getLike())
-                                .content(thread.getContent())
-                                .image(thread.getImage())
                                 .title(thread.getTitle())
-                                .userId(thread.getUserId())
+                                .content(thread.getContent())
+                                .created_at(thread.getCreated_At())
+                                .name_user(thread.getName_User())
                         .build());
             }
 
-//            if (threadsList.isEmpty()){
-//                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-//
-//            }
-
-//            for (Threads threads: threadsList){
-//                threadsRequestList.add(mapper.map(threads, ThreadsRequest.class));new ArrayList<>()
-//            }
-
-
-            //return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
         }catch (Exception e){
             log.error("Get an error get thread order by dsc : {}", e.getMessage());
