@@ -31,7 +31,6 @@ jobs:
           push: true
           tags: hafidzencis/capstone-coverage:latest
 
-
   build:
     name: Build
     runs-on: ubuntu-18.04
@@ -57,7 +56,6 @@ jobs:
           context: .
           push: true
           tags: hafidzencis/capstone:latest
-
 
   deploy:
     name: Deploy
