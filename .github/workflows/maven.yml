@@ -19,6 +19,20 @@ jobs:
           distribution: "adopt"
       - name: Maven Verify
         run: mvn clean verify
+      - name: Login to docker hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build docker image
+        uses: docker/build-push-action@v2
+        with:
+          file: unit-test.dockerfile
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/capstone-coverage:latest
+
+
   build:
     name: Build
     runs-on: ubuntu-18.04
@@ -43,7 +57,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/develop:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/capstone:latest
+
+
   deploy:
     name: Deploy
     runs-on: ubuntu-18.04
@@ -67,8 +83,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            docker stop develop
-            docker rm develop
-            docker rmi hafidzencis/develop:latest
-            docker pull hafidzencis/develop:latest
-            docker run -d --name develop -p 443:8080 -p 80:8080 --env-file dev.env --network mynetwork -v "/home/hafidz/images":/app/image/image hafidzencis/develop:latest
+            docker stop capstone capstone-coverage
+            docker rmi hafidzencis/capstone:latest hafidzencis/capstone-coverage:latest  
+            docker pull hafidzencis/capstone:latest
+            docker pull hafidzencis/capstone-coverage:latest
+            docker run -d --rm --name capstone-coverage -p 8000:80 hafidzencis/cicdjacoco-coverage:latest
+            docker run -d --rm --name capstone -p 80:8080 --env-file=dev.env --network mynetwork -v "/home/ec2-user/images":/app/image/image hafidzencis/capstone:latest
