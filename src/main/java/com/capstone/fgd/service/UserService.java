@@ -84,10 +84,10 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public ResponseEntity<Object> searchUser(String email){
+    public ResponseEntity<Object> searchUser(String user){
         try {
-            log.info("Executing search user with email : {}",email);
-            List<Users> userDaoList = userRepository.findEmail(email);
+            log.info("Executing search user with email : {}",user);
+            List<Users> userDaoList = userRepository.findByUser(user);
             List<UsersRequest> userDtoList = new ArrayList<>();
 
             if (userDaoList.isEmpty()){
@@ -95,8 +95,8 @@ public class UserService implements UserDetailsService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
 
-            for (Users user:userDaoList) {
-                userDtoList.add(mapper.map(user,UsersRequest.class));
+            for (Users user1:userDaoList) {
+                userDtoList.add(mapper.map(user1,UsersRequest.class));
             }
 
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,userDtoList,HttpStatus.OK);

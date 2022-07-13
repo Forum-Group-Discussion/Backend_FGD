@@ -20,7 +20,7 @@ public class ThreadByLikeDTO{
     private Integer like;
     private String content;
     private String title;
-    private String image;
-    private String userId;
+    private String name_user;
+    private String created_at;
 
 }

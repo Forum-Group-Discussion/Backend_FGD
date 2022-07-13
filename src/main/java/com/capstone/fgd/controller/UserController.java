@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping(value = "")
-    public ResponseEntity<Object> getAllUser (Principal principal) {
+    public ResponseEntity<Object> getAllUser(Principal principal) {
             return userService.getAllUser();
     }
 
@@ -56,8 +56,8 @@ public class UserController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<Object> searchUser(Principal principal,@RequestParam(value = "email",required = false) String email){
-        return userService.searchUser(email);
+    public ResponseEntity<Object> searchUser(Principal principal,@RequestParam(value = "user",required = false) String user){
+        return userService.searchUser(user);
     }
 
     @PutMapping(value = "/suspend/{id}")

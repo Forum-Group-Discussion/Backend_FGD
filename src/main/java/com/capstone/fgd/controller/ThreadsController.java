@@ -81,8 +81,8 @@ public class ThreadsController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<Object> searchThread(@RequestParam(value = "thread",required = false) String thread){
-        return userService.searchUser(thread);
+    public ResponseEntity<Object> searchByThread(@RequestParam(value = "thread",required = false) String thread){
+        return threadsService.searchByThread(thread);
     }
 
     @GetMapping(value = "/{offset}/{limit}")
