@@ -40,12 +40,12 @@ public class UserController {
             return userService.getAllUser();
     }
 
-    @GetMapping(value = "/image",produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/image",produces= "application/json")
     public ResponseEntity<?> loadUserImage(Principal principal){
         return fileService.userLoadImage(principal);
     }
 
-    @GetMapping(value = "/imagebackground",produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value = "/imagebackground",produces= "application/json")
     public ResponseEntity<?> loadUserImageBackground(Principal principal){
         return fileService.userLoadImageBackground(principal);
     }

@@ -47,10 +47,6 @@ public class ThreadsController {
         return threadsService.getAllThread();
     }
 
-    @GetMapping(value = "/allimage")
-    public ResponseEntity<?> getAllThreadUsingImage() {
-        return fileService.getAllThreadUsingImage();
-    }
 
     @GetMapping(value = "/bytopic")
     public ResponseEntity<Object> getThreadByTopic(@RequestParam(value = "topic", required = false)Long thread){
@@ -67,10 +63,6 @@ public class ThreadsController {
         return threadsService.getAllThreadByNew();
     }
 
-//    @GetMapping(value = "/joinlikethread")
-//    public ResponseEntity<Object> getThreadJoinLikeThread(){
-//        return threadsService.getThreadJoinLikeThread();
-//    }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Object> updateThread(@PathVariable Long id, @RequestBody ThreadsRequest request) {
