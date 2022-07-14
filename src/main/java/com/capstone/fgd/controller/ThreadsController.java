@@ -1,12 +1,19 @@
 package com.capstone.fgd.controller;
 
 import com.capstone.fgd.domain.dto.ThreadsRequest;
+import com.capstone.fgd.domain.dto.UsersRequest;
+import com.capstone.fgd.service.FileService;
 import com.capstone.fgd.service.ThreadsService;
 import com.capstone.fgd.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -18,9 +25,21 @@ public class ThreadsController {
     @Autowired
     private ThreadsService threadsService;
 
-    @PostMapping(value = "")
-    public ResponseEntity<Object> createNewThread(@RequestBody ThreadsRequest request, Principal principal) {
-        return threadsService.createNewThread(request,principal);
+    @Autowired
+    private FileService fileService;
+
+
+    @PostMapping(value = "",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> createNewThread(Principal principal,@RequestParam("json") String json,
+                                                  @RequestParam(value = "file",required = false) MultipartFile file) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        ThreadsRequest request = mapper.readValue(json,ThreadsRequest.class);
+
+        if(file == null){
+            return threadsService.createNewThread(principal,request);
+        }
+        return threadsService.createNewThreadUsingImage(principal,request,file);
     }
 
     @GetMapping(value = "")
@@ -28,8 +47,9 @@ public class ThreadsController {
         return threadsService.getAllThread();
     }
 
+
     @GetMapping(value = "/bytopic")
-    public ResponseEntity<Object> getThreadByTopic(@RequestParam(value = "topic", required = false)Integer thread){
+    public ResponseEntity<Object> getThreadByTopic(@RequestParam(value = "topic", required = false)Long thread){
         return threadsService.getThreadByTopic(thread);
     }
 
@@ -49,17 +69,29 @@ public class ThreadsController {
         return threadsService.updateThread(id, request);
     }
 
-//    @DeleteMapping(value = "/{id}")
-//<<<<<<< HEAD
-//    public ResponseEntity<Object> deleteThread(Principal principal, @PathVariable Long id) {
-//=======
-//    public ResponseEntity<Object> deleteThread(@PathVariable Long id) {
-//>>>>>>> fd2925da89ceed722cd9748aec38befb9024fe2e
-//        return threadsService.deleteThread(id);
-//    }
-//
-//    @GetMapping(value = "/search")
-//    public ResponseEntity<Object> searchThread(@RequestParam(value = "thread",required = false) String thread){
-//        return userService.searchUser(thread);
-//    }
+    @GetMapping(value = "/photo/{id}",produces= "application/json")
+    public ResponseEntity<?> getImageThreadById(@PathVariable Long id){
+        return fileService.getImageThreadById(id);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Object> deleteThread(Principal principal, @PathVariable Long id) {
+
+        return threadsService.deleteThread(principal,id);
+    }
+
+    @GetMapping(value = "/search")
+    public ResponseEntity<Object> searchByThread(@RequestParam(value = "thread",required = false) String thread){
+        return threadsService.searchByThread(thread);
+    }
+
+    @GetMapping(value = "/{offset}/{limit}")
+    public ResponseEntity<?> getAllThreadDESCUsingPagination(@PathVariable Long offset,@PathVariable Long limit){
+        return threadsService.getAllThreadWithPagination(offset, limit);
+    }
+
+    @GetMapping(value = "/bylike")
+    public ResponseEntity<?> getListThreadByLike(){
+        return threadsService.getListThreadByLike();
+    }
 }

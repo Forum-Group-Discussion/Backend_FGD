@@ -1,26 +1,35 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
+import com.capstone.fgd.domain.dao.ThreadByLikeDao;
 import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Topic;
 import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dto.ThreadByLikeDTO;
 import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.repository.TopicRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -41,7 +50,61 @@ public class ThreadsService {
     @Autowired
     private ModelMapper mapper;
 
-    public ResponseEntity<Object> createNewThread(ThreadsRequest threadRequest, Principal principal){
+    @Value("${upload.path}")
+    private String uploadPath;
+
+    public ResponseEntity<Object> createNewThreadUsingImage(Principal principal,ThreadsRequest threadRequest,
+                                                            MultipartFile file){
+        try {
+            log.info("Executing create new Thread Using Image");
+
+            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
+
+            Optional<Topic> topicOptional = topicRepository.findById(threadRequest.getTopic().getId());
+            if (topicOptional.isEmpty()){
+                log.info("Topic not found");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+
+            if (file.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            // sebagai tempat upload
+            log.info("Store file");
+            Path uploadDir = Paths.get(uploadPath);
+
+            // sebagai ttempat upload
+            String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+            String getExt = FilenameUtils.getExtension(fileName);
+            log.info(getExt);
+            String imageUrl = String.format("%s.%s", UUID.randomUUID(),getExt);
+            log.info(imageUrl);
+
+            InputStream inputStream = file.getInputStream();
+            Path filePath = uploadDir.resolve(imageUrl);
+            String imageUrlSave = uploadPath + imageUrl;
+            Files.copy(inputStream,filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            Threads thread = Threads.builder()
+                    .users(userSignIn)
+                    .topic(topicOptional.get())
+                    .title(threadRequest.getTitle())
+                    .content(threadRequest.getContent())
+                    .image(imageUrlSave)
+                    .save(false)
+                    .build();
+            threadsRepository.save(thread);
+            ThreadsRequest threadRequestDto = mapper.map(thread, ThreadsRequest.class);
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, threadRequestDto,HttpStatus.OK);
+        } catch (Exception e){
+            log.error("Get an error executing new thread, Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> createNewThread(Principal principal,ThreadsRequest threadRequest){
         try {
             log.info("Executing create new Thread");
 
@@ -58,7 +121,7 @@ public class ThreadsService {
                     .topic(topicOptional.get())
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
-                    .image(threadRequest.getImage())
+                    .image(null)
                     .save(false)
                     .build();
             threadsRepository.save(thread);
@@ -70,6 +133,7 @@ public class ThreadsService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
     public ResponseEntity<Object> getAllThread(){
         try {
@@ -92,7 +156,7 @@ public class ThreadsService {
         }
     }
 
-
+    @Transactional
     public ResponseEntity<Object> getThreadById(Long id){
         try {
             log.info("Executing getThreadById with id : {}", id);
@@ -110,7 +174,8 @@ public class ThreadsService {
         }
     }
 
-    public ResponseEntity<Object> getThreadByTopic(Integer request){
+    @Transactional
+    public ResponseEntity<Object> getThreadByTopic(Long request){
         try {
             log.info("Executing get All Thread By Topic");
             List<Threads> threadsList = threadsRepository.getAllThreadByTopic(request);
@@ -131,10 +196,11 @@ public class ThreadsService {
         }
     }
 
+    @Transactional
     public ResponseEntity<Object> getAllThreadByNew(){
         try {
             log.info("Executing get All Thread Order By DSC");
-            List<Threads> threadsList = threadsRepository.getThreadASC();
+            List<Threads> threadsList = threadsRepository.getThreadDESC();
             List<ThreadsRequest> threadsRequestList = new ArrayList<>();
 
             if (threadsList.isEmpty()){
@@ -151,6 +217,35 @@ public class ThreadsService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Transactional
+    public ResponseEntity<Object> getListThreadByLike(){
+        try {
+            log.info("Executing get All Thread By Like ");
+            List<ThreadByLikeDao> joinThreadLKS = threadsRepository.getListThreadByLike();
+            List<ThreadByLikeDTO> threadsRequestList = new ArrayList<>();
+            log.info("JOIN THREAD LKS: {}",joinThreadLKS);
+
+
+            for (ThreadByLikeDao thread: joinThreadLKS){
+                log.info("Like : {}",thread.getLike());
+                threadsRequestList.add(ThreadByLikeDTO.builder()
+                                .id(thread.getId())
+                                .like(thread.getLike())
+                                .title(thread.getTitle())
+                                .content(thread.getContent())
+                                .created_at(thread.getCreated_At())
+                                .name_user(thread.getName_User())
+                        .build());
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList, HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error get thread order by dsc : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public ResponseEntity<Object> updateThread(Long id, ThreadsRequest request){
         try {
             log.info("Executing update thread");
@@ -172,22 +267,49 @@ public class ThreadsService {
         }
     }
 
-    public ResponseEntity<Object> deleteThread(Long id){
+    public ResponseEntity<Object> deleteThread(Principal principal ,Long id){
         try {
+            log.info("DELETE THREAD BY ID");
             Optional<Threads> threadOptional = threadsRepository.findById(id);
+            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
+
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
             threadsRepository.delete(threadOptional.get());
+            log.info("DELETE THREAD SUCCESS");
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
+
+
         } catch (Exception e){
             log.error("Get an error by executing delete thread");
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
 
+    @Transactional
+    public ResponseEntity<?> getAllThreadWithPagination(Long offset,Long limit){
+        try {
+            log.info("Get All Thread With Pagination");
+            List<Threads> threadsList = threadsRepository.getAllThreadDESCUsingPagination(offset,limit);
+            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+
+            if (threadsList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.OK);
+            }
+
+            for (Threads threads : threadsList){
+                threadsRequestList.add(mapper.map(threads,ThreadsRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get all thread with pagination, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public ResponseEntity<Object> searchByThread(String req){
         try {
@@ -203,7 +325,7 @@ public class ThreadsService {
             for (Threads threads:threadsList){
                 threadsRequestList.add(mapper.map(threadsList,ThreadsRequest.class));
             }
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsList,HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList,HttpStatus.OK);
         }catch (Exception e){
             log.error("Get an error by searching thread, Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);

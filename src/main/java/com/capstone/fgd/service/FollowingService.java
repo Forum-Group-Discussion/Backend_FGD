@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class FollowingService {
     private ModelMapper mapper;
 
 
+    @Transactional
     public ResponseEntity<Object> followUser(FollowingRequest request,Principal principal) {
         try {
             log.info("Executing service create follow");
@@ -47,7 +49,6 @@ public class FollowingService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-
             if (userLogin.getId().equals(request.getUserFollow().getId())){
                 return ResponseUtil.build("CAN'T_FOLLOW_YOURSELF",null,HttpStatus.BAD_REQUEST);
             }
@@ -58,7 +59,7 @@ public class FollowingService {
 
             if (checkFollow.isEmpty()){
                 log.info("Follow is empty");
-                log.info("i user : {}, user folow : {}",userLogin.getId(),userToFollow.get().getId());
+                log.info("i user : {}, user follow : {}",userLogin.getId(),userToFollow.get().getId());
                 Following following = Following.builder()
                         .user(userLogin)
                         .userFollow(userToFollow.get())
@@ -72,27 +73,27 @@ public class FollowingService {
 
             if (checkFollow.isPresent()){
                 Following follows = checkFollow.get();
-                if (follows.getType().equals("FOLLOW")){
-                    log.info("Unfollow user");
+                if (request.getType().equals("FOLLOW")){
+                    log.info("follow user");
                     follows.setId(follows.getId());
                     follows.setUser(follows.getUser());
                     follows.setUserFollow(follows.getUserFollow());
-                    follows.setType("UNFOLLOW");
-                    follows.setIsFollow(false);
+                    follows.setType("FOLLOW");
+                    follows.setIsFollow(true);
                     followingRepository.save(follows);
 
                     FollowingRequest followingRequest = mapper.map(follows,FollowingRequest.class);
                     return ResponseUtil.build(ResponseMessage.KEY_FOUND,followingRequest,HttpStatus.OK);
                 }
 
-                if (follows.getType().equals("UNFOLLOW")){
+                if (request.getType().equals("UNFOLLOW")){
                     log.info("follow user again");
 
                     follows.setId(follows.getId());
                     follows.setUser(follows.getUser());
                     follows.setUserFollow(follows.getUserFollow());
-                    follows.setType("FOLLOW");
-                    follows.setIsFollow(true);
+                    follows.setType("UNFOLLOW");
+                    follows.setIsFollow(false);
                     followingRepository.save(follows);
 
                     FollowingRequest followingRequest = mapper.map(follows,FollowingRequest.class);
@@ -110,12 +111,37 @@ public class FollowingService {
 
 
 
+    @Transactional
     public ResponseEntity<Object> getAllFollowing(Principal principal){
         try {
             log.info("Executing get all following");
             Users userLogin = (Users) userService.loadUserByUsername(principal.getName());
 
             List<Following> followingList = followingRepository.listFollowedUser(userLogin.getId());
+            List<FollowingRequest> followingRequestList = new ArrayList<>();
+
+            if (followingList.isEmpty()){
+                log.info("Following List Not Found");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
+            }
+
+            for (Following follow:followingList) {
+                followingRequestList.add(mapper.map(follow,FollowingRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,followingRequestList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error when executing get all following,Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<Object> getAllFollower(Principal principal){
+        try {
+            log.info("Executing get all followers");
+            Users userLogin = (Users) userService.loadUserByUsername(principal.getName());
+
+            List<Following> followingList = followingRepository.listFollowersUser(userLogin.getId());
             List<FollowingRequest> followingRequestList = new ArrayList<>();
 
             if (followingList.isEmpty()){

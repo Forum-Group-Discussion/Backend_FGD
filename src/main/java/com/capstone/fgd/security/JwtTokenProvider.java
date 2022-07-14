@@ -49,11 +49,18 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (Exception ex){
-            log.error("JWT Error : {}", ex.getMessage());
-            throw new Exception();
+        } catch (SignatureException ex){
+            log.error("Invalid Jwt Signature : {}", ex.getMessage());
+        } catch (MalformedJwtException ex){
+            log.error("Invalid Jwt Token : {}", ex.getMessage());
+        } catch (ExpiredJwtException ex){
+            log.error("Invalid Jwt Token : {}", ex.getMessage());
+        } catch (UnsupportedJwtException ex) {
+            log.error("Unsupported Jwt Token : {}", ex.getMessage());
+        } catch (IllegalArgumentException ex) {
+            log.error("Unsupported Jwt Token : {}", ex.getMessage());
         }
-
+        return false;
     }
 
 

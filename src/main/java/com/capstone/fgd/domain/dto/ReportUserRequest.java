@@ -1,5 +1,6 @@
 package com.capstone.fgd.domain.dto;
 
+import com.capstone.fgd.domain.Enum.ReportType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -8,9 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.Path;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+
 
 @Data
 @Builder
@@ -18,28 +18,11 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UsersRequest {
+public class ReportUserRequest {
+    private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
     private Long id;
-
-    private String name;
-
-    private String username;
-
-    private String email;
-
-    private String password;
-
-    private String image;
-
-    private String bio;
-
-    private String location;
-
-    private String website;
-
-    private String backgroundImage;
-
-    private Boolean isAdmin;
-
-    private Boolean isSuspended;
+    private UsersRequest user;
+    private UsersRequest userReport;
+    private ReportType reportType;
 }

@@ -15,7 +15,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +31,7 @@ public class UserService implements UserDetailsService {
     @Autowired
     private ModelMapper mapper;
 
-
+    @Transactional
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
@@ -41,6 +43,7 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
+    @Transactional
     public ResponseEntity<Object> getAllUser(){
         try {
             log.info("Executing get all user");
@@ -62,6 +65,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    @Transactional
     public ResponseEntity<Object> getUserByid(Long id){
         try {
             log.info("Executing get user by id,id : {}",id);
@@ -79,10 +83,11 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<Object> searchUser(String email){
+    @Transactional
+    public ResponseEntity<Object> searchUser(String user){
         try {
-            log.info("Executing search user with email : {}",email);
-            List<Users> userDaoList = userRepository.findEmail(email);
+            log.info("Executing search user with email : {}",user);
+            List<Users> userDaoList = userRepository.findByUser(user);
             List<UsersRequest> userDtoList = new ArrayList<>();
 
             if (userDaoList.isEmpty()){
@@ -90,8 +95,8 @@ public class UserService implements UserDetailsService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
 
-            for (Users user:userDaoList) {
-                userDtoList.add(mapper.map(user,UsersRequest.class));
+            for (Users user1:userDaoList) {
+                userDtoList.add(mapper.map(user1,UsersRequest.class));
             }
 
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,userDtoList,HttpStatus.OK);
@@ -102,7 +107,8 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<Object> updateSuspended(Long id){
+    @Transactional
+    public ResponseEntity<Object> updateSuspended(Long id,UsersRequest request){
         try {
             log.info("Suspend user with id : {}",id);
             Optional<Users> usersOptional = userRepository.findById(id);
@@ -110,7 +116,7 @@ public class UserService implements UserDetailsService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
             Users users = usersOptional.get();
-            users.setIsSuspended(true);
+            users.setIsSuspended(request.getIsSuspended());
             userRepository.save(users);
             UsersRequest usersRequest = mapper.map(users,UsersRequest.class);
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,usersRequest,HttpStatus.OK);
@@ -123,7 +129,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-
+    @Transactional
     public ResponseEntity<Object> updateUser(Long id,UsersRequest request){
         try {
             log.info("Executing update user with id : {}", id);
@@ -133,11 +139,16 @@ public class UserService implements UserDetailsService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
             Users users = userDaoOptional.get();
-
             users.setName(request.getName());
-            userRepository.save(users);
+            users.setUsername(request.getUsername());
+            users.setBio(request.getBio());
+            users.setLocation(request.getLocation());
+            users.setWebsite(request.getWebsite());
 
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,mapper.map(users,UsersRequest.class),HttpStatus.OK);
+            userRepository.save(users);
+            UsersRequest usersRequest = mapper.map(users,UsersRequest.class);
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,usersRequest,HttpStatus.OK);
 
         }catch (Exception e){
             log.error("Get an error by executing update team,Error : {}",e.getMessage());
@@ -145,20 +156,4 @@ public class UserService implements UserDetailsService {
         }
     }
 
-//    public ResponseEntity<Object> deleteUser(Long id){
-//        try {
-//            log.info("Executing delete user with id : {}",id);
-//            Optional<UserDa> userDaoOptional = userRepository.findById(id);
-//            if (userDaoOptional.isEmpty()){
-//                log.info("user not found");
-//                return ResponseUtil.build(ResponseMassage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-//            }
-//            userRepository.delete(userDaoOptional.get());
-//            return ResponseUtil.build(ResponseMassage.KEY_FOUND,null,HttpStatus.OK);
-//
-//        }catch (Exception e){
-//            log.error("Get an error by executing delete user,Error : {}",e.getMessage());
-//            return ResponseUtil.build(ResponseMassage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
 }

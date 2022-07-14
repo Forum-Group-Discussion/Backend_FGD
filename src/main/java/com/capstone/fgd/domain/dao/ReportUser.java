@@ -1,43 +1,39 @@
 package com.capstone.fgd.domain.dao;
 
+import com.capstone.fgd.domain.Enum.ReportType;
 import com.capstone.fgd.domain.common.BaseDao;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-
-@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Entity
-@Table(name = "m_likethread")
-
-public class LikeThread extends BaseDao {
+@Table(name = "m_report_user")
+public class ReportUser extends BaseDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "thread_id")
-    private Threads threadLike;
+    @JoinColumn(name = "user_id")
+    private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private Users userLike;
+    @JoinColumn(name = "user_report_id")
+    private Users userReport;
 
-    @Column(name = "is_like")
-    private Boolean isLike;
-
-    @Column(name = "is_dislike")
-    private Boolean isDislike;
-
+    @Enumerated(EnumType.STRING)
+    @JoinColumn(name = "Report_Type")
+    private ReportType reportType;
 }
-
-
