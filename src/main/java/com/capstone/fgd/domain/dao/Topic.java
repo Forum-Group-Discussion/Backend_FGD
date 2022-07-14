@@ -25,7 +25,7 @@ public class Topic extends BaseDao {
     @Column(name = "topic_name", nullable = false)
     private String topicName;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "topic")
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "topic",orphanRemoval = true)
     private Set<Threads> threadTopic;
 
 

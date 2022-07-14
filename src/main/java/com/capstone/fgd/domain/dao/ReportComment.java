@@ -27,12 +27,12 @@ public class ReportComment extends BaseDao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "comment_id",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Comment comment;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     private Users user;
 

@@ -1,10 +1,8 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.ThreadByLikeDao;
-import com.capstone.fgd.domain.dao.Threads;
-import com.capstone.fgd.domain.dao.Topic;
-import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dao.*;
+import com.capstone.fgd.domain.dto.CommentThreadById;
 import com.capstone.fgd.domain.dto.ThreadByLikeDTO;
 import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.repository.ThreadsRepository;
@@ -286,13 +284,21 @@ public class ThreadsService {
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
+
             threadsRepository.deleteThreadFromSaveThread(id);
-//            threadsRepository.deleteThreadFromReportComment(id);
-            threadsRepository.deleteThreadFromReportThread(id);
-            threadsRepository.deleteThreadFromLikeComment(id);
-            threadsRepository.deleteThreadFromLikeThread(id);
+            List<GetCommentByThreadId> comments = threadsRepository.getidCommentByThreadId(id);
+
+            for (GetCommentByThreadId c: comments){
+                log.info("Id comment : {}",c.getId());
+                threadsRepository.deleteThreadFromReportComment(c.getId());
+                threadsRepository.deleteThreadFromLikeComment(c.getId());
+            }
+
             threadsRepository.deleteThreadFromComment(id);
-            threadsRepository.deleteById(Long.valueOf(id));
+            threadsRepository.deleteThreadFromReportThread(id);
+            threadsRepository.deleteThreadFromLikeThread(id);
+
+            threadsRepository.delete(threadOptional.get());
             log.info("DELETE THREAD SUCCESS");
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
 

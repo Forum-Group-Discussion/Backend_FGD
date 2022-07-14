@@ -45,6 +45,8 @@ public class ReportThreadService {
             Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
 
             Optional<Threads> threadOptional = threadRepository.findById(reportThreadRequest.getThread().getId());
+
+
             if (threadOptional.isEmpty()) {
                 log.info("Thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);

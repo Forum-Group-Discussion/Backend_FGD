@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional
 public class CommentService {
 
     @Autowired
@@ -40,7 +42,6 @@ public class CommentService {
 
     @Autowired
     private CommentRepository commentRepository;
-
 
     public ResponseEntity<Object> createNewComment(CommentRequest commentRequest, Principal principal){
         try {
@@ -112,10 +113,13 @@ public class CommentService {
                 log.info("comment not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
-            commentRepository.delete(commentOptional.get());
+
+            commentRepository.deleteLikeCommentUseCommentId(id);
+            commentRepository.deleteReportCommentUseCommentId(id);
+            commentRepository.deleteComment(id);
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
         } catch (Exception e){
-            log.error("Get an error by executing delete Comment");
+            log.error("Get an error by executing delete Comment :{}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

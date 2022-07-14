@@ -5,7 +5,6 @@ import javax.persistence.Lob;
 public interface ThreadByLikeDao {
     Integer getId();
     Integer getLike();
-    @Lob
     String getContent();
     String getTitle();
 

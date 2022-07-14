@@ -27,12 +27,12 @@ public class ReportThread extends BaseDao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "thread_id",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Threads thread;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id",nullable = false)
     private Users user;
 

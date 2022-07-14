@@ -1,6 +1,7 @@
 package com.capstone.fgd.domain.dao;
 
 import com.capstone.fgd.domain.common.BaseDao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,14 +38,13 @@ public class Threads extends BaseDao {
     @JoinColumn(name = "topic_id",nullable = false)
     private Topic topic;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "thread")
+    @JsonIgnore
+    //,orphanRemoval = true cascade = CascadeType.ALL,fetch = FetchType.LAZY,
+    @OneToMany(mappedBy = "thread",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private Set<Comment> threadsComments;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "threadLike")
     private Set<LikeThread> threadsLike;
-
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "threadsId")
-    private Set<LikeComment> threadsLikeComment;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "thread")
     private Set<ReportThread> reportThreads;

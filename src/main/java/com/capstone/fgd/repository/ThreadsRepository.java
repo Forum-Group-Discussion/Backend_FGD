@@ -1,9 +1,10 @@
 package com.capstone.fgd.repository;
 
+import com.capstone.fgd.domain.dao.GetCommentByThreadId;
 import com.capstone.fgd.domain.dao.ThreadByLikeDao;
 import com.capstone.fgd.domain.dao.Threads;
 
-import com.capstone.fgd.domain.dto.ThreadByLikeDTO;
+import com.capstone.fgd.domain.dto.CommentThreadById;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -25,16 +26,8 @@ public interface ThreadsRepository extends JpaRepository<Threads, Long> {
     @Query(value = "SELECT * FROM m_thread ORDER BY created_at DESC", nativeQuery = true)
     List<Threads> getThreadDESC();
 
-    @Query(value = "SELECT image FROM Threads ")
-    List<Threads> getAllImage();
-
     @Query(value = "SELECT * FROM m_thread ORDER BY created_at DESC OFFSET :offset LIMIT :limit",nativeQuery = true)
     List<Threads> getAllThreadDESCUsingPagination(Long offset, Long limit);
-
-
-//    @Query(value = "SELECT new com.capstone.fgd.domain.dto.ThreadRequest(Threads.id, Threads.content, Threads.image, " +
-//            "Threads.title, LikeThread.isDislike, LikeThread.isLike)" +
-//            "FROM Threads INNER JOIN LikeThread ON Threads.id = LikeThread.threadLike")
 
     @Query(value = "SELECT COUNT(lt.is_like) AS like,t.id,t.content,t.title,t.image,t.user_id\n" +
             "FROM m_thread t \n" +
@@ -45,28 +38,31 @@ public interface ThreadsRepository extends JpaRepository<Threads, Long> {
 
     @Modifying
     @Query(value = "DELETE FROM m_save_thread WHERE thread_id = :id",nativeQuery = true)
-    Integer deleteThreadFromSaveThread(@Param("id") Integer id);
+    void deleteThreadFromSaveThread(@Param("id") Integer id);
 
-//    @Modifying
-//    @Query(value = "DELETE FROM m_report_comment WHERE thread_id = :id",nativeQuery = true)
-//    Integer deleteThreadFromReportComment(@Param("id") Integer id);
+    @Modifying
+    @Query(value = "DELETE FROM m_report_comment WHERE comment_id = :id",nativeQuery = true)
+    void deleteThreadFromReportComment(@Param("id") Integer id);
+
+    @Modifying
+    @Query(value = "DELETE FROM m_like_comment WHERE comment_id = :id",nativeQuery = true)
+    void deleteThreadFromLikeComment(@Param("id") Integer id);
 
     @Modifying
     @Query(value = "DELETE FROM m_report_thread WHERE thread_id = :id",nativeQuery = true)
-    Integer deleteThreadFromReportThread(@Param("id") Integer id);
-
-    @Modifying
-    @Query(value = "DELETE FROM m_like_comment WHERE thread_id = :id",nativeQuery = true)
-    Integer deleteThreadFromLikeComment(@Param("id") Integer id);
+    void deleteThreadFromReportThread(@Param("id") Integer id);
 
     @Modifying
     @Query(value = "DELETE FROM m_like_thread WHERE thread_id = :id",nativeQuery = true)
-    Integer deleteThreadFromLikeThread(@Param("id") Integer id);
+    void deleteThreadFromLikeThread(@Param("id") Integer id);
 
     @Modifying
     @Query(value = "DELETE FROM m_comment WHERE thread_id = :id",nativeQuery = true)
-    Integer deleteThreadFromComment(@Param("id") Integer id);
+    void deleteThreadFromComment(@Param("id") Integer id);
 
+    @Modifying
+    @Query(value = "SELECT cmt.id FROM m_comment cmt WHERE thread_id = :id",nativeQuery = true)
+    List<GetCommentByThreadId> getidCommentByThreadId(@Param("id") Integer id);
 
 
 }

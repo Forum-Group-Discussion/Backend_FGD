@@ -1,13 +1,11 @@
 package com.capstone.fgd.domain.dao;
 
 import com.capstone.fgd.domain.common.BaseDao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -15,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
+
 
 @Data
 @Builder
@@ -61,39 +60,41 @@ public class Users extends BaseDao implements UserDetails {
 
     @Column(name = "is_Suspended")
     private Boolean isSuspended;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
-//    private Set<Following> follow;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userFollow")
-//    private Set<Following> followUser; fetch = FetchType.LAZY,
 
-//    @OneToMany(cascade = CascadeType.ALL,mappedBy = "user")
-//    private Set<Threads> threadsUser;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
-//    private Set<Comment> commentUser;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userLike")
-//    private Set<LikeThread> userLikeThread;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userLike")
-//    private Set<LikeComment> userLikeComment;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
-//    private Set<ReportThread> reportThreadsUser;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
-//    private Set<ReportComment> reportComments;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
-//    private Set<ReportUser> reportUser;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userReport")
-//    private Set<ReportUser> reportForUser;
-//
-//    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
-//    private Set<SaveThread> saveThreadsUser;
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user",orphanRemoval = true)
+    private Set<Following> follow;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userFollow",orphanRemoval = true)
+    private Set<Following> followUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user",orphanRemoval = true)
+    private Set<Threads> threadsUser;
+
+    @JsonIgnore
+    //cascade = CascadeType.ALL,fetch = FetchType.LAZY,orphanRemoval = true
+    @OneToMany(mappedBy = "user")
+    private Set<Comment> commentUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userLike")
+    private Set<LikeThread> userLikeThread;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userLike")
+    private Set<LikeComment> userLikeComment;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<ReportThread> reportThreadsUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<ReportComment> reportComments;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<ReportUser> reportUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userReport")
+    private Set<ReportUser> reportForUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<SaveThread> saveThreadsUser;
 
 
 

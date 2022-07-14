@@ -1,6 +1,7 @@
 package com.capstone.fgd.domain.dao;
 
 import com.capstone.fgd.domain.common.BaseDao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -29,25 +30,25 @@ public class Comment extends BaseDao {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JsonIgnore
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id",nullable = false)
     private Users user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thread_id",nullable = false)
+    @ManyToOne
+    @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "thread_id",nullable = false)
     private Threads thread;
 
     @Column(name = "comment",columnDefinition = "TEXT",nullable = false)
     private String comment;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "commentLike")
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "commentLike",orphanRemoval = true)
     private Set<Comment> commentLike;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "threadsId")
-    private Set<LikeComment> likeCommentsThread;
-
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "comment")
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "comment",orphanRemoval = true)
     private Set<ReportComment> reportComment;
 
 }

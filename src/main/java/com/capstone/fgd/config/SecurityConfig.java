@@ -58,7 +58,7 @@ import java.util.Arrays;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
+        http.headers().frameOptions().disable();
         //endpoint can access with out auth author
         http.csrf().disable()
                 .authorizeRequests()

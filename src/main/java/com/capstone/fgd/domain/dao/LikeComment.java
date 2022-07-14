@@ -36,11 +36,6 @@ public class LikeComment extends BaseDao {
     @JoinColumn(name = "user_id")
     private Users userLike;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "thread_id")
-    private Comment threadsId;
-
     @Column(name = "is_like")
     private Boolean isLike;
 

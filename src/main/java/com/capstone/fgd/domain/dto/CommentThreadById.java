@@ -12,12 +12,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LikeCommentRequest {
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class CommentThreadById {
     private Long id;
-    private CommentRequest commentLike;
-    private UsersRequest userLike;
-    private Boolean isLike;
-    private Boolean isDislike;
 }
