@@ -1,8 +1,7 @@
 package com.capstone.fgd.domain.dto;
 
 
-import com.capstone.fgd.domain.dao.Threads;
-import com.capstone.fgd.domain.dao.Users;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
@@ -18,7 +17,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class CommentRequest {
-    private Long Id;
+    private Long id;
     private UsersRequest users;
     private ThreadsRequest thread;
     private String comment;

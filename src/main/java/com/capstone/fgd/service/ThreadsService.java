@@ -1,10 +1,7 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.ThreadByLikeDao;
-import com.capstone.fgd.domain.dao.Threads;
-import com.capstone.fgd.domain.dao.Topic;
-import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dao.*;
 import com.capstone.fgd.domain.dto.ThreadByLikeDTO;
 import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.repository.ThreadsRepository;
@@ -33,6 +30,7 @@ import java.util.*;
 
 @Slf4j
 @Service
+@Transactional
 public class ThreadsService {
 
     @Autowired
@@ -92,7 +90,6 @@ public class ThreadsService {
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
                     .image(imageUrlSave)
-                    .save(false)
                     .build();
             threadsRepository.save(thread);
             ThreadsRequest threadRequestDto = mapper.map(thread, ThreadsRequest.class);
@@ -122,7 +119,6 @@ public class ThreadsService {
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
                     .image(null)
-                    .save(false)
                     .build();
             threadsRepository.save(thread);
             ThreadsRequest threadRequestDto = mapper.map(thread, ThreadsRequest.class);
@@ -156,7 +152,6 @@ public class ThreadsService {
         }
     }
 
-    @Transactional
     public ResponseEntity<Object> getThreadById(Long id){
         try {
             log.info("Executing getThreadById with id : {}", id);
@@ -174,7 +169,6 @@ public class ThreadsService {
         }
     }
 
-    @Transactional
     public ResponseEntity<Object> getThreadByTopic(Long request){
         try {
             log.info("Executing get All Thread By Topic");
@@ -196,7 +190,7 @@ public class ThreadsService {
         }
     }
 
-    @Transactional
+
     public ResponseEntity<Object> getAllThreadByNew(){
         try {
             log.info("Executing get All Thread Order By DSC");
@@ -218,7 +212,6 @@ public class ThreadsService {
         }
     }
 
-    @Transactional
     public ResponseEntity<Object> getListThreadByLike(){
         try {
             log.info("Executing get All Thread By Like ");
@@ -267,30 +260,42 @@ public class ThreadsService {
         }
     }
 
-    public ResponseEntity<Object> deleteThread(Principal principal ,Long id){
+    public ResponseEntity<Object> deleteThread(Integer id){
         try {
             log.info("DELETE THREAD BY ID");
-            Optional<Threads> threadOptional = threadsRepository.findById(id);
-            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
-
+            Optional<Threads> threadOptional = threadsRepository.findById(Long.valueOf(id));
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
+
+            threadsRepository.deleteThreadFromSaveThread(id);
+            List<GetCommentByThreadId> comments = threadsRepository.getidCommentByThreadId(id);
+
+            for (GetCommentByThreadId c: comments){
+                log.info("Id comment : {}",c.getId());
+                threadsRepository.deleteThreadFromReportComment(c.getId());
+                threadsRepository.deleteThreadFromLikeComment(c.getId());
+            }
+
+            threadsRepository.deleteThreadFromComment(id);
+            threadsRepository.deleteThreadFromReportThread(id);
+            threadsRepository.deleteThreadFromLikeThread(id);
+
             threadsRepository.delete(threadOptional.get());
             log.info("DELETE THREAD SUCCESS");
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
 
 
         } catch (Exception e){
-            log.error("Get an error by executing delete thread");
+            log.error("Get an error by executing delete thread : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
 
-    @Transactional
+
     public ResponseEntity<?> getAllThreadWithPagination(Long offset,Long limit){
         try {
             log.info("Get All Thread With Pagination");

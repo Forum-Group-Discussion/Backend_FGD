@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -21,16 +23,19 @@ import javax.persistence.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "m_report_comment")
 public class ReportComment extends BaseDao {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "Id_Comment")
+    @JoinColumn(name = "comment_id",nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Comment comment;
 
     @ManyToOne
-    @JoinColumn(name = "Id_User")
+    @JoinColumn(name = "user_id",nullable = false)
     private Users user;
 
     @Enumerated(EnumType.STRING)

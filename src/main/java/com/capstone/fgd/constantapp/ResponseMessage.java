@@ -12,5 +12,7 @@ public class ResponseMessage {
     public static final String CHAR_LESS_4 = "CHARACTER_LESS_THAN_4";
     public static final String TOKEN_INVALID_NULL = "TOKEN_INVALID_OR_TOKEN_NULL";
     public static final String EMAIL_INVALID = "EMAIL_NOT_VALID";
-    public static final String SUCCESS_DELETE = "DELETE_SUCCESS";
+    public static final String SUCCESS_REPORT_THREAD =  "YOU_HAS_BEEN_REPORT_THREAD";
+    public static final String SUCCESS_REPORT_COMMENT =  "YOU_HAS_BEEN_REPORT_COMMENT";
+    public static final String SUCCESS_REPORT_USER =  "YOU_HAS_BEEN_REPORT_USER";
 }

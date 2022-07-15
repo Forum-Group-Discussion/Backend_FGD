@@ -45,19 +45,32 @@ public class ReportThreadService {
             Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
 
             Optional<Threads> threadOptional = threadRepository.findById(reportThreadRequest.getThread().getId());
+
+            Optional<ReportThread> optionalReportThreadRequest = reportThreadRepository.hasBeenReportThread(userSignIn.getId());
+
             if (threadOptional.isEmpty()) {
                 log.info("Thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
 
-            ReportThread reportThread = ReportThread.builder()
-                    .user(userSignIn)
-                    .thread(threadOptional.get())
-                    .reportType(reportThreadRequest.getReportType())
-                    .build();
-            reportThreadRepository.save(reportThread);
-            ReportThreadRequest reportThreadRequestDto = mapper.map(reportThread, ReportThreadRequest.class);
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportThreadRequestDto, HttpStatus.OK);
+            if (optionalReportThreadRequest.isPresent()){
+                log.info("has been report thread");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            if (optionalReportThreadRequest.isEmpty()){
+                ReportThread reportThread = ReportThread.builder()
+                        .user(userSignIn)
+                        .thread(threadOptional.get())
+                        .reportType(reportThreadRequest.getReportType())
+                        .build();
+                reportThreadRepository.save(reportThread);
+                ReportThreadRequest reportThreadRequestDto = mapper.map(reportThread, ReportThreadRequest.class);
+                return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportThreadRequestDto, HttpStatus.OK);
+            }
+            return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_THREAD,null,HttpStatus.BAD_REQUEST);
+
+
 
         } catch (Exception e) {
             log.error("Get an error executing new report thread, Error : {}", e.getMessage());

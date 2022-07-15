@@ -1,10 +1,12 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
+import com.capstone.fgd.domain.Enum.ReportType;
 import com.capstone.fgd.domain.dao.Comment;
 import com.capstone.fgd.domain.dao.ReportComment;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.ReportCommentRequest;
+import com.capstone.fgd.domain.dto.ReportTypeDTO;
 import com.capstone.fgd.repository.CommentRepository;
 import com.capstone.fgd.repository.ReportCommentRepository;
 import com.capstone.fgd.repository.UserRepository;
@@ -50,14 +52,25 @@ public class ReportCommentService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
 
-            ReportComment reportComment = ReportComment.builder()
-                    .user(userSignIn)
-                    .comment(commentOptional.get())
-                    .reportType(reportCommentRequest.getReportType())
-                    .build();
-            reportCommentRepository.save(reportComment);
-            ReportCommentRequest reportCommentRequestDto = mapper.map(reportComment, ReportCommentRequest.class);
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportCommentRequestDto, HttpStatus.OK);
+            Optional<ReportComment> optionalReportComment = reportCommentRepository.hasBeenReportComment(userSignIn.getId());
+
+            if (optionalReportComment.isPresent()){
+                return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_COMMENT,null,HttpStatus.BAD_REQUEST);
+            }
+
+            if (optionalReportComment.isEmpty()){
+                ReportComment reportComment = ReportComment.builder()
+                        .user(userSignIn)
+                        .comment(commentOptional.get())
+                        .reportType(reportCommentRequest.getReportType())
+                        .build();
+                reportCommentRepository.save(reportComment);
+                ReportCommentRequest reportCommentRequestDto = mapper.map(reportComment, ReportCommentRequest.class);
+                return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportCommentRequestDto, HttpStatus.OK);
+            }
+            return null;
+
+
         } catch (Exception e) {
             log.error("Get an error executing new report comment, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -118,6 +131,29 @@ public class ReportCommentService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, mapper.map(reportComment, ReportCommentRequest.class), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Get an error executing update report comment, Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getAllReportType() {
+        try {
+            log.info("Executing get all report ");
+
+            List<ReportTypeDTO> reportTypeList = new ArrayList<>();
+
+            ReportType[] rt = ReportType.values();
+            for (int i = 1; i <= rt.length; i++) {
+                ReportType r = rt[i-1];
+                reportTypeList.add(ReportTypeDTO.builder()
+                                .id(Long.valueOf(i))
+                                .reportType(String.valueOf(r))
+                        .build());
+            }
+
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportTypeList, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Get an error get all report, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

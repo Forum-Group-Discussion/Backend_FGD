@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SaveThreadRequest {
-    private Long Id;
-    private UsersRequest IdUser;
-    private ThreadsRequest IdThread;
+    private Long id;
+    private UsersRequest user;
+    private ThreadsRequest threads;
 }

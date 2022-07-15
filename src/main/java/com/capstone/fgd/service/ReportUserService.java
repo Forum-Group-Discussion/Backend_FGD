@@ -1,10 +1,7 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.ReportThread;
-import com.capstone.fgd.domain.dao.ReportUser;
-import com.capstone.fgd.domain.dao.Threads;
-import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dao.*;
 import com.capstone.fgd.domain.dto.ReportThreadRequest;
 import com.capstone.fgd.domain.dto.ReportUserRequest;
 import com.capstone.fgd.repository.ReportThreadRepository;
@@ -50,14 +47,31 @@ public class ReportUserService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
 
-            ReportUser reportUser = ReportUser.builder()
-                    .user(userSignIn)
-                    .userReport(userOptional.get())
-                    .reportType(request.getReportType())
-                    .build();
-            reportUserRepository.save(reportUser);
-            ReportUserRequest reportUserRequest = mapper.map(reportUser, ReportUserRequest.class);
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportUserRequest, HttpStatus.OK);
+            Optional<ReportUser> optionalReportUser = reportUserRepository.hasBeenReportUser(userSignIn.getId());
+
+            Optional<ReportUser> reporrUrSelf = reportUserRepository.cantReportYourSelf(userSignIn.getId(),request.getUserReport().getId());
+
+            if (optionalReportUser.isPresent()){
+                log.info("has been report user");
+                return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_USER,null,HttpStatus.BAD_REQUEST);
+            }
+
+            if (reporrUrSelf.isEmpty()){
+                return ResponseUtil.build("CAN'T_REPORT_YOURSELF",null,HttpStatus.BAD_REQUEST);
+            }
+
+            if (optionalReportUser.isEmpty()){
+                ReportUser reportUser = ReportUser.builder()
+                        .user(userSignIn)
+                        .userReport(userOptional.get())
+                        .reportType(request.getReportType())
+                        .build();
+                reportUserRepository.save(reportUser);
+                ReportUserRequest reportUserRequest = mapper.map(reportUser, ReportUserRequest.class);
+                return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportUserRequest, HttpStatus.OK);
+            }
+            return null;
+
 
         } catch (Exception e) {
             log.error("Get an error executing new report user, Error : {}", e.getMessage());

@@ -23,14 +23,15 @@ import javax.persistence.*;
 public class ReportUser extends BaseDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",nullable = false)
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "user_report_id")
+    @JoinColumn(name = "user_report_id",nullable = false)
     private Users userReport;
 
     @Enumerated(EnumType.STRING)

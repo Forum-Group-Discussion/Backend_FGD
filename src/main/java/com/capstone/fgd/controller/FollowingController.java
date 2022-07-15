@@ -32,6 +32,15 @@ public class FollowingController {
         return followingService.getAllFollower(principal);
     }
 
+    @GetMapping(value = "/mostfollower")
+    public ResponseEntity<Object> getUserByFollower(){
+        return followingService.getUserByFollowers();
+    }
+
+    @GetMapping(value = "/countuserfollowing")
+    public ResponseEntity<Object> getCountFollowingUser(){
+        return followingService.getUserByFollowing();
+    }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getFollowingById(Principal principal, @PathVariable Long id){

@@ -84,6 +84,8 @@ public class FileService {
         }
     }
 
+
+
     public ResponseEntity<?> editImageBackground(MultipartFile multipartFile, Principal principal)  {
         try {
             log.info("Executing upload image");
@@ -109,6 +111,34 @@ public class FileService {
         }
     }
 
+
+    public ResponseEntity<?> userDeleteImage(Principal principal){
+        try {
+            log.info("Executing delete photo profile ");
+            Users usersSignIn = (Users) userService.loadUserByUsername(principal.getName());
+            usersSignIn.setImage(null);
+            userRepository.save(usersSignIn);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,null, HttpStatus.OK);
+        } catch (Exception e){
+            log.info("Get an error by executing photo profile, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
+    public ResponseEntity<?> userDeleteImageBackground(Principal principal){
+        try {
+            log.info("Executing delete photo background ");
+            Users usersSignIn = (Users) userService.loadUserByUsername(principal.getName());
+            usersSignIn.setBackgroundImage(null);
+            userRepository.save(usersSignIn);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,null, HttpStatus.OK);
+        } catch (Exception e){
+            log.info("Get an error by executing photo profile, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
     public ResponseEntity<?> userLoadImage(Principal principal){
         try {
@@ -170,6 +200,8 @@ public class FileService {
         }
         return null;
     }
+
+
 
     public ResponseEntity<?> getImageThreadById(Long id){
         try {

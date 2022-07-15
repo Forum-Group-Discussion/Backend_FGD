@@ -23,6 +23,11 @@ public class ReportCommentController {
         return reportCommentService.createNewReportComment(request, principal);
     }
 
+    @GetMapping(value = "/allreporttype")
+    public ResponseEntity<Object> getAllReportType(){
+        return reportCommentService.getAllReportType();
+    }
+
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllReportComment(Principal principal){
         return reportCommentService.getAllReportComment();

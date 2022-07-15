@@ -48,7 +48,7 @@ public class SaveThreadService {
             log.info("Executing service create save thread");
             Users userLogin = (Users) userService.loadUserByUsername(principal.getName());
 
-            Optional<Threads> threadOptional = threadsRepository.findById(request.getIdThread().getId());
+            Optional<Threads> threadOptional = threadsRepository.findById(request.getThreads().getId());
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
@@ -59,11 +59,12 @@ public class SaveThreadService {
                     .user(userLogin)
                     .threads(threadOptional.get())
                     .build();
-
+            log.info("gagal");
             saveThreadRepository.save(saveThread);
+            log.info("berhasil");
 
-//            SaveThreadRequest saveThreadRequestDTO = mapper.map(saveThread, SaveThreadRequest.class);
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, saveThread, HttpStatus.OK);
+            SaveThreadRequest saveThreadRequestDTO = mapper.map(saveThread, SaveThreadRequest.class);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, saveThreadRequestDTO, HttpStatus.OK);
         }catch (Exception e){
             log.error("Get an error executing new save thread, error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);

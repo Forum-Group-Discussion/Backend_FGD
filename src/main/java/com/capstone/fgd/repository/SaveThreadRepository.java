@@ -10,6 +10,6 @@ import java.util.List;
 
 @Repository
 public interface SaveThreadRepository extends JpaRepository<SaveThread, Long> {
-    @Query(value = "SELECT * FROM m_savethread WHERE user_id = :userId", nativeQuery = true)
+    @Query(value = "SELECT * FROM m_save_thread WHERE user_id = :userId", nativeQuery = true)
     List<SaveThread> getByUser(@Param("userId") Long userId);
 }

@@ -40,6 +40,7 @@ public class LikeCommentService {
     @Autowired
     private ModelMapper mapper;
 
+
     public ResponseEntity<Object> LikeComment(Principal principal, LikeCommentRequest request){
         try{
             log.info("Executing post like comment");
@@ -48,14 +49,13 @@ public class LikeCommentService {
             log.info("{}",userLogin.getId());
 
             Optional<Comment> commentOptional = commentRepository.findById(request.getCommentLike().getId());
-            Optional<Comment> commentOptional1 = commentRepository.findById(request.getThreadsId().getId());
 
-            if (commentOptional.isEmpty() && commentOptional1.isEmpty()){
+            if (commentOptional.isEmpty()){
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
 
             Optional<LikeComment> likeCommentOptional = likeCommentRepository.userLikeComment(userLogin.getId(),
-            request.getCommentLike().getId());
+                    request.getCommentLike().getId());
 
             if (likeCommentOptional.isEmpty()){
                 if (request.getIsLike().equals(true) && request.getIsDislike().equals(false)){
@@ -63,7 +63,6 @@ public class LikeCommentService {
 
                     LikeComment likeComment = LikeComment.builder()
                             .userLike(userLogin)
-                            .threadsId(commentOptional1.get())
                             .commentLike(commentOptional.get())
                             .isLike(true)
                             .isDislike(false)
@@ -80,7 +79,6 @@ public class LikeCommentService {
 
                     LikeComment likeComment = LikeComment.builder()
                             .userLike(userLogin)
-                            .threadsId(commentOptional1.get())
                             .commentLike(commentOptional.get())
                             .isLike(false)
                             .isDislike(true)
@@ -102,7 +100,6 @@ public class LikeCommentService {
 
                     LikeComment likeComment = likeCommentOptional.get();
                     likeComment.setId(likeComment.getId());
-                    likeComment.setThreadsId(commentOptional1.get());
                     likeComment.setIsLike(true);
                     likeComment.setIsDislike(false);
 
@@ -111,11 +108,10 @@ public class LikeCommentService {
                     return ResponseUtil.build(ResponseMessage.KEY_FOUND,likeCommentRequest,HttpStatus.OK);
                 }
 
-                if (request.getIsLike().equals(false) && request.getIsDislike().getClass().equals(true)){
+                if (request.getIsLike().equals(false) && request.getIsDislike().equals(true)){
                     log.info("Like false and dislike is true");
 
                     LikeComment likeComment = likeCommentOptional.get();
-                    likeComment.setThreadsId(commentOptional1.get());
                     likeComment.setId(likeComment.getId());
                     likeComment.setIsLike(false);
                     likeComment.setIsDislike(true);
@@ -128,7 +124,6 @@ public class LikeCommentService {
                 if (request.getIsLike().equals(false) && request.getIsDislike().equals(false)){
                     log.info("User Unlike or undislike comment");
                     LikeComment likeComment = likeCommentOptional.get();
-                    likeComment.setThreadsId(commentOptional1.get());
                     likeComment.setId(likeComment.getId());
                     likeComment.setIsLike(null);
                     likeComment.setIsDislike(null);
@@ -145,6 +140,7 @@ public class LikeCommentService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     public ResponseEntity<Object> countDislikecomment(CommentRequest request){
         try {
             log.info("Executing count dislike comment ");

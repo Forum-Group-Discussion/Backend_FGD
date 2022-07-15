@@ -11,13 +11,13 @@ import java.util.Optional;
 @Repository
 public interface LikeCommentRepository extends JpaRepository<LikeComment, Long> {
 
-    @Query(value = "SELECT * FROM m_likecomment t WHERE t.user_id = :userId AND t.comment_id = :commentId", nativeQuery = true)
+    @Query(value = "SELECT * FROM m_like_comment t WHERE t.user_id = :userId AND t.comment_id = :commentId", nativeQuery = true)
     Optional<LikeComment> userLikeComment(
             @Param("userId") Long userId,
             @Param("commentId") Long commentId
     );
 
-    @Query(value = "SELECT COUNT(*) FROM m_likecomment t WHERE t.is_like = TRUE AND t.comment_id = :commentId", nativeQuery = true)
+    @Query(value = "SELECT COUNT(*) FROM m_like_comment t WHERE t.is_like = TRUE AND t.comment_id = :commentId", nativeQuery = true)
     public Long userLikeComment(
             @Param("commentId") Long commentId
     );
