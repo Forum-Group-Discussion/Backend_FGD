@@ -2,11 +2,9 @@ package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.*;
-import com.capstone.fgd.domain.dto.ReportThreadRequest;
+import com.capstone.fgd.domain.dto.GetCountReportDTO;
 import com.capstone.fgd.domain.dto.ReportUserRequest;
-import com.capstone.fgd.repository.ReportThreadRepository;
 import com.capstone.fgd.repository.ReportUserRepository;
-import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -115,6 +113,23 @@ public class ReportUserService {
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(reportUser, ReportUserRequest.class), HttpStatus.OK);
         } catch (Exception e) {
             log.error("Get an error by executing get report user by id, Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getTotalReport() {
+        try {
+            log.info("Executing get total report ");
+           Integer getCountReports = reportUserRepository.getCountReport();
+
+            GetCountReportDTO getCountReportDTO = GetCountReportDTO.builder()
+                    .totalReport(getCountReports)
+                    .build();
+
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, getCountReportDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Get an error by executing get total report , Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -94,4 +94,17 @@ public class ThreadsController {
     public ResponseEntity<?> getListThreadByLike(){
         return threadsService.getListThreadByLike();
     }
+
+    @GetMapping(value = "/totalthread")
+    public ResponseEntity<?> getTotalThread(){
+        return threadsService.getTotalThread();
+    }
+
+    @GetMapping(value = "/totalthreaduserid")
+    public ResponseEntity<?> getCountThreadByUser(Principal principal){
+        return threadsService.getCountThreadByUser(principal);
+    }
+
+
+
 }

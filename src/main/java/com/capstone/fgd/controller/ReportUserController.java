@@ -35,6 +35,11 @@ public class ReportUserController {
         return reportUserService.getReportuserById(id);
     }
 
+    @GetMapping(value = "/totalreport")
+    public ResponseEntity<Object> getTotalReport(){
+        return reportUserService.getTotalReport();
+    }
+
 
 }
 

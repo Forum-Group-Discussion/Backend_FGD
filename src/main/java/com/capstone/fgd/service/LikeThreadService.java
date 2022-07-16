@@ -1,9 +1,9 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.LikeThread;
-import com.capstone.fgd.domain.dao.Threads;
-import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dao.*;
+import com.capstone.fgd.domain.dto.GetCountDislikeThreadbyThreadDTO;
+import com.capstone.fgd.domain.dto.GetCountLikeThreadByThreadDTO;
 import com.capstone.fgd.domain.dto.LikeThreadRequest;
 import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.repository.LikeThreadRepository;
@@ -17,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -164,6 +166,44 @@ public class LikeThreadService {
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,count,HttpStatus.OK);
         }catch (Exception e){
             log.error("Get an error by executing count dislike thread, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getListLikeThread(){
+        try {
+            log.info("Executing count like thread by thread ");
+            List<GetCountLikeThreadByThread> getCountLikeThreadByThreads = likeThreadRepository.getCountLikeThreadByThread();
+            List<GetCountLikeThreadByThreadDTO> getCountLikeThreadByThreadDTOList = new ArrayList<>();
+
+            for (GetCountLikeThreadByThread count : getCountLikeThreadByThreads){
+                getCountLikeThreadByThreadDTOList.add(GetCountLikeThreadByThreadDTO.builder()
+                                .countLikeThread(count.getLike())
+                                .threadId(count.getThread_Id())
+                        .build());
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,getCountLikeThreadByThreadDTOList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by executing count like thread by threadz, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getListDislikeThread(){
+        try {
+            log.info("Executing count dislike thread by thread ");
+            List<GetDislikeThreadByThread> getDislikeThreadByThreads = likeThreadRepository.getCountDislikeThreadByThread();
+            List<GetCountDislikeThreadbyThreadDTO> getCountDislikeThreadbyThreadDTOS = new ArrayList<>();
+
+            for (GetDislikeThreadByThread count : getDislikeThreadByThreads){
+                getCountDislikeThreadbyThreadDTOS.add(GetCountDislikeThreadbyThreadDTO.builder()
+                                .countDislikeThread(count.getDislike())
+                                .threadId(count.getThread_id())
+                        .build());
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,getCountDislikeThreadbyThreadDTOS,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by executing count like thread by threadz, Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

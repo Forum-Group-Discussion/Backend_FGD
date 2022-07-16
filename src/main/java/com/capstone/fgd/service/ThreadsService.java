@@ -2,6 +2,8 @@ package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.*;
+import com.capstone.fgd.domain.dto.GetCountThread;
+import com.capstone.fgd.domain.dto.GetCountThreadByUser;
 import com.capstone.fgd.domain.dto.ThreadByLikeDTO;
 import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.repository.ThreadsRepository;
@@ -328,9 +330,46 @@ public class ThreadsService {
             }
 
             for (Threads threads:threadsList){
-                threadsRequestList.add(mapper.map(threadsList,ThreadsRequest.class));
+                threadsRequestList.add(mapper.map(threads,ThreadsRequest.class));
             }
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by searching thread, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getTotalThread(){
+        try {
+            log.info("Executing total thread");
+            Integer getTotalThread = threadsRepository.getCountThread();
+
+            GetCountThread getCountThread =GetCountThread.builder()
+                    .totalThread(getTotalThread)
+                    .build();
+
+
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,getCountThread,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by searching thread, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getCountThreadByUser(Principal principal){
+        try {
+            log.info("Executing total thread by user");
+            Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
+
+
+            Long getTotalThreadByUser = threadsRepository.countThreadByUserId(userSignIn.getId());
+
+            GetCountThreadByUser getCountThread = GetCountThreadByUser.builder()
+
+                    .totalThreadByUser(getTotalThreadByUser)
+                    .build();
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,getCountThread,HttpStatus.OK);
         }catch (Exception e){
             log.error("Get an error by searching thread, Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);

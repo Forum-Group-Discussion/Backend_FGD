@@ -4,7 +4,6 @@ import com.capstone.fgd.domain.dao.GetCommentByThreadId;
 import com.capstone.fgd.domain.dao.ThreadByLikeDao;
 import com.capstone.fgd.domain.dao.Threads;
 
-import com.capstone.fgd.domain.dto.ThreadByLikeDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +17,7 @@ import java.util.List;
 public interface ThreadsRepository extends JpaRepository<Threads, Long> {
 
     @Query(value = "SELECT * FROM m_thread WHERE title LIKE %:Word% OR content LIKE %:Word% ",nativeQuery = true)
-    List<Threads> searchByThread(@Param("Word") String t);
+    List<Threads> searchByThread(@Param("Word") String Word);
 
     @Query(value = "SELECT * FROM m_thread WHERE topic_id = :topic", nativeQuery = true)
     List<Threads> getAllThreadByTopic(@Param("topic") Long topic);
@@ -67,8 +66,11 @@ public interface ThreadsRepository extends JpaRepository<Threads, Long> {
     @Query(value = "SELECT cmt.id FROM m_comment cmt WHERE thread_id = :id",nativeQuery = true)
     List<GetCommentByThreadId> getidCommentByThreadId(@Param("id") Integer id);
 
-    @Query (value = "select count(*) AS count_thread FROM m_thread",nativeQuery = true)
-    void getCountThread();
+    @Query(value = "select count(*) AS count_thread FROM m_thread",nativeQuery = true)
+    Integer getCountThread();
+
+    @Query(value = "SELECT count(*) FROM m_thread WHERE user_id =:id",nativeQuery = true)
+    Long countThreadByUserId(@Param("id") Long id);
 }
 
 

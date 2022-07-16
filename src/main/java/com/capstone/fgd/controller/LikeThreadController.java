@@ -30,4 +30,14 @@ public class LikeThreadController {
         return likeThreadService.countDislikeThread(request);
     }
 
+    @GetMapping(value = "/likethreadbythread")
+    ResponseEntity<Object> countLikeThreadByThread(){
+        return likeThreadService.getListLikeThread();
+    }
+
+    @GetMapping(value = "/dislikethreadbythread")
+    ResponseEntity<Object> countDislikeThreadByThread(){
+        return likeThreadService.getListDislikeThread();
+    }
+
 }

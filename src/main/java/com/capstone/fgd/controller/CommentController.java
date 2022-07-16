@@ -43,6 +43,12 @@ public class CommentController {
         return commentService.updateComment(id, request);
     }
 
+    @GetMapping(value = "/totalcommentbythread")
+    public ResponseEntity<Object> getTotalCommentByThread(){
+        return commentService.getTotalCommentByThread();
+    }
+
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteComment(Principal principal, @PathVariable Long id) {
         Users user = (Users) userService.loadUserByUsername(principal.getName());
