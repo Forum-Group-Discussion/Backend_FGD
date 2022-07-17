@@ -35,4 +35,6 @@ public interface LikeCommentRepository extends JpaRepository<LikeComment, Long> 
 
 
 
+
+
 }

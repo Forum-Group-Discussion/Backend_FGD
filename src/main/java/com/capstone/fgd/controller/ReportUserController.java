@@ -41,5 +41,11 @@ public class ReportUserController {
     }
 
 
+    @GetMapping(value = "/listotalreportuser")
+    public ResponseEntity<Object> getListReportuser(){
+        return reportUserService.getListReportUser();
+    }
+
+
 }
 

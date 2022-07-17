@@ -48,4 +48,8 @@ public class ReportCommentController {
         return reportCommentService.deleteReportComment(id);
     }
 
+    @GetMapping(value = "/listotalreportcomment")
+    public ResponseEntity<Object> getListReportComment(){
+        return reportCommentService.getListReportCommentByComment();
+    }
 }

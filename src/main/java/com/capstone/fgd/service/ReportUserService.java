@@ -3,6 +3,8 @@ package com.capstone.fgd.service;
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.*;
 import com.capstone.fgd.domain.dto.GetCountReportDTO;
+import com.capstone.fgd.domain.dto.GetListTotalReportThreadDTO;
+import com.capstone.fgd.domain.dto.GetListTotalReportUserDTO;
 import com.capstone.fgd.domain.dto.ReportUserRequest;
 import com.capstone.fgd.repository.ReportUserRepository;
 import com.capstone.fgd.repository.UserRepository;
@@ -133,5 +135,32 @@ public class ReportUserService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public ResponseEntity<Object> getListReportUser() {
+        try {
+
+            log.info("Executing List report user by user_report_id");
+
+            List<GetListTotalReportUser> getListTotalReportUsers = reportUserRepository.getListTotalReportUser();
+            List<GetListTotalReportUserDTO> getListTotalReportUserDTOS = new ArrayList<>();
+
+            if (getListTotalReportUsers.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (GetListTotalReportUser list : getListTotalReportUsers){
+                getListTotalReportUserDTOS.add(GetListTotalReportUserDTO.builder()
+                                .user_report_id(list.getUser_Report_Id())
+                                .total_report_user(list.getTotal_Report_User())
+                        .build());
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, getListTotalReportUserDTOS, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Get an error by executing list total report thread");
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }

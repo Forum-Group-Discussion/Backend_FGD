@@ -29,6 +29,11 @@ public class ReportThreadController {
         return reportThreadService.getAllReportThread();
     }
 
+    @GetMapping(value = "/listotalreportthread")
+    public ResponseEntity<Object> getListReportThread(){
+        return reportThreadService.getListReportThreadByThread();
+    }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getReportThreadById(Principal principal, @PathVariable Long id) {
         return reportThreadService.getReportThreadById(id);

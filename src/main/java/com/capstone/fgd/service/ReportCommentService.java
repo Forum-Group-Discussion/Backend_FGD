@@ -2,9 +2,9 @@ package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.Enum.ReportType;
-import com.capstone.fgd.domain.dao.Comment;
-import com.capstone.fgd.domain.dao.ReportComment;
-import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dao.*;
+import com.capstone.fgd.domain.dto.GetListTotalReportCommentDTO;
+import com.capstone.fgd.domain.dto.GetListTotalReportThreadDTO;
 import com.capstone.fgd.domain.dto.ReportCommentRequest;
 import com.capstone.fgd.domain.dto.ReportTypeDTO;
 import com.capstone.fgd.repository.CommentRepository;
@@ -172,4 +172,30 @@ public class ReportCommentService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public ResponseEntity<Object> getListReportCommentByComment() {
+        try {
+
+            log.info("Executing List report  thread by thread");
+            List<GetListTotalReportComment> getListTotalReportComments = reportCommentRepository.getListTotalReportComment();
+            List<GetListTotalReportCommentDTO> getListTotalReportCommentDTOList = new ArrayList<>();
+
+            if (getListTotalReportComments.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (GetListTotalReportComment list : getListTotalReportComments){
+                getListTotalReportCommentDTOList.add(GetListTotalReportCommentDTO.builder()
+                        .comment_id(list.getComment_Id())
+                        .total_report_comment(list.getTotal_Report_Comment())
+                        .build());
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, getListTotalReportCommentDTOList, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Get an error by executing list total report comment");
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
