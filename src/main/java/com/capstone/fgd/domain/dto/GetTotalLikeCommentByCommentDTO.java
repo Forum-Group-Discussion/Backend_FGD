@@ -8,15 +8,14 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LikeCommentRequest {
-    private Long id;
-    private CommentRequest commentLike;
-    private UsersRequest userLike;
-    private Boolean isLike;
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+public class GetTotalLikeCommentByCommentDTO {
+    private Integer like;
+    private Integer Comment_id;
 }

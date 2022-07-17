@@ -30,6 +30,8 @@ public interface CommentRepository extends JpaRepository<Comment , Long> {
 
     @Query(value = "SELECT count(comment) AS total_comment,thread_id,user_id FROM m_comment\n" +
             "GROUP BY thread_id,user_id",nativeQuery = true)
-
     List<GetTotalCommentByThread> getTotalCommentByThread();
+
+    @Query(value = "SELECT * FROM m_comment WHERE comment LIKE %:comment%",nativeQuery = true)
+    List<Comment> searchComment(@Param("comment") String comment);
 }

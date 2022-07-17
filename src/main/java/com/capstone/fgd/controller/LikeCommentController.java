@@ -21,14 +21,15 @@ public class LikeCommentController {
         return likeCommentService.LikeComment(principal, request);
     }
 
+    @GetMapping(value = "/listlikecomment")
+    ResponseEntity<Object> getTotalLikeCommentByComment(){
+        return likeCommentService.getTotalLikeCommentByComment();
+    }
+
     @GetMapping(value = "/like")
     ResponseEntity<Object> countLikeComment(@RequestBody CommentRequest request){
         return likeCommentService.countLikeThread(request);
     }
 
-    @GetMapping(value = "/dislike")
-    ResponseEntity<Object> countDislikeComment(@RequestBody CommentRequest request){
-        return likeCommentService.countDislikecomment(request);
-    }
 
 }

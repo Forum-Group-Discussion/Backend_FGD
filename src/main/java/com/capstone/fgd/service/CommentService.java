@@ -168,4 +168,25 @@ public class CommentService {
         }
     }
 
+    public ResponseEntity<Object> searchComment(String req){
+        try {
+            log.info("Executing search comment");
+             List<Comment> commentList = commentRepository.searchComment(req);
+             List<CommentRequest> commentRequestList = new ArrayList<>();
+
+            if (commentList.isEmpty()){
+                log.info("not found any comment");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (Comment comment:commentList){
+                commentRequestList.add(mapper.map(comment,CommentRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,commentRequestList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by searching thread, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

@@ -40,6 +40,4 @@ public class LikeComment extends BaseDao {
     @Column(name = "is_like")
     private Boolean isLike;
 
-    @Column(name = "is_dislike")
-    private Boolean isDislike;
 }

@@ -348,8 +348,6 @@ public class ThreadsService {
                     .totalThread(getTotalThread)
                     .build();
 
-
-
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,getCountThread,HttpStatus.OK);
         }catch (Exception e){
             log.error("Get an error by searching thread, Error : {}",e.getMessage());
