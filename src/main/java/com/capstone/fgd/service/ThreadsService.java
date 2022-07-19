@@ -82,8 +82,8 @@ public class ThreadsService {
             log.info(imageUrl);
 
             InputStream inputStream = file.getInputStream();
-            Path filePath = uploadDir.resolve(imageUrl);
-            String imageUrlSave = uploadPath + imageUrl;
+            Path filePath = uploadDir.resolve(uploadPath + imageUrl);
+//            String imageUrlSave = uploadPath + imageUrl;
             Files.copy(inputStream,filePath, StandardCopyOption.REPLACE_EXISTING);
 
             Threads thread = Threads.builder()
@@ -91,7 +91,7 @@ public class ThreadsService {
                     .topic(topicOptional.get())
                     .title(threadRequest.getTitle())
                     .content(threadRequest.getContent())
-                    .image(imageUrlSave)
+                    .image(String.valueOf(filePath))
                     .build();
             threadsRepository.save(thread);
             ThreadsRequest threadRequestDto = mapper.map(thread, ThreadsRequest.class);
