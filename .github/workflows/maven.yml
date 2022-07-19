@@ -85,4 +85,4 @@ jobs:
             docker pull hafidzencis/capstone:latest
             docker pull hafidzencis/capstone-coverage:latest
             docker run -d --rm --name capstone-coverage -p 8000:80 hafidzencis/capstone-coverage:latest
-            docker run -d --rm --name capstone -p 80:8080 --env-file=dev.env --network mynetwork -v "/home/ec2-user/images":/app/images hafidzencis/capstone:latest
+            docker run -d --rm --name capstone -p 80:8080 --env-file=dev.env --network mynetwork -v "/home/ec2-user/images":/app hafidzencis/capstone:latest
