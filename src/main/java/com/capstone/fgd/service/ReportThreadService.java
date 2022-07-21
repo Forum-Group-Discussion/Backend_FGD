@@ -48,31 +48,27 @@ public class ReportThreadService {
 
             Optional<Threads> threadOptional = threadRepository.findById(reportThreadRequest.getThread().getId());
 
-            Optional<ReportThread> optionalReportThreadRequest = reportThreadRepository.hasBeenReportThread(userSignIn.getId());
+            Optional<ReportThread> optionalReportThread = reportThreadRepository.hasBeenReportThread(userSignIn.getId(),
+                    reportThreadRequest.getThread().getId());
 
             if (threadOptional.isEmpty()) {
                 log.info("Thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
 
-            if (optionalReportThreadRequest.isPresent()){
+            if (optionalReportThread.isPresent()){
                 log.info("has been report thread");
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+                return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_THREAD,null,HttpStatus.BAD_REQUEST);
             }
 
-            if (optionalReportThreadRequest.isEmpty()){
-                ReportThread reportThread = ReportThread.builder()
-                        .user(userSignIn)
-                        .thread(threadOptional.get())
-                        .reportType(reportThreadRequest.getReportType())
-                        .build();
-                reportThreadRepository.save(reportThread);
-                ReportThreadRequest reportThreadRequestDto = mapper.map(reportThread, ReportThreadRequest.class);
-                return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportThreadRequestDto, HttpStatus.OK);
-            }
-            return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_THREAD,null,HttpStatus.BAD_REQUEST);
-
-
+            ReportThread reportThread = ReportThread.builder()
+                    .user(userSignIn)
+                    .thread(threadOptional.get())
+                    .reportType(reportThreadRequest.getReportType())
+                    .build();
+            reportThreadRepository.save(reportThread);
+            ReportThreadRequest reportThreadRequestDto = mapper.map(reportThread, ReportThreadRequest.class);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportThreadRequestDto, HttpStatus.OK);
 
         } catch (Exception e) {
             log.error("Get an error executing new report thread, Error : {}", e.getMessage());
@@ -120,26 +116,6 @@ public class ReportThreadService {
         }
     }
 
-    public ResponseEntity<Object> updateReportThread(Long id, ReportThreadRequest request) {
-        try {
-            log.info("Executing update Report Thread");
-            Optional<ReportThread> reportThreadOptional = reportThreadRepository.findById(id);
-
-            if (reportThreadOptional.isEmpty()) {
-                log.info("report thread not found");
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
-            }
-
-            ReportThread reportThread = reportThreadOptional.get();
-            reportThread.setReportType(request.getReportType());
-            reportThreadRepository.save(reportThread);
-
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(reportThread, ReportThreadRequest.class), HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Get an error executing update report thread, Error : {}", e.getMessage());
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     public ResponseEntity<Object> getListReportThreadByThread() {
         try {

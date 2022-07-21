@@ -114,8 +114,6 @@ public class FollowingService {
     }
 
 
-
-    @Transactional
     public ResponseEntity<Object> getAllFollowing(Principal principal){
         try {
             log.info("Executing get all following");
@@ -139,7 +137,6 @@ public class FollowingService {
         }
     }
 
-    @Transactional
     public ResponseEntity<Object> getAllFollower(Principal principal){
         try {
             log.info("Executing get all followers");

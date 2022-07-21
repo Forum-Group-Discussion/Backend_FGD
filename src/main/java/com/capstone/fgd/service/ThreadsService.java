@@ -298,25 +298,6 @@ public class ThreadsService {
     }
 
 
-    public ResponseEntity<?> getAllThreadWithPagination(Long offset,Long limit){
-        try {
-            log.info("Get All Thread With Pagination");
-            List<Threads> threadsList = threadsRepository.getAllThreadDESCUsingPagination(offset,limit);
-            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
-
-            if (threadsList.isEmpty()){
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.OK);
-            }
-
-            for (Threads threads : threadsList){
-                threadsRequestList.add(mapper.map(threads,ThreadsRequest.class));
-            }
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList,HttpStatus.OK);
-        }catch (Exception e){
-            log.error("Get all thread with pagination, Error : {}",e.getMessage());
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     public ResponseEntity<Object> searchByThread(String req){
         try {

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ReportUserRepository extends JpaRepository<ReportUser,Long> {
-    @Query(value = "SELECT * FROM m_report_user WHERE user_id = :userId",nativeQuery = true)
-    Optional<ReportUser> hasBeenReportUser(@Param("userId") Long userId);
+    @Query(value = "SELECT * FROM m_report_user WHERE user_id = :userId AND user_report_id = :usp",nativeQuery = true)
+    Optional<ReportUser> hasBeenReportUser(@Param("userId") Long userId,@Param("usp") Long usp);
 
     @Query(value = "SELECT * FROM m_report_user WHERE user_id = :userId AND user_report_id = :userReportId",nativeQuery = true)
     Optional<ReportUser> cantReportYourSelf(@Param("userId") Long userId,@Param("userReportId") Long userReportId);

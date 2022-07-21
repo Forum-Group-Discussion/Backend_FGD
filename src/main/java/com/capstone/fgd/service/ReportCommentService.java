@@ -52,24 +52,21 @@ public class ReportCommentService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
 
-            Optional<ReportComment> optionalReportComment = reportCommentRepository.hasBeenReportComment(userSignIn.getId());
+            Optional<ReportComment> optionalReportComment = reportCommentRepository.hasBeenReportComment(
+                    userSignIn.getId(), reportCommentRequest.getComment().getId());
 
             if (optionalReportComment.isPresent()){
                 return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_COMMENT,null,HttpStatus.BAD_REQUEST);
             }
 
-            if (optionalReportComment.isEmpty()){
-                ReportComment reportComment = ReportComment.builder()
-                        .user(userSignIn)
-                        .comment(commentOptional.get())
-                        .reportType(reportCommentRequest.getReportType())
-                        .build();
-                reportCommentRepository.save(reportComment);
-                ReportCommentRequest reportCommentRequestDto = mapper.map(reportComment, ReportCommentRequest.class);
-                return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportCommentRequestDto, HttpStatus.OK);
-            }
-            return null;
-
+            ReportComment reportComment = ReportComment.builder()
+                    .user(userSignIn)
+                    .comment(commentOptional.get())
+                    .reportType(reportCommentRequest.getReportType())
+                    .build();
+            reportCommentRepository.save(reportComment);
+            ReportCommentRequest reportCommentRequestDto = mapper.map(reportComment, ReportCommentRequest.class);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportCommentRequestDto, HttpStatus.OK);
 
         } catch (Exception e) {
             log.error("Get an error executing new report comment, Error : {}", e.getMessage());
@@ -115,25 +112,6 @@ public class ReportCommentService {
         }
     }
 
-    public ResponseEntity<Object> updateReportComment(Long id, ReportCommentRequest request) {
-        try {
-            log.info("Executing update Report Comment");
-            Optional<ReportComment> reportCommentOptional = reportCommentRepository.findById(id);
-
-            if (reportCommentOptional.isEmpty()) {
-                log.info("report comment not found");
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
-            }
-
-            ReportComment reportComment = reportCommentOptional.get();
-            reportComment.setReportType(request.getReportType());
-            reportCommentRepository.save(reportComment);
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, mapper.map(reportComment, ReportCommentRequest.class), HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Get an error executing update report comment, Error : {}", e.getMessage());
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     public ResponseEntity<Object> getAllReportType() {
         try {

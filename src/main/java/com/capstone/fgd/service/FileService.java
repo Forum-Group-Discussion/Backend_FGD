@@ -56,6 +56,7 @@ public class FileService {
 
     @Autowired
     private ModelMapper mapper;
+
     @Value("${upload.path}")
     private String uploadPath;
 
@@ -83,7 +84,6 @@ public class FileService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
 
     public ResponseEntity<?> editImageBackground(MultipartFile multipartFile, Principal principal)  {
@@ -140,14 +140,27 @@ public class FileService {
 
     }
 
-    public ResponseEntity<?> userLoadImage(Principal principal){
+
+    public ResponseEntity<?> userLoadImage(Long id){
         try {
             log.info("Executing photo profile ");
-            Users usersSignIn = (Users) userService.loadUserByUsername(principal.getName());
 
+            Optional<Users> usersOptional = userRepository.findById(id);
+            if (usersOptional.isEmpty()){
+                log.info("user not found/ null");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            if (usersOptional.get().getImage() == null){
+                log.info("Image null");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            log.info("gagal");
             Path uploadDir = Paths.get(uploadPath);
-            log.info("Name file : {}",usersSignIn.getImage());
-            Path filePath = uploadDir.resolve(usersSignIn.getImage()).normalize();
+
+            log.info("Name file : {}");
+            Path filePath = uploadDir.resolve(usersOptional.get().getImage()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             File convert = resource.getFile();
             byte[] fileContent = FileUtils.readFileToByteArray(convert);
@@ -156,7 +169,7 @@ public class FileService {
                     .encodeToString(fileContent);
 
             ConvertImageRequest convertImageRequest = ConvertImageRequest.builder()
-                    .id(usersSignIn.getId())
+                    .id(usersOptional.get().getId())
                     .imageBase64(encodedString)
                     .build();
 
@@ -170,12 +183,20 @@ public class FileService {
         return null;
     }
 
+
     public ResponseEntity<?> userLoadImageBackground(Principal principal){
         try {
             log.info("Executing photo profile ");
             Users usersSignIn = (Users) userService.loadUserByUsername(principal.getName());
 
+            if (usersSignIn.getBackgroundImage() == null){
+                log.info("Image background null");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
             Path uploadDir = Paths.get(uploadPath);
+
+
             log.info("Name file : {}",usersSignIn.getImage());
             Path filePath = uploadDir.resolve(usersSignIn.getBackgroundImage()).normalize();
             Resource resource = new UrlResource(filePath.toUri());
@@ -200,8 +221,6 @@ public class FileService {
         }
         return null;
     }
-
-
 
     public ResponseEntity<?> getImageThreadById(Long id){
         try {

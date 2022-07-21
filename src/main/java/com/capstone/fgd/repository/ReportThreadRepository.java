@@ -13,8 +13,8 @@ import java.util.Optional;
 
 @Repository
 public interface ReportThreadRepository extends JpaRepository<ReportThread, Long> {
-    @Query(value = "SELECT * FROM m_report_thread WHERE user_id = :userId",nativeQuery = true)
-    Optional<ReportThread> hasBeenReportThread(@Param("userId") Long userId);
+    @Query(value = "SELECT * FROM m_report_thread WHERE user_id = :userId AND thread_id = :threadId",nativeQuery = true)
+    Optional<ReportThread> hasBeenReportThread(@Param("userId") Long userId,@Param("threadId") Long threadId);
 
     @Query(value = "SELECT count(*)AS Total_Report_Thread, thread_id  FROM m_report_thread GROUP BY thread_id " +
             "ORDER BY count(*) DESC",nativeQuery = true)

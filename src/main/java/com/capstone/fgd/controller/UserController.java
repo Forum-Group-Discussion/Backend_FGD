@@ -50,9 +50,9 @@ public class UserController {
             return userService.getAllUser();
     }
 
-    @GetMapping(value = "/image",produces= "application/json")
-    public ResponseEntity<?> loadUserImage(Principal principal){
-        return fileService.userLoadImage(principal);
+    @GetMapping(value = "/image/{id}",produces= "application/json")
+    public ResponseEntity<?> loadUserImage(@PathVariable Long id){
+        return fileService.userLoadImage(id);
     }
 
     @GetMapping(value = "/imagebackground",produces= "application/json")

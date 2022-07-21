@@ -38,10 +38,6 @@ public class ReportCommentController {
         return reportCommentService.getReportCommentById(id);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<Object> updateReportComment(Principal principal, @PathVariable Long id, @RequestBody ReportCommentRequest request){
-        return reportCommentService.updateReportComment(id, request);
-    }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteReportComment(Principal principal, @PathVariable Long id){

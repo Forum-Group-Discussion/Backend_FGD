@@ -144,6 +144,10 @@
 						<exclude>**/controller/*.class</exclude>
 						<exclude>**/domain/**/*.class</exclude>
 						<exclude>**/repository/*.class</exclude>
+						<exclude>**/security/**/*.class</exclude>
+						<exclude>**/util/*.class</exclude>
+						<exclude>**/contantapp/*.class</exclude>
+						<exclude>**/ForumGroupDiscussionApplication.class</exclude>
 					</excludes>
 				</configuration>
 				<executions>

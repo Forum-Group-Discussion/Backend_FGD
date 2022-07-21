@@ -1,17 +1,45 @@
 package com.capstone.fgd.unittest;
 
+import com.capstone.fgd.constantapp.ResponseMessage;
+import com.capstone.fgd.controller.ThreadsController;
+import com.capstone.fgd.domain.common.ApiResponse;
+import com.capstone.fgd.domain.dao.Threads;
+import com.capstone.fgd.domain.dao.Topic;
+import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dto.ThreadsRequest;
+import com.capstone.fgd.domain.dto.TopicRequest;
+import com.capstone.fgd.domain.dto.UsersRequest;
 import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.repository.TopicRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.service.ThreadsService;
+import com.capstone.fgd.service.UserService;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.Principal;
+import java.util.Objects;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static springfox.documentation.builders.PathSelectors.any;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = ThreadsService.class)
@@ -28,14 +56,25 @@ public class ThreadServiceTest {
     @MockBean
     private ModelMapper mapper;
 
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    private Principal principal;
+
     @Autowired
     private ThreadsService threadsService;
 
 
 //    @Test
-//    void addThread_Success_Test(){
+//    void addThreadWithImages_Success_Test(){
+//
 //        Users users = Users.builder()
 //                .id(1L)
+//                .email("hafidzfebrian21@gmail.com")
+//                .password("Likelike12")
+//                .name("Hafidz Febrian")
+//                .ausername("hafidzsenpai")
 //                .build();
 //        Topic topic = Topic.builder()
 //                .id(1L)
@@ -43,18 +82,15 @@ public class ThreadServiceTest {
 //
 //        Threads thread = Threads.builder()
 //                .id(1L)
-//                .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
-//                .image("urlxxxxxxxxxxxxxxxx")
-//                .content("Xxxxxxxxxxxxxxxxxxx")
-//                .save(false)
 //                .build();
 //
-//        ThreadRequest threadRequest = ThreadRequest.builder()
+//
+//
+//        ThreadsRequest threadRequest = ThreadsRequest.builder()
 //                .id(1L)
 //                .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
 //                .image("urlxxxxxxxxxxxxxxxx")
 //                .content("Xxxxxxxxxxxxxxxxxxx")
-//                .save(false)
 //                .users(UsersRequest.builder()
 //                        .id(1L)
 //                        .build())
@@ -63,32 +99,37 @@ public class ThreadServiceTest {
 //                        .build())
 //                .build();
 //
+//        MockMultipartFile file = new MockMultipartFile(
+//                "file",
+//                "gas.txt",
+//                MediaType.MULTIPART_FORM_DATA_VALUE,
+//                "Hello,World".getBytes()
+//        );
+//
+//        when(userService.loadUserByUsername(principal.getName())).thenReturn(users);
 //        when(userRepository.findById(anyLong())).thenReturn(Optional.of(users));
 //        when(topicRepository.findById(anyLong())).thenReturn(Optional.of(topic));
 //        when(mapper.map(any(),eq(Threads.class))).thenReturn(thread);
-//        when(mapper.map(any(),eq(ThreadRequest.class))).thenReturn(threadRequest);
+//        when(mapper.map(any(),eq(ThreadsRequest.class))).thenReturn(threadRequest);
 //
-//        ResponseEntity<Object> responseEntity = threadService.createNewThread(ThreadRequest.builder()
-//                .id(1L)
-//                .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
-//                .image("urlxxxxxxxxxxxxxxxx")
-//                .content("Xxxxxxxxxxxxxxxxxxx")
-//                .save(false)
-//                .users(UsersRequest.builder()
-//                        .id(1L)
-//                        .build())
-//                .topic(TopicRequest.builder()
-//                        .id(1L)
-//                        .build())
-//                .build());
+//        ResponseEntity<Object> responseEntity = threadsService.createNewThreadUsingImage(principal
+//                ,ThreadsRequest.builder()
+//                                .id(1L)
+//                                .title("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+//                                .content("Xxxxxxxxxxxxxxxxxxx")
+//                        .users(UsersRequest.builder()
+//                                .id(1L)
+//                                .build())
+//                        .topic(TopicRequest.builder()
+//                                .id(1L)
+//                                .build())
+//                        .build()
+//                ,file);
+//
 //        ApiResponse apiResponse  = (ApiResponse) responseEntity.getBody();
-//        ThreadRequest data = (ThreadRequest) Objects.requireNonNull(apiResponse).getData();
+//        ThreadsRequest data = (ThreadsRequest) Objects.requireNonNull(apiResponse).getData();
 //        assertEquals(1L,data.getId());
-//        assertEquals("XXXXXXXXXXXXXXXXXXXXXXXXXX",data.getTitle());
-//        assertEquals("Xxxxxxxxxxxxxxxxxxx",data.getContent());
-//        assertEquals("urlxxxxxxxxxxxxxxxx",data.getImage());
-//        assertEquals(1L,data.getTopic().getId());
-//        assertEquals(1L,data.getUsers().getId());
+//
 //    }
 //
 //    @Test
@@ -135,7 +176,7 @@ public class ThreadServiceTest {
 //                .build();
 //        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 //        when(topicRepository.save(any())).thenThrow(NullPointerException.class);
-//        ResponseEntity<Object> responseEntity = threadService.createNewThread(ThreadRequest.builder()
+//        ResponseEntity<Object> responseEntity = threadsService.createNewThread(ThreadsRequest.builder()
 //                .users(UsersRequest.builder().id(1L).build())
 //                .build());
 //        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
@@ -490,4 +531,6 @@ public class ThreadServiceTest {
 //        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseEntity.getStatusCodeValue());
 //        assertEquals(ResponseMessage.KEY_NOT_FOUND, Objects.requireNonNull(apiResponse).getMessage());
 //    }
-}
+
+
+        }

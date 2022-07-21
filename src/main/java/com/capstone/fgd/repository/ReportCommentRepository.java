@@ -13,8 +13,8 @@ import java.util.Optional;
 
 @Repository
 public interface ReportCommentRepository extends JpaRepository<ReportComment, Long> {
-    @Query(value = "SELECT * FROM m_report_comment WHERE user_id = :userId",nativeQuery = true)
-    Optional<ReportComment> hasBeenReportComment(@Param("userId") Long userId);
+    @Query(value = "SELECT * FROM m_report_comment WHERE user_id = :userId AND comment_id = :comId ",nativeQuery = true)
+    Optional<ReportComment> hasBeenReportComment(@Param("userId") Long userId,@Param("comId") Long comId);
 
 
     @Query(value = "SELECT count(*)AS Total_Report_Comment, comment_id  FROM m_report_comment " +

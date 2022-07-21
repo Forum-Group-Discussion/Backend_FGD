@@ -85,10 +85,6 @@ public class ThreadsController {
         return threadsService.searchByThread(thread);
     }
 
-    @GetMapping(value = "/{offset}/{limit}")
-    public ResponseEntity<?> getAllThreadDESCUsingPagination(@PathVariable Long offset,@PathVariable Long limit){
-        return threadsService.getAllThreadWithPagination(offset, limit);
-    }
 
     @GetMapping(value = "/bylike")
     public ResponseEntity<?> getListThreadByLike(){

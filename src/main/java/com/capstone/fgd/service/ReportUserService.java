@@ -47,7 +47,7 @@ public class ReportUserService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
 
-            Optional<ReportUser> optionalReportUser = reportUserRepository.hasBeenReportUser(userSignIn.getId());
+            Optional<ReportUser> optionalReportUser = reportUserRepository.hasBeenReportUser(userSignIn.getId(),request.getUserReport().getId());
 
             Optional<ReportUser> reporrUrSelf = reportUserRepository.cantReportYourSelf(userSignIn.getId(),request.getUserReport().getId());
 
@@ -56,22 +56,18 @@ public class ReportUserService {
                 return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_USER,null,HttpStatus.BAD_REQUEST);
             }
 
-            if (reporrUrSelf.isEmpty()){
+            if (reporrUrSelf.isPresent()){
                 return ResponseUtil.build("CAN'T_REPORT_YOURSELF",null,HttpStatus.BAD_REQUEST);
             }
 
-            if (optionalReportUser.isEmpty()){
-                ReportUser reportUser = ReportUser.builder()
-                        .user(userSignIn)
-                        .userReport(userOptional.get())
-                        .reportType(request.getReportType())
-                        .build();
-                reportUserRepository.save(reportUser);
-                ReportUserRequest reportUserRequest = mapper.map(reportUser, ReportUserRequest.class);
-                return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportUserRequest, HttpStatus.OK);
-            }
-            return null;
-
+            ReportUser reportUser = ReportUser.builder()
+                    .user(userSignIn)
+                    .userReport(userOptional.get())
+                    .reportType(request.getReportType())
+                    .build();
+            reportUserRepository.save(reportUser);
+            ReportUserRequest reportUserRequest = mapper.map(reportUser, ReportUserRequest.class);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportUserRequest, HttpStatus.OK);
 
         } catch (Exception e) {
             log.error("Get an error executing new report user, Error : {}", e.getMessage());
