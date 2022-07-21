@@ -146,7 +146,7 @@
 						<exclude>**/repository/*.class</exclude>
 						<exclude>**/security/**/*.class</exclude>
 						<exclude>**/util/*.class</exclude>
-						<exclude>**/contantapp/*.class</exclude>
+						<exclude>**/constantapp/*.class</exclude>
 						<exclude>**/ForumGroupDiscussionApplication.class</exclude>
 					</excludes>
 				</configuration>
