@@ -1,6 +1,8 @@
 package com.capstone.fgd.config;
 
 import com.capstone.fgd.security.SecurityFilter;
+import com.capstone.fgd.security.handle.CustomAuthenticationEntryPoint;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +15,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 
 @Configuration
@@ -41,14 +48,31 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
     }
 
 
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint(){
+        return new CustomAuthenticationEntryPoint();
+    }
+
+
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
+        http.headers().frameOptions().disable();
+        //endpoint can access with out auth author
         http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/v1/auth/**", "/h2-ui/**", "/h2-console/**").permitAll()
-                .anyRequest().authenticated();
-        ;
+                .antMatchers("/v2/api-docs",
+                        "/configuration/ui",
+                        "/swagger-resources/**",
+                        "/configuration/security",
+                        "/swagger-ui/**",
+                        "/webjars/**").permitAll().anyRequest().authenticated()
+                .and()
+
+        //when token null and invalid
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint());
 
         //remove session
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
