@@ -29,6 +29,18 @@ public class TopicService {
     public ResponseEntity<Object> createNewTopic(TopicRequest request){
         try {
             log.info("Executing create new Topic");
+
+            if (request.getTopicName() == null || request.getTopicName().equals("")){
+                log.info("topic Name null");
+                return ResponseUtil.build("YOU_MUST_CONTAINING_TOPIC",null,HttpStatus.BAD_REQUEST);
+            }
+
+            Optional<Topic> topicOptional = topicRepository.getTopicName(request.getTopicName());
+
+            if (topicOptional.isPresent()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
             Topic topic = Topic.builder()
                     .topicName(request.getTopicName())
                     .build();

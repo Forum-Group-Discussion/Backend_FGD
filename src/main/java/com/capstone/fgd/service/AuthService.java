@@ -45,7 +45,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    @Transactional
+
     public ResponseEntity<?> authenticateAndGenerateToken(UsersRequest req) {
         try {
             log.info(" Login ");

@@ -29,15 +29,17 @@ public class ReportThreadController {
         return reportThreadService.getAllReportThread();
     }
 
+    @GetMapping(value = "/listotalreportthread")
+    public ResponseEntity<Object> getListReportThread(){
+        return reportThreadService.getListReportThreadByThread();
+    }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getReportThreadById(Principal principal, @PathVariable Long id) {
         return reportThreadService.getReportThreadById(id);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<Object> updateReportThread(Principal principal, @PathVariable Long id, @RequestBody ReportThreadRequest request) {
-        return reportThreadService.updateReportThread(id, request);
-    }
+
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteReportThread(Principal principal, @PathVariable Long id) {

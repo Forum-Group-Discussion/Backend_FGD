@@ -30,9 +30,19 @@ public class UserController {
         return fileService.editImage(multipartFile,principal);
     }
 
+    @PostMapping("/deleteimage")
+    public ResponseEntity<?> deleteImage(Principal principal) {
+        return fileService.userDeleteImage(principal);
+    }
+
     @PostMapping("/editimagebackground")
     public ResponseEntity<?> editImageBackground(@RequestParam("file") MultipartFile multipartFile, Principal principal) {
         return fileService.editImageBackground(multipartFile,principal);
+    }
+
+    @PostMapping("/deleteimagebackground")
+    public ResponseEntity<?> deleteImageBackground(Principal principal) {
+        return fileService.userDeleteImageBackground(principal);
     }
 
     @GetMapping(value = "")
@@ -40,9 +50,9 @@ public class UserController {
             return userService.getAllUser();
     }
 
-    @GetMapping(value = "/image",produces= "application/json")
-    public ResponseEntity<?> loadUserImage(Principal principal){
-        return fileService.userLoadImage(principal);
+    @GetMapping(value = "/image/{id}",produces= "application/json")
+    public ResponseEntity<?> loadUserImage(@PathVariable Long id){
+        return fileService.userLoadImage(id);
     }
 
     @GetMapping(value = "/imagebackground",produces= "application/json")

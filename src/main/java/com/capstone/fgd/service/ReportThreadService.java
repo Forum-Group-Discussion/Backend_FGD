@@ -1,9 +1,11 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
+import com.capstone.fgd.domain.dao.GetListTotalReportThread;
 import com.capstone.fgd.domain.dao.ReportThread;
 import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dto.GetListTotalReportThreadDTO;
 import com.capstone.fgd.domain.dto.ReportThreadRequest;
 import com.capstone.fgd.repository.ReportThreadRepository;
 import com.capstone.fgd.repository.ThreadsRepository;
@@ -45,9 +47,18 @@ public class ReportThreadService {
             Users userSignIn = (Users) userService.loadUserByUsername(principal.getName());
 
             Optional<Threads> threadOptional = threadRepository.findById(reportThreadRequest.getThread().getId());
+
+            Optional<ReportThread> optionalReportThread = reportThreadRepository.hasBeenReportThread(userSignIn.getId(),
+                    reportThreadRequest.getThread().getId());
+
             if (threadOptional.isEmpty()) {
                 log.info("Thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+
+            if (optionalReportThread.isPresent()){
+                log.info("has been report thread");
+                return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_THREAD,null,HttpStatus.BAD_REQUEST);
             }
 
             ReportThread reportThread = ReportThread.builder()
@@ -105,23 +116,28 @@ public class ReportThreadService {
         }
     }
 
-    public ResponseEntity<Object> updateReportThread(Long id, ReportThreadRequest request) {
-        try {
-            log.info("Executing update Report Thread");
-            Optional<ReportThread> reportThreadOptional = reportThreadRepository.findById(id);
 
-            if (reportThreadOptional.isEmpty()) {
-                log.info("report thread not found");
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> getListReportThreadByThread() {
+        try {
+
+            log.info("Executing List report  thread by thread");
+            List<GetListTotalReportThread> getListTotalReportThreadList = reportThreadRepository.getListTotalReport();
+            List<GetListTotalReportThreadDTO> getListTotalReportThreadDTOS = new ArrayList<>();
+
+            if (getListTotalReportThreadList.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
 
-            ReportThread reportThread = reportThreadOptional.get();
-            reportThread.setReportType(request.getReportType());
-            reportThreadRepository.save(reportThread);
+            for (GetListTotalReportThread list : getListTotalReportThreadList){
+                getListTotalReportThreadDTOS.add(GetListTotalReportThreadDTO.builder()
+                                .thread_id(list.getThread_Id())
+                                .total_report_thraed(list.getTotal_Report_Thread())
+                        .build());
+            }
 
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(reportThread, ReportThreadRequest.class), HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, getListTotalReportThreadDTOS, HttpStatus.OK);
         } catch (Exception e) {
-            log.error("Get an error executing update report thread, Error : {}", e.getMessage());
+            log.error("Get an error by executing list total report thread");
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

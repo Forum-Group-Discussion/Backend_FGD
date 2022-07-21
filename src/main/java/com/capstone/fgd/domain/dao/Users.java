@@ -17,6 +17,7 @@ import javax.validation.Path;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Set;
 
 @Data
 @Builder
@@ -29,13 +30,14 @@ import java.util.Collection;
 public class Users extends BaseDao implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name_user",nullable = false)
     private String name;
 
-    @Column(name = "username")
-    private String username;
+    @Column(name = "ausername")
+    private String ausername;
 
     @Column(name = "email",nullable = false)
     private String email;
@@ -46,8 +48,7 @@ public class Users extends BaseDao implements UserDetails {
     @Column(name = "image")
     private String image;
 
-    @Lob
-    @Column(name = "bio")
+    @Column(name = "bio",columnDefinition = "TEXT")
     private String bio;
 
     @Column(name = "location")
@@ -64,6 +65,40 @@ public class Users extends BaseDao implements UserDetails {
 
     @Column(name = "is_Suspended")
     private Boolean isSuspended;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<Following> follow;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userFollow")
+    private Set<Following> followUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "users")
+    private Set<Threads> threadsUser;
+
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "users")
+    private Set<Comment> commentUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userLike")
+    private Set<LikeThread> userLikeThread;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userLike")
+    private Set<LikeComment> userLikeComment;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<ReportThread> reportThreadsUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<ReportComment> reportComments;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<ReportUser> reportUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "userReport")
+    private Set<ReportUser> reportForUser;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+    private Set<SaveThread> saveThreadsUser;
 
 
     @Override

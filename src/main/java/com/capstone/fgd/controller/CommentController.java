@@ -43,13 +43,21 @@ public class CommentController {
         return commentService.updateComment(id, request);
     }
 
+    @GetMapping(value = "/totalcommentbythread")
+    public ResponseEntity<Object> getTotalCommentByThread(){
+        return commentService.getTotalCommentByThread();
+    }
+
+    @GetMapping(value = "/search")
+    public ResponseEntity<Object> searchComment(@RequestParam(value = "comment", required = false)String comment){
+        return commentService.searchComment(comment);
+    }
+
+
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteComment(Principal principal, @PathVariable Long id) {
-        Users user = (Users) userService.loadUserByUsername(principal.getName());
-        if (user.getIsAdmin().equals(true)) {
             return commentService.deleteComment(id);
-        }
-        return ResponseUtil.build(ResponseMessage.NON_AUTHORIZED, null, HttpStatus.BAD_REQUEST);
+
     }
 
 

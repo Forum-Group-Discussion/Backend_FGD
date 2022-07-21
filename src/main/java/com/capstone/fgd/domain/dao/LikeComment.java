@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -19,27 +21,23 @@ import javax.persistence.*;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-@Table(name = "m_likecomment")
+@Table(name = "m_like_comment")
 public class LikeComment extends BaseDao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "comment_id")
+    @JoinColumn(name = "comment_id",nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Comment commentLike;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",nullable = false)
     private Users userLike;
-
-    @ManyToOne
-    @JoinColumn(name = "thread_id")
-    private Comment threadsId;
 
     @Column(name = "is_like")
     private Boolean isLike;
 
-    @Column(name = "is_dislike")
-    private Boolean isDislike;
 }

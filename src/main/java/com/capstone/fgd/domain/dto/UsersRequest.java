@@ -23,7 +23,7 @@ public class UsersRequest {
 
     private String name;
 
-    private String username;
+    private String ausername;
 
     private String email;
 

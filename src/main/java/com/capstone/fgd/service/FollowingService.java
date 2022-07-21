@@ -2,8 +2,12 @@ package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Following;
+import com.capstone.fgd.domain.dao.GetFollowingUser;
+import com.capstone.fgd.domain.dao.GetUserByFollowers;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.FollowingRequest;
+import com.capstone.fgd.domain.dto.GetFollowingUserDTO;
+import com.capstone.fgd.domain.dto.GetUserByFollowerDTO;
 import com.capstone.fgd.repository.FollowingRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
@@ -110,8 +114,6 @@ public class FollowingService {
     }
 
 
-
-    @Transactional
     public ResponseEntity<Object> getAllFollowing(Principal principal){
         try {
             log.info("Executing get all following");
@@ -135,7 +137,6 @@ public class FollowingService {
         }
     }
 
-    @Transactional
     public ResponseEntity<Object> getAllFollower(Principal principal){
         try {
             log.info("Executing get all followers");
@@ -176,23 +177,56 @@ public class FollowingService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-//
-//    public ResponseEntity<Object> deleteFollowingById(Long id){
-//        try {
-//            log.info("Executing delete following by id,id : {}",id);
-//            Optional<Following> followingOptional = followingRepository.findById(id);
-//
-//            if (followingOptional.isEmpty()){
-//                log.info("following not found");
-//                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-//            }
-//            followingRepository.delete(followingOptional.get());
-//            return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
-//        }catch (Exception e){
-//            log.error("Get an error by executing get user by id, Error : {}",e.getMessage());
-//            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-//
-//
+
+    public ResponseEntity<Object> getUserByFollowers(){
+        try {
+
+            log.info("Executing get user by most follower");
+
+            List<GetUserByFollowers> getUserByFollowers = followingRepository.getUserByFollower();
+            List<GetUserByFollowerDTO> getUserByFollowerDTOS = new ArrayList<>();
+
+           for (GetUserByFollowers followers: getUserByFollowers){
+               getUserByFollowerDTOS.add(GetUserByFollowerDTO.builder()
+                               .id(followers.getId())
+                               .follower(followers.getFollower())
+                               .name_user(followers.getName_User())
+                               .ausername(followers.getAusername())
+                       .build());
+
+           }
+           log.info("SUCCESS");
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,getUserByFollowerDTOS,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by executing get user by most follower, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getUserByFollowing(){
+        try {
+
+            log.info("Executing get followuing all user");
+
+            List<GetFollowingUser> getFollowingUsers = followingRepository.getAllUserFollowing();
+            List<GetFollowingUserDTO> getFollowingUserDTOS = new ArrayList<>();
+
+            for (GetFollowingUser following: getFollowingUsers){
+                getFollowingUserDTOS.add(GetFollowingUserDTO.builder()
+                        .id(following.getId())
+                        .following(following.getFollowing())
+                        .name_user(following.getName_User())
+                        .ausername(following.getAusername())
+                        .build());
+
+            }
+            log.info("SUCCESS");
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,getFollowingUserDTOS,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by executing followuing all user, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

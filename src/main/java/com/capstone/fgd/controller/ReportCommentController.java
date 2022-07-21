@@ -23,6 +23,11 @@ public class ReportCommentController {
         return reportCommentService.createNewReportComment(request, principal);
     }
 
+    @GetMapping(value = "/allreporttype")
+    public ResponseEntity<Object> getAllReportType(){
+        return reportCommentService.getAllReportType();
+    }
+
     @GetMapping(value = "")
     public ResponseEntity<Object> getAllReportComment(Principal principal){
         return reportCommentService.getAllReportComment();
@@ -33,14 +38,14 @@ public class ReportCommentController {
         return reportCommentService.getReportCommentById(id);
     }
 
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<Object> updateReportComment(Principal principal, @PathVariable Long id, @RequestBody ReportCommentRequest request){
-        return reportCommentService.updateReportComment(id, request);
-    }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Object> deleteReportComment(Principal principal, @PathVariable Long id){
         return reportCommentService.deleteReportComment(id);
     }
 
+    @GetMapping(value = "/listotalreportcomment")
+    public ResponseEntity<Object> getListReportComment(){
+        return reportCommentService.getListReportCommentByComment();
+    }
 }

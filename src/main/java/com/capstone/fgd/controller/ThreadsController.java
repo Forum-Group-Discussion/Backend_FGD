@@ -75,9 +75,9 @@ public class ThreadsController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteThread(Principal principal, @PathVariable Long id) {
+    public ResponseEntity<Object> deleteThread(@PathVariable Integer id) {
 
-        return threadsService.deleteThread(principal,id);
+        return threadsService.deleteThread(id);
     }
 
     @GetMapping(value = "/search")
@@ -85,13 +85,22 @@ public class ThreadsController {
         return threadsService.searchByThread(thread);
     }
 
-    @GetMapping(value = "/{offset}/{limit}")
-    public ResponseEntity<?> getAllThreadDESCUsingPagination(@PathVariable Long offset,@PathVariable Long limit){
-        return threadsService.getAllThreadWithPagination(offset, limit);
-    }
 
     @GetMapping(value = "/bylike")
     public ResponseEntity<?> getListThreadByLike(){
         return threadsService.getListThreadByLike();
     }
+
+    @GetMapping(value = "/totalthread")
+    public ResponseEntity<?> getTotalThread(){
+        return threadsService.getTotalThread();
+    }
+
+    @GetMapping(value = "/totalthreaduserid")
+    public ResponseEntity<?> getCountThreadByUser(Principal principal){
+        return threadsService.getCountThreadByUser(principal);
+    }
+
+
+
 }

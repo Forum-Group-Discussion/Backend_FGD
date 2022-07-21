@@ -1,10 +1,12 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.Comment;
-import com.capstone.fgd.domain.dao.ReportComment;
-import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.Enum.ReportType;
+import com.capstone.fgd.domain.dao.*;
+import com.capstone.fgd.domain.dto.GetListTotalReportCommentDTO;
+import com.capstone.fgd.domain.dto.GetListTotalReportThreadDTO;
 import com.capstone.fgd.domain.dto.ReportCommentRequest;
+import com.capstone.fgd.domain.dto.ReportTypeDTO;
 import com.capstone.fgd.repository.CommentRepository;
 import com.capstone.fgd.repository.ReportCommentRepository;
 import com.capstone.fgd.repository.UserRepository;
@@ -50,6 +52,13 @@ public class ReportCommentService {
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
             }
 
+            Optional<ReportComment> optionalReportComment = reportCommentRepository.hasBeenReportComment(
+                    userSignIn.getId(), reportCommentRequest.getComment().getId());
+
+            if (optionalReportComment.isPresent()){
+                return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_COMMENT,null,HttpStatus.BAD_REQUEST);
+            }
+
             ReportComment reportComment = ReportComment.builder()
                     .user(userSignIn)
                     .comment(commentOptional.get())
@@ -58,6 +67,7 @@ public class ReportCommentService {
             reportCommentRepository.save(reportComment);
             ReportCommentRequest reportCommentRequestDto = mapper.map(reportComment, ReportCommentRequest.class);
             return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportCommentRequestDto, HttpStatus.OK);
+
         } catch (Exception e) {
             log.error("Get an error executing new report comment, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -102,22 +112,26 @@ public class ReportCommentService {
         }
     }
 
-    public ResponseEntity<Object> updateReportComment(Long id, ReportCommentRequest request) {
-        try {
-            log.info("Executing update Report Comment");
-            Optional<ReportComment> reportCommentOptional = reportCommentRepository.findById(id);
 
-            if (reportCommentOptional.isEmpty()) {
-                log.info("report comment not found");
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Object> getAllReportType() {
+        try {
+            log.info("Executing get all report ");
+
+            List<ReportTypeDTO> reportTypeList = new ArrayList<>();
+
+            ReportType[] rt = ReportType.values();
+            for (int i = 1; i <= rt.length; i++) {
+                ReportType r = rt[i-1];
+                reportTypeList.add(ReportTypeDTO.builder()
+                                .id(Long.valueOf(i))
+                                .reportType(String.valueOf(r))
+                        .build());
             }
 
-            ReportComment reportComment = reportCommentOptional.get();
-            reportComment.setReportType(request.getReportType());
-            reportCommentRepository.save(reportComment);
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, mapper.map(reportComment, ReportCommentRequest.class), HttpStatus.OK);
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, reportTypeList, HttpStatus.OK);
         } catch (Exception e) {
-            log.error("Get an error executing update report comment, Error : {}", e.getMessage());
+            log.error("Get an error get all report, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -136,4 +150,30 @@ public class ReportCommentService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public ResponseEntity<Object> getListReportCommentByComment() {
+        try {
+
+            log.info("Executing List report  thread by thread");
+            List<GetListTotalReportComment> getListTotalReportComments = reportCommentRepository.getListTotalReportComment();
+            List<GetListTotalReportCommentDTO> getListTotalReportCommentDTOList = new ArrayList<>();
+
+            if (getListTotalReportComments.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (GetListTotalReportComment list : getListTotalReportComments){
+                getListTotalReportCommentDTOList.add(GetListTotalReportCommentDTO.builder()
+                        .comment_id(list.getComment_Id())
+                        .total_report_comment(list.getTotal_Report_Comment())
+                        .build());
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, getListTotalReportCommentDTOList, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Get an error by executing list total report comment");
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

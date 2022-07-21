@@ -43,7 +43,6 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    @Transactional
     public ResponseEntity<Object> getAllUser(){
         try {
             log.info("Executing get all user");
@@ -65,7 +64,6 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    @Transactional
     public ResponseEntity<Object> getUserByid(Long id){
         try {
             log.info("Executing get user by id,id : {}",id);
@@ -83,7 +81,6 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    @Transactional
     public ResponseEntity<Object> searchUser(String user){
         try {
             log.info("Executing search user with email : {}",user);
@@ -107,7 +104,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    @Transactional
+
     public ResponseEntity<Object> updateSuspended(Long id,UsersRequest request){
         try {
             log.info("Suspend user with id : {}",id);
@@ -129,7 +126,6 @@ public class UserService implements UserDetailsService {
     }
 
 
-    @Transactional
     public ResponseEntity<Object> updateUser(Long id,UsersRequest request){
         try {
             log.info("Executing update user with id : {}", id);
@@ -140,7 +136,7 @@ public class UserService implements UserDetailsService {
             }
             Users users = userDaoOptional.get();
             users.setName(request.getName());
-            users.setUsername(request.getUsername());
+            users.setAusername(request.getAusername());
             users.setBio(request.getBio());
             users.setLocation(request.getLocation());
             users.setWebsite(request.getWebsite());

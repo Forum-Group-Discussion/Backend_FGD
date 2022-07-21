@@ -1,15 +1,12 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.ReportThread;
-import com.capstone.fgd.domain.dao.ReportUser;
-import com.capstone.fgd.domain.dao.Threads;
-import com.capstone.fgd.domain.dao.Users;
-import com.capstone.fgd.domain.dto.ReportThreadRequest;
+import com.capstone.fgd.domain.dao.*;
+import com.capstone.fgd.domain.dto.GetCountReportDTO;
+import com.capstone.fgd.domain.dto.GetListTotalReportThreadDTO;
+import com.capstone.fgd.domain.dto.GetListTotalReportUserDTO;
 import com.capstone.fgd.domain.dto.ReportUserRequest;
-import com.capstone.fgd.repository.ReportThreadRepository;
 import com.capstone.fgd.repository.ReportUserRepository;
-import com.capstone.fgd.repository.ThreadsRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +45,19 @@ public class ReportUserService {
             if (userOptional.isEmpty()) {
                 log.info("User not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.BAD_REQUEST);
+            }
+
+            Optional<ReportUser> optionalReportUser = reportUserRepository.hasBeenReportUser(userSignIn.getId(),request.getUserReport().getId());
+
+            Optional<ReportUser> reporrUrSelf = reportUserRepository.cantReportYourSelf(userSignIn.getId(),request.getUserReport().getId());
+
+            if (optionalReportUser.isPresent()){
+                log.info("has been report user");
+                return ResponseUtil.build(ResponseMessage.SUCCESS_REPORT_USER,null,HttpStatus.BAD_REQUEST);
+            }
+
+            if (reporrUrSelf.isPresent()){
+                return ResponseUtil.build("CAN'T_REPORT_YOURSELF",null,HttpStatus.BAD_REQUEST);
             }
 
             ReportUser reportUser = ReportUser.builder()
@@ -104,5 +114,49 @@ public class ReportUserService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public ResponseEntity<Object> getTotalReport() {
+        try {
+            log.info("Executing get total report ");
+           Integer getCountReports = reportUserRepository.getCountReport();
+
+            GetCountReportDTO getCountReportDTO = GetCountReportDTO.builder()
+                    .totalReport(getCountReports)
+                    .build();
+
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, getCountReportDTO, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Get an error by executing get total report , Error : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> getListReportUser() {
+        try {
+
+            log.info("Executing List report user by user_report_id");
+
+            List<GetListTotalReportUser> getListTotalReportUsers = reportUserRepository.getListTotalReportUser();
+            List<GetListTotalReportUserDTO> getListTotalReportUserDTOS = new ArrayList<>();
+
+            if (getListTotalReportUsers.isEmpty()){
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (GetListTotalReportUser list : getListTotalReportUsers){
+                getListTotalReportUserDTOS.add(GetListTotalReportUserDTO.builder()
+                                .user_report_id(list.getUser_Report_Id())
+                                .total_report_user(list.getTotal_Report_User())
+                        .build());
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, getListTotalReportUserDTOS, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Get an error by executing list total report thread");
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }

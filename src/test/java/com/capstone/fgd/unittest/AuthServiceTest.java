@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = AuthService.class)
-public class AuthServiceTest {
+ class AuthServiceTest {
     @MockBean
     private ModelMapper mapper;
 
@@ -52,183 +52,181 @@ public class AuthServiceTest {
     @Autowired
     private AuthService authService;
 
-//    @Test
-//    void registerUsersSuccess_Test() {
-//
-//        Users users = Users.builder()
-//                .id(1L)
-//                .name("Hafidz Febrian")
-//                .email("hafidzencis@gmail.com")
-//                .password("jokowiloveR12")
-//                .isAdmin(false)
-//                .isSuspended(false)
-//                .build();
-//        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-//        when(userRepository.save(any())).thenReturn(users);
-//
-//        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
-//                .id(1L)
-//                .name("Hafidz Febrian")
-//                .email("hafidzencis@gmail.com")
-//                .password("jokowiloveR12")
-//                .build());
-//        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
-//        UsersRequest usersheck = (UsersRequest) Objects.requireNonNull(apiResponse).getData();
-//        assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
-//    }
+    @Test
+    void registerUsersSuccess_Test() {
 
-//    @Test
-//    void registerUsers_Admin_Success_Test() {
-//
-//        Users users = Users.builder()
-//                .id(1L)
-//                .name("Hafidz Febrian")
-//                .email("hafidzencis@gmail.com")
-//                .password("jokowiloveR12")
-//                .isAdmin(true)
-//                .isSuspended(false)
-//                .build();
-//        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-//        when(userRepository.save(any())).thenReturn(users);
-//
-//        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
-//                .id(1L)
-//                .name("Hafidz Febrian")
-//                .email("hafidzencis@gmail.com")
-//                .password("jokowiloveR12")
-//                .isAdmin(true)
-//                .build());
-//        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
-//        UsersRequest usersheck = (UsersRequest) Objects.requireNonNull(apiResponse).getData();
-//        assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
-//    }
+        Users users = Users.builder()
+                .id(1L)
+                .name("Hafidz Febrian")
+                .email("hafidzencis@gmail.com")
+                .password("jokowiloveR12")
+                .isAdmin(false)
+                .isSuspended(false)
+                .build();
+        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
+        when(userRepository.save(any())).thenReturn(users);
 
-//    @Test
-//    void registerUsersFail_NullField_Test() {
-//
-//        Users users = Users.builder()
-//                .id(1L)
-//                .name("")
-//                .email("")
-//                .password("")
-//                .isAdmin(false)
-//                .isSuspended(false)
-//                .build();
-//
-//        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-//        when(userRepository.save(any())).thenReturn(users);
-//
-//        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
-//                .id(1L)
-//                .name("")
-//                .email("")
-//                .password("")
-//                .build());
-//        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
-//        assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
-//        assertEquals(ResponseMessage.COLUMN_NULL,Objects.requireNonNull(apiResponse).getMessage());
-//    }
+        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
+                .id(1L)
+                .name("Hafidz Febrian")
+                .email("hafidzencis@gmail.com")
+                .password("jokowiloveR12")
+                .build());
+        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
+        UsersRequest usersheck = (UsersRequest) Objects.requireNonNull(apiResponse).getData();
+        assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
+    }
 
-//    @Test
-//    void registerUsersFail_Namelessthen4_Test() {
-//
-//        Users users = Users.builder()
-//                .id(1L)
-//                .name("haf")
-//                .email("hafidzfebrian@gmail.com")
-//                .password("Jokowilover12")
-//                .isAdmin(false)
-//                .isSuspended(false)
-//                .build();
-//
-//        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-//        when(userRepository.save(any())).thenReturn(users);
-//
-//        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
-//                .id(1L)
-//                .name("haf")
-//                .email("hafidzfebrian@gmail.com")
-//                .password("Jokowilover12")
-//                .build());
-//        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
-//        assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
-//        assertEquals(ResponseMessage.CHAR_LESS_4,Objects.requireNonNull(apiResponse).getMessage());
-//    }
+    @Test
+    void registerUsers_Admin_Success_Test() {
 
-//    @Test
-//    void registerUsersFail_Emailnothave_at_Test() {
-//
-//        Users users = Users.builder()
-//                .id(1L)
-//                .name("hafidzfebrian")
-//                .email("hafidzfebriangmail.com")
-//                .password("Jokowilover12")
-//                .isAdmin(false)
-//                .isSuspended(false)
-//                .build();
-//
-//        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-//        when(userRepository.save(any())).thenReturn(users);
-//
-//        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
-//                .id(1L)
-//                .name("hafidzfebrian")
-//                .email("hafidzfebriangmail.com")
-//                .password("Jokowilover12")
-//                .build());
-//        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
-//        assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
-//        assertEquals("EMAIL_NOT_VALID",Objects.requireNonNull(apiResponse).getMessage());
-//    }
+        Users users = Users.builder()
+                .id(1L)
+                .name("Hafidz Febrian")
+                .email("hafidzencis@gmail.com")
+                .password("jokowiloveR12")
+                .isAdmin(true)
+                .isSuspended(false)
+                .build();
+        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
+        when(userRepository.save(any())).thenReturn(users);
+
+        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
+                .id(1L)
+                .name("Hafidz Febrian")
+                .email("hafidzencis@gmail.com")
+                .password("jokowiloveR12")
+                .isAdmin(true)
+                .build());
+        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
+        UsersRequest usersheck = (UsersRequest) Objects.requireNonNull(apiResponse).getData();
+        assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
+    }
+
+    @Test
+    void registerUsersFail_NullField_Test() {
+        Users users = Users.builder()
+                .id(1L)
+                .name("")
+                .email("")
+                .password("")
+                .isAdmin(false)
+                .isSuspended(false)
+                .build();
+
+        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
+        when(userRepository.save(any())).thenReturn(users);
+
+        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
+                .id(1L)
+                .name("")
+                .email("")
+                .password("")
+                .build());
+        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
+        assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
+        assertEquals(ResponseMessage.COLUMN_NULL,Objects.requireNonNull(apiResponse).getMessage());
+    }
+
+    @Test
+    void registerUsersFail_Namelessthen4_Test() {
+        Users users = Users.builder()
+                .id(1L)
+                .name("haf")
+                .email("hafidzfebrian@gmail.com")
+                .password("Jokowilover12")
+                .isAdmin(false)
+                .isSuspended(false)
+                .build();
+
+        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
+        when(userRepository.save(any())).thenReturn(users);
+
+        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
+                .id(1L)
+                .name("haf")
+                .email("hafidzfebrian@gmail.com")
+                .password("Jokowilover12")
+                .build());
+        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
+        assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
+        assertEquals(ResponseMessage.CHAR_LESS_4,Objects.requireNonNull(apiResponse).getMessage());
+    }
+
+    @Test
+    void registerUsersFail_Emailnothave_at_Test() {
+
+        Users users = Users.builder()
+                .id(1L)
+                .name("hafidzfebrian")
+                .email("hafidzfebriangmail.com")
+                .password("Jokowilover12")
+                .isAdmin(false)
+                .isSuspended(false)
+                .build();
+
+        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
+        when(userRepository.save(any())).thenReturn(users);
+
+        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
+                .id(1L)
+                .name("hafidzfebrian")
+                .email("hafidzfebriangmail.com")
+                .password("Jokowilover12")
+                .build());
+        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
+        assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
+        assertEquals("EMAIL_NOT_VALID",Objects.requireNonNull(apiResponse).getMessage());
+    }
 
 
-//    @Test
-//    void registerUsersFail_Password_at_Test() {
-//
-//        Users users = Users.builder()
-//                .id(1L)
-//                .name("hafidzfebrian")
-//                .email("hafidzfebrian@gmail.com")
-//                .password("Jokowilove")
-//                .isAdmin(false)
-//                .isSuspended(false)
-//                .build();
-//
-//        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
-//        when(userRepository.save(any())).thenReturn(users);
-//
-//        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
-//                .id(1L)
-//                .name("hafidzfebrian")
-//                .email("hafidzfebrian@gmail.com")
-//                .password("Jokowilove")
-//                .build());
-//        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
-//        assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
-//        assertEquals("MUST_CONTAINS_NUMBER_AND_CAPITALCHAR",Objects.requireNonNull(apiResponse).getMessage());
-//    }
+    @Test
+    void registerUsersFail_Password_at_Test() {
+
+        Users users = Users.builder()
+                .id(1L)
+                .name("hafidzfebrian")
+                .email("hafidzfebrian@gmail.com")
+                .password("Jokowilove")
+                .isAdmin(false)
+                .isSuspended(false)
+                .build();
+
+        when(userRepository.existsByEmail(users.getEmail())).thenReturn(false);
+        when(userRepository.save(any())).thenReturn(users);
+
+        ResponseEntity<Object> responseEntity = authService.register(UsersRequest.builder()
+                .id(1L)
+                .name("hafidzfebrian")
+                .email("hafidzfebrian@gmail.com")
+                .password("Jokowilove")
+                .build());
+        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
+        assertEquals(HttpStatus.BAD_REQUEST.value(),responseEntity.getStatusCodeValue());
+        assertEquals("MUST_CONTAINS_NUMBER_AND_CAPITALCHAR",Objects.requireNonNull(apiResponse).getMessage());
+    }
 
 //    @Test
 //    void authenticatedAndGenerateTokenSuccess_Test() {
 //        Users users = Users.builder()
-//                .id(1L)
-//                .name("Hafidz Febrian")
+//
 //                .email("hafidzencis@gmail.com")
 //                .password("jokowiloveR12")
-//                .isAdmin(false)
-//                .isSuspended(false)
 //                .build();
 //        TokenResponse tokenResponseDto = TokenResponse.builder()
 //                .token("TOKEN")
+//                .id(1L)
 //                .name("Hafidz Febrian")
 //                .isAdmin(false)
 //                .isSupended(false)
 //                .build();
 //
 //        when(jwtTokenProvider.generateToken(any())).thenReturn("TOKEN");
-//        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(users));
+//        when(userRepository.findByEmail(any())).thenReturn(Optional.of(users));
 //        when(mapper.map(any(),eq(Users.class))).thenReturn(users);
 //        when(mapper.map(any(),eq(TokenResponse.class))).thenReturn(tokenResponseDto);
+////        when(userRepository.findById(any())).thenReturn(Optional.ofNullable(users));
+//
 //        ResponseEntity<?> responseEntity = authService.authenticateAndGenerateToken(UsersRequest.builder()
 //                        .name("Hafidz Febrian")
 //                        .email("hafidzencis@gmail.com")
@@ -238,7 +236,7 @@ public class AuthServiceTest {
 //                .build());
 //        ApiResponse response = (ApiResponse) responseEntity.getBody();
 //        TokenResponse tokenResponse = (TokenResponse) Objects.requireNonNull(response).getData();
-//        assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
+////        assertEquals(HttpStatus.OK.value(), responseEntity.getStatusCodeValue());
 //        assertEquals("TOKEN", tokenResponse.getToken());
 //        assertEquals("Hafidz Febrian",tokenResponse.getName());
 //        assertEquals(false,tokenResponse.getIsAdmin());

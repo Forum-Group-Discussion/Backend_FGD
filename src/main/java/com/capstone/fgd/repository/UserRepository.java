@@ -12,8 +12,13 @@ import java.util.List;
 public interface UserRepository extends JpaRepository<Users,Long> {
 
     Users findByEmail(String email);
+
     Boolean existsByEmail(String email);
 
     @Query(value = "SELECT t FROM Users t Where t.name LIKE %:userreq% ")
     List<Users> findByUser(@Param("userreq") String userreq);
+
+    @Query(value = "select count(*) AS user from m_user where is_admin = false", nativeQuery = true)
+    void getCountUser();
+
 }

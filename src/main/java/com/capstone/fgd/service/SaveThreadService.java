@@ -48,32 +48,41 @@ public class SaveThreadService {
             log.info("Executing service create save thread");
             Users userLogin = (Users) userService.loadUserByUsername(principal.getName());
 
-            Optional<Threads> threadOptional = threadsRepository.findById(request.getIdThread().getId());
+            Optional<Threads> threadOptional = threadsRepository.findById(request.getThreads().getId());
 
             if (threadOptional.isEmpty()){
                 log.info("thread not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.BAD_REQUEST);
             }
 
+            Optional<SaveThread> checkSaveThread = saveThreadRepository.checkUserSaveThread(threadOptional.get().getId()
+                    ,userLogin.getId());
+
+            if (checkSaveThread.isPresent()){
+                log.info("User : {} have save thread id : {} ",userLogin.getName(),request.getThreads().getId());
+                return ResponseUtil.build("YOU_HAVE_BEEN_SAVE_THIS_THREAD",null, HttpStatus.BAD_REQUEST);
+            }
+
             SaveThread saveThread = SaveThread.builder()
                     .user(userLogin)
                     .threads(threadOptional.get())
                     .build();
-
             saveThreadRepository.save(saveThread);
+            log.info("berhasil");
 
-//            SaveThreadRequest saveThreadRequestDTO = mapper.map(saveThread, SaveThreadRequest.class);
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, saveThread, HttpStatus.OK);
+            SaveThreadRequest saveThreadRequestDTO = mapper.map(saveThread, SaveThreadRequest.class);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, saveThreadRequestDTO, HttpStatus.OK);
         }catch (Exception e){
             log.error("Get an error executing new save thread, error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    public  ResponseEntity<Object> getByUser(Long req){
+    public  ResponseEntity<Object> getByUser(Principal principal){
         try {
-            log.info("Executing get all save thread by user");
-            List<SaveThread> saveThreadList = saveThreadRepository.getByUser(req);
+            Users user = (Users)userService.loadUserByUsername(principal.getName());
+            log.info("Executing get all save thread by user with user id : {} ",user.getId());
+            List<SaveThread> saveThreadList = saveThreadRepository.getByUser(user.getId());
             List<SaveThreadRequest> saveThreadRequestList = new ArrayList<>();
 
             if (saveThreadList.isEmpty()){
@@ -91,5 +100,24 @@ public class SaveThreadService {
         }
     }
 
+    public  ResponseEntity<Object> deleteSaveThread(Principal principal, Long id){
+        try {
+            log.info("Executing delete save thread user by id : {}", id);
+            Users user = (Users)userService.loadUserByUsername(principal.getName());
+            Optional<SaveThread> saveThreadList = saveThreadRepository.getDeleteSaveThread(user.getId(),id);
+
+            if (saveThreadList.isPresent()){
+                saveThreadRepository.delete(saveThreadList.get());
+                log.info("Success delete save thread with id thread : {} and user id : {}", id,user.getId());
+                return ResponseUtil.build(ResponseMessage.KEY_FOUND, null,HttpStatus.OK);
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null,HttpStatus.BAD_REQUEST);
+
+
+        }catch (Exception e){
+            log.error("Get An error get delete save thread by user : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

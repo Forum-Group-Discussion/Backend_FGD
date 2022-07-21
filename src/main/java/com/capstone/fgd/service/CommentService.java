@@ -2,9 +2,11 @@ package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
 import com.capstone.fgd.domain.dao.Comment;
+import com.capstone.fgd.domain.dao.GetTotalCommentByThread;
 import com.capstone.fgd.domain.dao.Threads;
 import com.capstone.fgd.domain.dao.Users;
 import com.capstone.fgd.domain.dto.CommentRequest;
+import com.capstone.fgd.domain.dto.GetTotalCommentByThreadDTO;
 import com.capstone.fgd.domain.dto.ThreadsRequest;
 import com.capstone.fgd.repository.CommentRepository;
 import com.capstone.fgd.repository.ThreadsRepository;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional
 public class CommentService {
 
     @Autowired
@@ -87,6 +91,27 @@ public class CommentService {
         }
     }
 
+    public ResponseEntity<Object> getTotalCommentByThread(){
+        try {
+            log.info("Executing get total comment by thread");
+            List<GetTotalCommentByThread> getTotalCommentByThreadList = commentRepository.getTotalCommentByThread();
+            List<GetTotalCommentByThreadDTO> getTotalCommentByThreadDTOList = new ArrayList<>();
+
+            for (GetTotalCommentByThread totalcomment : getTotalCommentByThreadList){
+                getTotalCommentByThreadDTOList.add(GetTotalCommentByThreadDTO.builder()
+                                .totalComment(totalcomment.getTotal_Comment())
+                                .threadId(totalcomment.getThread_Id())
+                                .userId(totalcomment.getUser_Id())
+                        .build());
+            }
+
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,getTotalCommentByThreadDTOList,HttpStatus.OK);
+        } catch (Exception e){
+            log.error("Get An error get all comment by thread : {}", e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public ResponseEntity<Object> getCommentById(Long id){
         try {
             log.info("Executing getCommentById with id : {}", id);
@@ -97,7 +122,7 @@ public class CommentService {
                 return ResponseUtil.build(ResponseMessage.KEY_FOUND,null, HttpStatus.BAD_REQUEST);
             }
             Comment comment = commentOptional.get();
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(comment, ThreadsRequest.class), HttpStatus.OK);
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND, mapper.map(comment, CommentRequest.class), HttpStatus.OK);
         } catch (Exception e){
             log.error("Get an error by executing get comment by id, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND, null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -112,7 +137,9 @@ public class CommentService {
                 log.info("comment not found");
                 return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
             }
-            commentRepository.delete(commentOptional.get());
+            commentRepository.deleteLikeCommentUseCommentId(id);
+            commentRepository.deleteReportCommentUseCommentId(id);
+            commentRepository.deleteComment(id);
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,null,HttpStatus.OK);
         } catch (Exception e){
             log.error("Get an error by executing delete Comment");
@@ -138,6 +165,27 @@ public class CommentService {
         }catch (Exception e){
             log.error("Get an error executing update comment, Error : {}", e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> searchComment(String req){
+        try {
+            log.info("Executing search comment");
+             List<Comment> commentList = commentRepository.searchComment(req);
+             List<CommentRequest> commentRequestList = new ArrayList<>();
+
+            if (commentList.isEmpty()){
+                log.info("not found any comment");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (Comment comment:commentList){
+                commentRequestList.add(mapper.map(comment,CommentRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,commentRequestList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by searching thread, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
