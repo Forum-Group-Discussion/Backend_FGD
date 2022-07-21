@@ -152,32 +152,4 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<Object> updateU(Long id,UsersRequest request){
-        try {
-            log.info("Executing update user with id : {}", id);
-            Optional<Users> userDaoOptional = userRepository.findById(id);
-            if (userDaoOptional.isEmpty()){
-                log.info("user not found");
-                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
-            }
-            Users users = userDaoOptional.get();
-            users.setName(request.getName());
-            users.setAusername(request.getAusername());
-            users.setBio(request.getBio());
-            users.setLocation(request.getLocation());
-            users.setWebsite(request.getWebsite());
-
-            userRepository.save(users);
-            UsersRequest usersRequest = mapper.map(users,UsersRequest.class);
-
-            return ResponseUtil.build(ResponseMessage.KEY_FOUND,usersRequest,HttpStatus.OK);
-
-        }catch (Exception e){
-            log.error("Get an error by executing update team,Error : {}",e.getMessage());
-            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-
 }
