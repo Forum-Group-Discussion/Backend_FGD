@@ -42,6 +42,11 @@ public class FollowingController {
         return followingService.getUserByFollowing();
     }
 
+    @GetMapping(value = "/countuserfollower")
+    public ResponseEntity<Object> getCountFollowerUser(){
+        return followingService.getFolloweruser();
+    }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<Object> getFollowingById(Principal principal, @PathVariable Long id){
         return followingService.getFollowingByid(id);

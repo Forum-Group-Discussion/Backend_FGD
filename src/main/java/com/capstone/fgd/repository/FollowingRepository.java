@@ -1,9 +1,6 @@
 package com.capstone.fgd.repository;
 
-import com.capstone.fgd.domain.dao.Following;
-import com.capstone.fgd.domain.dao.GetFollowingUser;
-import com.capstone.fgd.domain.dao.GetUserByFollowers;
-import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dao.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -39,5 +36,9 @@ public interface FollowingRepository extends JpaRepository<Following,Long> {
             "group by f.user_id,us.name_user,us.ausername\n" +
             "order by (f.user_id)",nativeQuery = true)
     List<GetFollowingUser> getAllUserFollowing();
+
+
+    @Query(value = "select f.user_follow_id as id, count(f.user_follow_id) as follower, us.name_user,us.ausername from m_following f join m_user us on us.id = f.user_follow_id where f.is_follow = true group by f.user_follow_id, us.name_user,us.ausername order by count(f.user_follow_id)",nativeQuery = true)
+    List<GetFollowerUser> getAllUserFollower();
 
 }

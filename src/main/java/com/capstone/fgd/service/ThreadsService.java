@@ -298,11 +298,10 @@ public class ThreadsService {
     }
 
 
-
-    public ResponseEntity<Object> searchByThread(String req){
+    public ResponseEntity<Object> searchThreadByTitle(String req){
         try {
-            log.info("Executing searchByThread");
-            List<Threads> threadsList = threadsRepository.searchByThread(req);
+            log.info("Executing search thread by title");
+            List<Threads> threadsList = threadsRepository.searchThreadByTitle(req);
             List<ThreadsRequest> threadsRequestList = new ArrayList<>();
 
             if (threadsList.isEmpty()){
@@ -315,7 +314,28 @@ public class ThreadsService {
             }
             return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList,HttpStatus.OK);
         }catch (Exception e){
-            log.error("Get an error by searching thread, Error : {}",e.getMessage());
+            log.error("Get an error by searching thread use title, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseEntity<Object> searchThreadByContent(String req){
+        try {
+            log.info("Executing search thread by content");
+            List<Threads> threadsList = threadsRepository.searchThreadByContent(req);
+            List<ThreadsRequest> threadsRequestList = new ArrayList<>();
+
+            if (threadsList.isEmpty()){
+                log.info("not found any thread");
+                return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.BAD_REQUEST);
+            }
+
+            for (Threads threads:threadsList){
+                threadsRequestList.add(mapper.map(threads,ThreadsRequest.class));
+            }
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,threadsRequestList,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by searching thread use content, Error : {}",e.getMessage());
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
