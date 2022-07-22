@@ -38,6 +38,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static springfox.documentation.builders.PathSelectors.any;
 
@@ -514,9 +515,9 @@ public class ThreadServiceTest {
 //
 //    @Test
 //    void deleteThread_NotFoundId_Test(){
-//        when(threadRepository.findById(anyLong())).thenReturn(Optional.empty());
-//        doNothing().when(threadRepository).delete(any());
-//        ResponseEntity<Object> responseEntity = threadService.deleteThread(1L);
+//        when(threadsRepository.findById(anyLong())).thenReturn(Optional.empty());
+//        doNothing().when(threadsRepository).delete(any());
+//        ResponseEntity<Object> responseEntity = threadsService.deleteThread(1L);
 //        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
 //        assertEquals(HttpStatus.BAD_REQUEST.value(), responseEntity.getStatusCodeValue());
 //        assertEquals(ResponseMessage.KEY_NOT_FOUND, Objects.requireNonNull(apiResponse).getMessage());
@@ -524,13 +525,12 @@ public class ThreadServiceTest {
 //
 //    @Test
 //    void deleteThread_Exception_Test(){
-//        when(threadRepository.findById(anyLong())).thenThrow(NullPointerException.class);
-//        doNothing().when(threadRepository).delete(any());
-//        ResponseEntity<Object> responseEntity = threadService.deleteThread(1L);
+//        when(threadsRepository.findById(anyLong())).thenThrow(NullPointerException.class);
+//        doNothing().when(threadsRepository).delete(any());
+//        ResponseEntity<Object> responseEntity = threadsService.deleteThread(1L);
 //        ApiResponse apiResponse = (ApiResponse) responseEntity.getBody();
 //        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), responseEntity.getStatusCodeValue());
 //        assertEquals(ResponseMessage.KEY_NOT_FOUND, Objects.requireNonNull(apiResponse).getMessage());
 //    }
-
-
-        }
+//
+}
