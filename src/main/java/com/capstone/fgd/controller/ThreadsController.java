@@ -80,9 +80,14 @@ public class ThreadsController {
         return threadsService.deleteThread(id);
     }
 
-    @GetMapping(value = "/search")
-    public ResponseEntity<Object> searchByThread(@RequestParam(value = "thread",required = false) String thread){
-        return threadsService.searchByThread(thread);
+    @GetMapping(value = "/searchthreadbytitle")
+    public ResponseEntity<Object> searchThreadByTitle(@RequestParam(value = "title",required = false) String title){
+        return threadsService.searchThreadByTitle(title);
+    }
+
+    @GetMapping(value = "/searchthreadbycontent")
+    public ResponseEntity<Object> searchThreadByContent(@RequestParam(value = "content",required = false) String content){
+        return threadsService.searchThreadByContent(content);
     }
 
 

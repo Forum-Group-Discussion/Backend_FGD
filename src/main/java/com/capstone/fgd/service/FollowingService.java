@@ -1,13 +1,11 @@
 package com.capstone.fgd.service;
 
 import com.capstone.fgd.constantapp.ResponseMessage;
-import com.capstone.fgd.domain.dao.Following;
-import com.capstone.fgd.domain.dao.GetFollowingUser;
-import com.capstone.fgd.domain.dao.GetUserByFollowers;
-import com.capstone.fgd.domain.dao.Users;
+import com.capstone.fgd.domain.dao.*;
 import com.capstone.fgd.domain.dto.FollowingRequest;
 import com.capstone.fgd.domain.dto.GetFollowingUserDTO;
 import com.capstone.fgd.domain.dto.GetUserByFollowerDTO;
+import com.capstone.fgd.domain.dto.GetUserFollowersDTO;
 import com.capstone.fgd.repository.FollowingRepository;
 import com.capstone.fgd.repository.UserRepository;
 import com.capstone.fgd.util.ResponseUtil;
@@ -227,6 +225,33 @@ public class FollowingService {
             return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
+    public ResponseEntity<Object> getFolloweruser(){
+        try {
+            log.info("Executing get follower all user");
+
+            List<GetFollowerUser> getFolloweruser = followingRepository.getAllUserFollower();
+            List<GetUserFollowersDTO> getFollowerUsersDTO = new ArrayList<>();
+
+            for (GetFollowerUser follower: getFolloweruser){
+                log.info("{}",follower.getId());
+                log.info("{}",follower.getFollower());
+                getFollowerUsersDTO.add(GetUserFollowersDTO.builder()
+                        .id(follower.getId())
+                        .follower(follower.getFollower())
+                        .name_user(follower.getName_User())
+                        .ausername(follower.getAusername())
+                        .build());
+            }
+            log.info("SUCCESS");
+            return ResponseUtil.build(ResponseMessage.KEY_FOUND,getFollowerUsersDTO,HttpStatus.OK);
+        }catch (Exception e){
+            log.error("Get an error by executing follower all user, Error : {}",e.getMessage());
+            return ResponseUtil.build(ResponseMessage.KEY_NOT_FOUND,null,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
 }
